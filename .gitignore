@@ -1,0 +1,14 @@
+# OS / IDE configurations
+desktop.ini
+.DS_Store
+.vscode/
+
+# Project temporary / scratch files
+scratch/
+browser_recordings/
+
+# Ignore root-level screenshots, but keep assets
+/*.png
+/*.jpg
+/*.gif
+!/assets/

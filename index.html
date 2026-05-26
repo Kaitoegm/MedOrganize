@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedOrganize Cozy — Seu Dia Aconchegante</title>
+    <!-- Google Fonts: Fredoka (Rounded, Friendly, Cute) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Floating background clouds for Studio Ghibli vibe -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <!-- Sidebar Buttons Container (Top Left) -->
+    <div class="sidebar-controls">
+        <!-- Settings Button -->
+        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+
+        <!-- Aesthetics Panel Button (Directly Below Settings) -->
+        <button id="aesthetics-toggle-btn" class="sidebar-btn aesthetics-btn" title="Aparência & Bichinhos">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 11.5 21.5 11 21 11H18.5C18.2239 11 18 10.7761 18 10.5C18 9.11929 16.8807 8 15.5 8C15.2239 8 15 7.77614 15 7.5V5C15 2.23858 12.7614 0 10 0C4.47715 0 0 4.47715 0 10C0 16.6274 5.37258 22 12 22Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="6.5" cy="9.5" r="1.5" fill="currentColor"/>
+                <circle cx="7.5" cy="15.5" r="1.5" fill="currentColor"/>
+                <circle cx="12.5" cy="17.5" r="1.5" fill="currentColor"/>
+                <circle cx="13.5" cy="12.5" r="1.5" fill="currentColor"/>
+            </svg>
+        </button>
+
+        <!-- Cozy Shop & Gacha Button -->
+        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+        </button>
+    </div>
+ 
+    <!-- Quests Button Container (Top Right) -->
+    <div class="quests-control-container">
+        <button id="quests-toggle-btn" class="quests-btn" title="Missões Diárias">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span id="quests-badge" class="quests-badge" style="display: none;">!</span>
+        </button>
+    </div>
+
+    <div class="main-screen">
+        <!-- Cherry Blossoms Decoration -->
+        <img src="assets/aesthetic/flowers-cherryblossom-pink-gif-png-cute.gif" onerror="this.style.display='none'" style="position: fixed; top: -15px; left: -15px; width: 180px; pointer-events: none; opacity: 0.85; z-index: 5; transform: rotate(15deg);" alt="Cherry Blossoms">
+        <img src="assets/aesthetic/flowers-cherryblossom-pink-gif-png-cute.gif" onerror="this.style.display='none'" style="position: fixed; top: -20px; right: -15px; width: 220px; pointer-events: none; opacity: 0.85; z-index: 5; transform: scaleX(-1) rotate(10deg);" alt="Cherry Blossoms">
+        
+        <div class="app-container">
+            <!-- Header -->
+            <header class="app-header">
+                <!-- Gamification Stats Dashboard -->
+                <div class="gamification-bar">
+                    <div class="stat-item" title="Pomodoros concluídos">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#e07a5f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" fill="#f4f1de"/>
+                                <polyline points="12 7 12 12 15 14"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Pomodoros:</span>
+                        <span id="stat-pomodoros" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item" title="Tarefas concluídas">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#81b29a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Tarefas:</span>
+                        <span id="stat-tasks" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item highlight-tokens" title="Seus MedTokens">
+                        <span class="stat-icon">
+                            <img src="assets/aesthetic/moedinha.png" alt="Tokens" class="stat-token-img">
+                        </span>
+                        <span class="stat-label">Tokens:</span>
+                        <span id="stat-tokens" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item highlight-gacha" title="Suas Moedas Gacha">
+                        <span class="stat-icon">
+                            <img src="assets/aesthetic/moeda-gacha.png" alt="Moedas Gacha" class="stat-gacha-img">
+                        </span>
+                        <span class="stat-label">Moedas Gacha:</span>
+                        <span id="stat-gacha-coins" class="stat-val">0</span>
+                    </div>
+                </div>
+
+                <div class="logo-area">
+                    <span class="logo-leaf">🌱</span>
+                    <h1>Med<span class="highlight">Organize</span></h1>
+                </div>
+                <p class="subtitle">Estude no seu próprio ritmo, com carinho 🌸</p>
+                <div id="current-date" class="date-display">Carregando data...</div>
+            </header>
+ 
+            <!-- Daily Schedule Section -->
+            <main class="checklist-section">
+                <!-- Task Entry Input Bar -->
+                <div class="task-input-container" style="position: relative;">
+                    <!-- Decor popcat -->
+                    <img src="assets/aesthetic/popcat.gif" onerror="this.style.display='none'" alt="Popcat" style="position: absolute; bottom: 100%; right: 20px; width: 85px; pointer-events: none; transform: translateY(29px); z-index: 5;">
+                    <span class="input-emoji">✨</span>
+                    <input type="text" id="task-input" placeholder="O que vamos fazer hoje?" autofocus autocomplete="off">
+                </div>
+
+                <!-- Incomplete Tasks List -->
+                <div class="tasks-container">
+                    <ul id="task-list" class="task-list">
+                        <!-- Tasks dynamically injected here -->
+                    </ul>
+                    
+                    <div id="empty-state" class="empty-state">
+                        <div class="empty-icon">🌱</div>
+                        <h3>Seu dia está limpinho!</h3>
+                        <p>Escreva uma tarefa acima e aperte Enter para começar.</p>
+                    </div>
+                </div>
+
+                <!-- Completed Tasks Section -->
+                <div id="completed-section" class="completed-section" style="display: none;">
+                    <div class="completed-header">
+                        <h4>Tarefas Concluídas ✨</h4>
+                        <span id="completed-count" class="badge">0 concluídas</span>
+                    </div>
+                    <ul id="completed-task-list" class="task-list completed-list">
+                        <!-- Completed tasks dynamically injected here -->
+                    </ul>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN POMODORO SCREEN -->
+    <div id="fullscreen-focus" class="fullscreen-focus">
+        
+        <!-- Interactive Lofi/Ghibli Background GIF -->
+        <img id="focus-bg-img" class="focus-bg-img" src="" alt="Lofi Background">
+        
+        <!-- Rain overlay effect (Foco stage) -->
+        <div id="rain-container" class="rain-container"></div>
+        
+        <!-- Big countdown overlay for the last 3-2-1 seconds of Preparo -->
+        <div id="countdown-overlay" class="countdown-overlay">
+            <span id="countdown-number">3</span>
+        </div>
+
+        <div class="focus-content-wrapper">
+            
+            <!-- LEFT PANEL: Active Stage content (Illustration, Header, Balloons, Skip) -->
+            <div class="focus-left-panel">
+                
+                <!-- STAGE 1: PREPARO -->
+                <div id="preparo-view" class="stage-view active">
+                    <div class="stage-header">
+                        <h2>Hora de se preparar... ☕</h2>
+                        <p class="stage-subtitle">Limpe sua mente e estoure os balões:</p>
+                    </div>
+                    
+                    <!-- Floating preparation task balloons (dynamic bubbles) -->
+                    <div id="prep-balloons-container" class="prep-balloons-container">
+                        <!-- Balloons will be injected here -->
+                    </div>
+                    
+                    <!-- Cute transparent animal sticker -->
+                    <div class="illustration-container">
+                        <img id="preparo-animal-img" class="focus-animal-gif" src="" alt="Preparo Animal">
+                    </div>
+                    <div class="phase-badge badge-preparo">Preparo</div>
+                </div>
+
+                <!-- STAGE 2: FOCO -->
+                <div id="foco-view" class="stage-view">
+                    <div class="stage-header">
+                        <h2>Foco total... 📖</h2>
+                        <p id="focus-task-title" class="stage-subtitle">Estudando: Tópico</p>
+                    </div>
+                    <!-- Cute transparent animal sticker -->
+                    <div class="illustration-container">
+                        <img id="foco-animal-img" class="focus-animal-gif" src="" alt="Foco Animal">
+                    </div>
+                    
+                    <!-- Toggle button to open Caderno de Erros -->
+                    <button id="error-notebook-toggle-btn" class="error-notebook-circle-btn" title="Caderno de Erros">
+                        <img src="assets/aesthetic/livro-de-erros.png" alt="Caderno de Erros">
+                    </button>
+                    
+                    <div class="phase-badge badge-foco">Foco</div>
+                </div>
+
+                <!-- STAGE 3: PAUSA -->
+                <div id="pausa-view" class="stage-view">
+                    <div class="stage-header">
+                        <h2>Hora de descansar! 🌸</h2>
+                        <p class="stage-subtitle">Alongue-se, tome uma água ou relaxe.</p>
+                    </div>
+                    <!-- Cute transparent animal sticker -->
+                    <div class="illustration-container">
+                        <img id="pausa-animal-img" class="focus-animal-gif" src="" alt="Pausa Animal">
+                    </div>
+                    <div class="phase-badge badge-pausa">Pausa</div>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL: Circular Peach Timer Card -->
+            <div class="focus-timer-section">
+                <span class="timer-label">Focus Session</span>
+                <div id="focus-timer-display" class="focus-timer-display">30:00</div>
+                
+                <div id="focus-controls" class="focus-controls">
+                    <!-- Standard pause/resume -->
+                    <button id="focus-pause-btn" class="btn btn-timer-control">
+                        <span>⏸️</span> Pausar
+                    </button>
+                    <!-- Close / Exit Session button -->
+                    <button id="focus-cancel-btn" class="btn btn-timer-danger">
+                        Desistir
+                    </button>
+                    <!-- Skip Preparation button (shown in preparo stage) -->
+                    <button id="skip-preparo-btn" class="btn btn-primary">
+                        Pular Preparação ➔
+                    </button>
+                    <!-- Finish task early button (shown in focus stage) -->
+                    <button id="focus-finish-btn" class="btn btn-success" style="display: none;">
+                        Finalizar ✅
+                    </button>
+                </div>
+
+                <!-- Post-Foco choices (shown when timer finishes) -->
+                <div id="focus-completed-actions" class="focus-completed-actions" style="display: none;">
+                    <button id="focus-btn-voltar" class="btn btn-secondary">Voltar</button>
+                    <button id="focus-btn-prosseguir" class="btn btn-primary">Pausa ➔</button>
+                    <button id="focus-btn-concluir" class="btn btn-success">Concluir 🎉</button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Lofi study player (Always visible on desktop) -->
+            <div id="music-player-panel" class="music-player-panel persistent-player">
+                <div class="music-panel-header">
+                    <h3>LOFI STUDY RADIO 🎧</h3>
+                    <div class="music-source-selectors">
+                        <button id="src-spotify-btn" class="music-src-btn active">Spotify</button>
+                        <button id="src-rain-btn" class="music-src-btn">Chuva</button>
+                    </div>
+                </div>
+                <!-- Spotify Embed frame -->
+                <div id="spotify-container" class="music-container active">
+                    <iframe id="spotify-iframe" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <!-- Rain Synthesizer -->
+                <div id="rain-synth-container" class="music-container">
+                    <button id="rain-sound-btn" class="btn btn-secondary rain-sound-btn">
+                        🔈 Ligar Som de Chuva
+                    </button>
+                    <p class="rain-hint">Chuva relaxante sintetizada nativamente 🌧️</p>
+                </div>
+            </div>
+
+            <!-- Toggle button for mobile screens -->
+            <button id="music-toggle-btn" class="music-toggle-btn" title="Abrir reprodutor de música" style="display: none;">
+                🎵 Player Lofi
+            </button>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL PANEL -->
+    <div id="settings-modal" class="settings-modal">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h3>Configurações de Foco ⚙️</h3>
+                <button class="modal-close-btn">&times;</button>
+            </div>
+            
+            <div class="settings-body-scrollable">
+                <!-- Standard Timers -->
+                <div class="settings-section">
+                    <h4>Tempos do Pomodoro ⏱️</h4>
+                    <div class="form-group">
+                        <label for="set-preparo">Preparo (minutos):</label>
+                        <input type="number" id="set-preparo" min="1" max="60" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-foco">Foco (minutos):</label>
+                        <input type="number" id="set-foco" min="1" max="180" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-pausa">Pausa (minutos):</label>
+                        <input type="number" id="set-pausa" min="1" max="60" value="5">
+                    </div>
+                </div>
+
+                <!-- Music link -->
+                <div class="settings-section">
+                    <h4>Música Personalizada 🎵</h4>
+                    <div class="form-group">
+                        <label for="set-spotify-url">Link da sua Playlist do Spotify:</label>
+                        <input type="text" id="set-spotify-url" placeholder="Cole o link da playlist (Compartilhar)...">
+                    </div>
+                </div>
+
+                <!-- Preparo Checklist configuration button -->
+                <div class="settings-section">
+                    <h4>Rotina de Preparação 📝</h4>
+                    <button id="btn-config-prep" class="btn btn-secondary btn-full">
+                        Editar Checklist de Preparo
+                    </button>
+                    
+                    <!-- Expanded Checklist Editor -->
+                    <div id="prep-checklist-editor" class="prep-checklist-editor">
+                        <div class="prep-editor-input-row">
+                            <input type="text" id="prep-new-item-input" placeholder="Nova tarefa (ex: Pegar lanche)">
+                            <button id="prep-add-item-btn" class="btn btn-primary">+</button>
+                        </div>
+                        <ul id="prep-editor-list" class="prep-editor-list">
+                            <!-- Injected dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-footer">
+                <button id="settings-reset-btn" class="btn btn-ghost">Resetar</button>
+                <button id="settings-save-btn" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AESTHETICS MODAL PANEL (🎨) -->
+    <div id="aesthetics-modal" class="aesthetics-modal">
+        <div class="aesthetics-modal-content">
+            <div class="aesthetics-header">
+                <h3>Aparência & Aconchego 🎨</h3>
+                <button class="modal-close-btn">&times;</button>
+            </div>
+            
+            <div class="aesthetics-body">
+                <!-- Mode select -->
+                <div class="aesthetics-section">
+                    <h4>Modo de Estética</h4>
+                    <div class="aesthetic-mode-toggle">
+                        <button id="mode-manual-btn" class="btn-toggle active">Manual 🎨</button>
+                        <button id="mode-random-btn" class="btn-toggle">Aleatório 🎲</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Selection Area (hidden if Random mode is selected) -->
+                <div id="aesthetics-selection-group">
+                    <!-- Backgrounds -->
+                    <div class="aesthetics-section">
+                        <div class="aesthetics-section-header">
+                            <h4>Planos de Fundo Aconchegantes</h4>
+                            <button id="add-more-bgs-btn" class="btn btn-expand-collection" title="Aumentar coleção de fundos">+ Loja 🛒</button>
+                        </div>
+                        <div class="aesthetic-grid grid-backgrounds" id="grid-backgrounds">
+                            <!-- Background items dynamically injected -->
+                        </div>
+                    </div>
+
+                    <!-- Animals -->
+                    <div class="aesthetics-section">
+                        <div class="aesthetics-section-header">
+                            <h4>Apanhado de Bichinhos Fofos</h4>
+                            <button id="add-more-animals-btn" class="btn btn-expand-collection" title="Aumentar coleção de bichinhos">+ Loja 🛒</button>
+                        </div>
+                        <div class="aesthetic-grid grid-animals" id="grid-animals">
+                            <!-- Animal items dynamically injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="aesthetics-footer">
+                <button id="aesthetics-save-btn" class="btn btn-primary btn-full">Salvar Aparência</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COZY SHOP & GACHA MODAL -->
+    <div id="shop-modal" class="shop-modal">
+        <div class="shop-modal-content">
+            <div class="shop-header">
+                <h3 style="display: flex; align-items: center; gap: 0.4rem;">
+                    Loja Cozy & Gacha
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                </h3>
+                <button id="shop-close-btn" class="modal-close-btn">&times;</button>
+            </div>
+            
+            <div class="shop-currency-display">
+                <span class="currency-stat">
+                    <img src="assets/aesthetic/moedinha.png" alt="Tokens" class="shop-token-img">
+                    Tokens: <strong id="shop-tokens-val">0</strong>
+                </span>
+                <span class="currency-stat">
+                    <img src="assets/aesthetic/moeda-gacha.png" alt="Moedas Gacha" class="shop-gacha-img">
+                    Moedas Gacha: <strong id="shop-gacha-val">0</strong>
+                </span>
+            </div>
+
+            <div class="shop-tabs">
+                <button id="tab-shop-bgs" class="shop-tab-btn active">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    Planos de Fundo
+                </button>
+                <button id="tab-shop-animals" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                        <circle cx="12" cy="14" r="4"/>
+                        <circle cx="6.5" cy="8.5" r="2"/>
+                        <circle cx="10" cy="5.5" r="2"/>
+                        <circle cx="14" cy="5.5" r="2"/>
+                        <circle cx="17.5" cy="8.5" r="2"/>
+                    </svg>
+                    Bichinhos
+                </button>
+                <button id="tab-shop-gacha" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/>
+                        <line x1="9" y1="8" x2="9" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
+                        <line x1="15" y1="8" x2="15" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
+                    </svg>
+                    Gacha Máquina
+                </button>
+            </div>
+
+            <div class="shop-body-scrollable">
+                <!-- Shop Backgrounds Panel -->
+                <div id="shop-bgs-panel" class="shop-panel active">
+                    <div class="shop-grid" id="grid-shop-backgrounds">
+                        <!-- Background items populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Shop Animals Panel -->
+                <div id="shop-animals-panel" class="shop-panel">
+                    <div class="shop-grid" id="grid-shop-animals">
+                        <!-- Animal items populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Gacha Machine Panel -->
+                <div id="shop-gacha-panel" class="shop-panel">
+                    <div class="gacha-machine-container">
+                        <div class="gacha-visual-area">
+                            <div class="gacha-machine-box">
+                                <div class="gacha-display-glass" id="gacha-glass-bowl">
+                                    <!-- Dynamic capsules loaded from app.js -->
+                                </div>
+                                <div class="gacha-glass-overlay"></div>
+                                <div class="gacha-lever-wrapper">
+                                    <img src="assets/aesthetic/girinho-gacha.png" class="gacha-dispenser-lever" id="gacha-lever-handle" alt="Gacha Lever">
+                                </div>
+                                <div class="gacha-lever-click-zone" id="gacha-lever-click-zone"></div>
+                                <div class="gacha-exit-slot" id="gacha-exit-slot">
+                                    <!-- A capsule will slide out here when rolling -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gacha-controls">
+                            <div class="gacha-card">
+                                <h5>Comprar Moeda Gacha</h5>
+                                <p>Custo: <img src="assets/aesthetic/moedinha.png" alt="Tokens" class="gacha-inline-img"> 30 tokens</p>
+                                <button id="gacha-buy-ticket-btn" class="btn btn-secondary btn-full">Comprar 1 <img src="assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></button>
+                            </div>
+                            <div class="gacha-card highlight">
+                                <h5>Girar Máquina Gacha</h5>
+                                <p>Custo: 1 Moeda <img src="assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></p>
+                                <button id="gacha-roll-btn" class="btn btn-primary btn-full btn-gacha-action">Girar Gacha! <img src="assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cinematic Gacha Reveal Overlay -->
+    <div id="gacha-reveal-overlay" class="gacha-reveal-overlay">
+        <!-- Dramatic theater curtains -->
+        <div class="curtain-left"></div>
+        <div class="curtain-right"></div>
+        
+        <!-- Lights & burst effects behind the card -->
+        <div class="reveal-spotlight"></div>
+        <div class="reveal-burst"></div>
+        
+        <!-- Central Card revealing the pet -->
+        <div class="reveal-container">
+            <h4 class="reveal-subtitle">Novo Companheiro Desbloqueado! ✨</h4>
+            <div class="reveal-img-wrapper">
+                <img id="reveal-animal-img" src="" alt="Bichinho obtido">
+            </div>
+            <h2 id="reveal-animal-species" class="reveal-title">Nome da Espécie</h2>
+            <div class="reveal-naming-box">
+                <label for="reveal-pet-name-input" class="reveal-naming-label">Dê um nome para seu novo amigo: 🌸</label>
+                <input type="text" id="reveal-pet-name-input" placeholder="Como ele vai se chamar?..." maxlength="15" autocomplete="off">
+            </div>
+            <button id="reveal-close-btn" class="btn btn-success reveal-close-btn">Que fofo! ❤️</button>
+        </div>
+    </div>
+
+    <!-- DAILY QUESTS PANEL (Sliding Drawer) -->
+    <div id="quests-panel" class="quests-panel">
+        <div class="quests-panel-content">
+            <div class="quests-header">
+                <h3>Missões Diárias 📜</h3>
+                <button id="quests-close-btn" class="quests-close-btn">&times;</button>
+            </div>
+            <p class="quests-subtitle">Complete missões para ganhar recompensas! As missões resetam diariamente. 🌟</p>
+            
+            <div class="quests-list" id="quests-list-container">
+                <!-- Quests dynamically injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="error-notebook-modal" class="error-notebook-modal">
+        <div class="error-notebook-wrapper">
+            <!-- Title banner added above the book -->
+            <img id="error-notebook-banner" src="assets/aesthetic/faixa.png" alt="Caderno de Erros">
+            
+            <div class="error-notebook-content">
+                <!-- Close button positioned absolutely in the corner of the book -->
+                <button id="error-notebook-close-btn" class="modal-close-btn" title="Fechar Caderno">&times;</button>
+                
+                <div class="error-notebook-body">
+                    <!-- Coluna Esquerda: Digitação e Lista de Erros alinhados com as linhas -->
+                    <div class="error-column-left">
+                        <div class="error-input-wrapper">
+                            <input type="text" id="error-notebook-input" placeholder="Escreva seu erro e dê Enter! ✍️" autocomplete="off" maxlength="45">
+                        </div>
+                        <ul id="error-notebook-list" class="error-notebook-list">
+                            <!-- Erros injetados dinamicamente via JS nas linhas 2 a 10 -->
+                        </ul>
+                    </div>
+                    
+                    <!-- Coluna Direita: Fluxograma interativo ou Explicação -->
+                    <div class="error-column-right">
+                        <!-- Flowchart View with clickable regions -->
+                        <div id="flowchart-view" class="flowchart-view">
+                            <img id="error-notebook-flowchart" src="assets/aesthetic/Fluxograma.png" alt="Fluxograma de Anotações">
+                            <div class="flowchart-hotspot" id="hotspot-step-1" title="Princípio 1"></div>
+                            <div class="flowchart-hotspot" id="hotspot-step-2" title="Princípio 2"></div>
+                            <div class="flowchart-hotspot" id="hotspot-step-3" title="Princípio 3"></div>
+                        </div>
+                        <!-- Explanation View (originally hidden) -->
+                        <div id="explanation-view" class="explanation-view" style="display: none;">
+                            <h4 id="explanation-title">Princípio</h4>
+                            <p id="explanation-text">Explicação...</p>
+                            <button id="explanation-back-btn" class="explanation-back-btn">Voltar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anime.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
