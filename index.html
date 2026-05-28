@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.0.3">
 </head>
 <body>
     <!-- Floating background clouds for Studio Ghibli vibe -->
@@ -16,10 +16,13 @@
     <div class="cloud cloud-2"></div>
     <div class="cloud cloud-3"></div>
 
+    <!-- Light/Dark Theme Toggle Button -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn" title="Alternar Tema Claro/Escuro" aria-label="Alternar Tema Claro/Escuro">☀️</button>
+
     <!-- Sidebar Buttons Container (Top Left) -->
-    <div class="sidebar-controls">
+    <div class="sidebar-controls" role="navigation" aria-label="Menu Principal">
         <!-- Settings Button -->
-        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações">
+        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações" aria-label="Configurações do Foco e Pomodoro" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -27,7 +30,7 @@
         </button>
 
         <!-- Aesthetics Panel Button (Directly Below Settings) -->
-        <button id="aesthetics-toggle-btn" class="sidebar-btn aesthetics-btn" title="Aparência & Bichinhos">
+        <button id="aesthetics-toggle-btn" class="sidebar-btn aesthetics-btn" title="Aparência & Bichinhos" aria-label="Aparência, Plano de Fundo e Bichinhos" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22C17.5228 22 22 17.5228 22 12C22 11.5 21.5 11 21 11H18.5C18.2239 11 18 10.7761 18 10.5C18 9.11929 16.8807 8 15.5 8C15.2239 8 15 7.77614 15 7.5V5C15 2.23858 12.7614 0 10 0C4.47715 0 0 4.47715 0 10C0 16.6274 5.37258 22 12 22Z" fill="none" stroke="currentColor" stroke-width="2"/>
                 <circle cx="6.5" cy="9.5" r="1.5" fill="currentColor"/>
@@ -38,18 +41,16 @@
         </button>
 
         <!-- Cozy Shop & Gacha Button -->
-        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha">
+        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha" aria-label="Loja Cozy e Máquina Gacha" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1"/>
                 <circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
         </button>
-    </div>
- 
-    <!-- Quests Button Container (Top Right) -->
-    <div class="quests-control-container">
-        <button id="quests-toggle-btn" class="quests-btn" title="Missões Diárias">
+
+        <!-- Quests Button (Daily Quests) -->
+        <button id="quests-toggle-btn" class="sidebar-btn quests-btn" title="Missões Diárias" aria-label="Missões Diárias e Conquistas" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
@@ -58,6 +59,15 @@
                 <polyline points="10 9 9 9 8 9"/>
             </svg>
             <span id="quests-badge" class="quests-badge" style="display: none;">!</span>
+        </button>
+
+        <!-- Stats Button (Estatísticas) -->
+        <button id="stats-toggle-btn" class="sidebar-btn stats-btn" title="Estatísticas de Estudo" aria-label="Estatísticas de Estudo" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
         </button>
     </div>
 
@@ -80,6 +90,16 @@
                         </span>
                         <span class="stat-label">Pomodoros:</span>
                         <span id="stat-pomodoros" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item" title="Tempo total de estudo">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a29bfe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Estudado:</span>
+                        <span id="stat-study-time" class="stat-val">0h 00m</span>
                     </div>
                     <div class="stat-item" title="Tarefas concluídas">
                         <span class="stat-icon">
@@ -119,7 +139,7 @@
                 <!-- Task Entry Input Bar -->
                 <div class="task-input-container" style="position: relative;">
                     <!-- Decor popcat -->
-                    <img src="assets/aesthetic/popcat.gif" onerror="this.style.display='none'" alt="Popcat" style="position: absolute; bottom: 100%; right: 20px; width: 85px; pointer-events: none; transform: translateY(29px); z-index: 5;">
+                    <img src="assets/aesthetic/popcat.gif" onerror="this.style.display='none'" alt="Popcat" class="popcat-decor">
                     <span class="input-emoji">✨</span>
                     <input type="text" id="task-input" placeholder="O que vamos fazer hoje?" autofocus autocomplete="off">
                 </div>
@@ -148,6 +168,7 @@
                     </ul>
                 </div>
             </main>
+
         </div>
     </div>
 
@@ -201,7 +222,7 @@
                     </div>
                     
                     <!-- Toggle button to open Caderno de Erros -->
-                    <button id="error-notebook-toggle-btn" class="error-notebook-circle-btn" title="Caderno de Erros">
+                    <button id="error-notebook-toggle-btn" class="error-notebook-circle-btn" title="Caderno de Erros" aria-label="Abrir Caderno de Erros" aria-haspopup="dialog" aria-expanded="false">
                         <img src="assets/aesthetic/livro-de-erros.png" alt="Caderno de Erros">
                     </button>
                     
@@ -225,7 +246,7 @@
             <!-- CENTER PANEL: Circular Peach Timer Card -->
             <div class="focus-timer-section">
                 <span class="timer-label">Focus Session</span>
-                <div id="focus-timer-display" class="focus-timer-display">30:00</div>
+                <div id="focus-timer-display" class="focus-timer-display" aria-live="polite">30:00</div>
                 
                 <div id="focus-controls" class="focus-controls">
                     <!-- Standard pause/resume -->
@@ -260,35 +281,52 @@
                     <h3>LOFI STUDY RADIO 🎧</h3>
                     <div class="music-source-selectors">
                         <button id="src-spotify-btn" class="music-src-btn active">Spotify</button>
-                        <button id="src-rain-btn" class="music-src-btn">Chuva</button>
+                        <button id="src-youtube-btn" class="music-src-btn">YouTube</button>
+                        <button id="src-rain-btn" class="music-src-btn">Sons</button>
                     </div>
                 </div>
                 <!-- Spotify Embed frame -->
                 <div id="spotify-container" class="music-container active">
                     <iframe id="spotify-iframe" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                 </div>
-                <!-- Rain Synthesizer -->
-                <div id="rain-synth-container" class="music-container">
-                    <button id="rain-sound-btn" class="btn btn-secondary rain-sound-btn">
-                        🔈 Ligar Som de Chuva
+                <!-- YouTube Embed frame -->
+                <div id="youtube-container" class="music-container">
+                    <iframe id="youtube-iframe" src="" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <!-- Ambiance Synthesizer -->
+                <div id="ambiance-container" class="music-container">
+                    <div class="ambiance-selector" style="margin-bottom: 0.8rem;">
+                        <label for="ambiance-sound-select" style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 0.3rem;">Som Ambiente:</label>
+                        <select id="ambiance-sound-select" class="form-control select-cozy" style="width: 100%; padding: 0.4rem; border: var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; background: var(--color-cream-white);">
+                            <option value="rain">🌧️ Chuva Aconchegante</option>
+                            <option value="fireplace">🔥 Lareira Estalando</option>
+                            <option value="chimes">🎐 Sinos de Vento Ghibli</option>
+                            <option value="waves">🌊 Ondas do Mar Lofi</option>
+                        </select>
+                    </div>
+                    <button id="ambiance-play-btn" class="btn btn-secondary btn-full">
+                        🔈 Ligar Som Ambiente
                     </button>
-                    <p class="rain-hint">Chuva relaxante sintetizada nativamente 🌧️</p>
+                    <div class="volume-control" style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">🔈</span>
+                        <input type="range" id="ambiance-volume" min="0" max="1" step="0.05" value="0.5" style="flex: 1; accent-color: var(--color-orange); cursor: pointer;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">🔊</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Toggle button for mobile screens -->
-            <button id="music-toggle-btn" class="music-toggle-btn" title="Abrir reprodutor de música" style="display: none;">
+            <button id="music-toggle-btn" class="music-toggle-btn" title="Abrir reprodutor de música" aria-label="Abrir reprodutor de música" aria-expanded="false" style="display: none;">
                 🎵 Player Lofi
             </button>
         </div>
     </div>
 
-    <!-- SETTINGS MODAL PANEL -->
-    <div id="settings-modal" class="settings-modal">
+    <div id="settings-modal" class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
         <div class="settings-modal-content">
             <div class="settings-header">
-                <h3>Configurações de Foco ⚙️</h3>
-                <button class="modal-close-btn">&times;</button>
+                <h3 id="settings-title">Configurações de Foco ⚙️</h3>
+                <button class="modal-close-btn" aria-label="Fechar Configurações">&times;</button>
             </div>
             
             <div class="settings-body-scrollable">
@@ -315,6 +353,10 @@
                     <div class="form-group">
                         <label for="set-spotify-url">Link da sua Playlist do Spotify:</label>
                         <input type="text" id="set-spotify-url" placeholder="Cole o link da playlist (Compartilhar)...">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-youtube-url">Link da sua Playlist do YouTube:</label>
+                        <input type="text" id="set-youtube-url" placeholder="Cole o link da playlist do YouTube...">
                     </div>
                 </div>
 
@@ -346,11 +388,11 @@
     </div>
 
     <!-- AESTHETICS MODAL PANEL (🎨) -->
-    <div id="aesthetics-modal" class="aesthetics-modal">
+    <div id="aesthetics-modal" class="aesthetics-modal" role="dialog" aria-modal="true" aria-labelledby="aesthetics-title">
         <div class="aesthetics-modal-content">
             <div class="aesthetics-header">
-                <h3>Aparência & Aconchego 🎨</h3>
-                <button class="modal-close-btn">&times;</button>
+                <h3 id="aesthetics-title">Aparência & Aconchego 🎨</h3>
+                <button class="modal-close-btn" aria-label="Fechar Aparência">&times;</button>
             </div>
             
             <div class="aesthetics-body">
@@ -396,10 +438,10 @@
     </div>
 
     <!-- COZY SHOP & GACHA MODAL -->
-    <div id="shop-modal" class="shop-modal">
+    <div id="shop-modal" class="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title">
         <div class="shop-modal-content">
             <div class="shop-header">
-                <h3 style="display: flex; align-items: center; gap: 0.4rem;">
+                <h3 id="shop-title" style="display: flex; align-items: center; gap: 0.4rem;">
                     Loja Cozy & Gacha
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
                         <circle cx="9" cy="21" r="1"/>
@@ -407,7 +449,7 @@
                         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                     </svg>
                 </h3>
-                <button id="shop-close-btn" class="modal-close-btn">&times;</button>
+                <button id="shop-close-btn" class="modal-close-btn" aria-label="Fechar Loja e Gacha">&times;</button>
             </div>
             
             <div class="shop-currency-display">
@@ -528,12 +570,44 @@
         </div>
     </div>
 
+    <!-- STATISTICS MODAL PANEL -->
+    <div id="stats-modal" class="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+        <div class="stats-modal-content">
+            <div class="stats-header">
+                <h3 id="stats-title">Estatísticas de Foco Semanal 📊</h3>
+                <button id="stats-close-btn" class="modal-close-btn" aria-label="Fechar Estatísticas">&times;</button>
+            </div>
+            
+            <div class="stats-body" style="overflow-y: auto;">
+                <section class="study-history-section" style="border: none; background: transparent; padding: 0; box-shadow: none;">
+                    <div class="history-header">
+                        <h4>Seu Progresso Semanal</h4>
+                        <span id="history-total-week" class="badge">0h 00m esta semana</span>
+                    </div>
+                    <div class="history-chart-container">
+                        <div class="chart-y-axis">
+                            <span>60m</span>
+                            <span>30m</span>
+                            <span>0m</span>
+                        </div>
+                        <div class="chart-bars" id="weekly-chart-bars">
+                            <!-- Bars dynamically loaded from JS -->
+                        </div>
+                    </div>
+                    <div class="chart-labels" id="weekly-chart-labels">
+                        <!-- Day labels from JS -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
     <!-- DAILY QUESTS PANEL (Sliding Drawer) -->
-    <div id="quests-panel" class="quests-panel">
+    <div id="quests-panel" class="quests-panel" role="dialog" aria-modal="true" aria-labelledby="quests-title">
         <div class="quests-panel-content">
             <div class="quests-header">
-                <h3>Missões Diárias 📜</h3>
-                <button id="quests-close-btn" class="quests-close-btn">&times;</button>
+                <h3 id="quests-title">Missões Diárias 📜</h3>
+                <button id="quests-close-btn" class="quests-close-btn" aria-label="Fechar Missões Diárias">&times;</button>
             </div>
             <p class="quests-subtitle">Complete missões para ganhar recompensas! As missões resetam diariamente. 🌟</p>
             
@@ -543,14 +617,14 @@
         </div>
     </div>
 
-    <div id="error-notebook-modal" class="error-notebook-modal">
+    <div id="error-notebook-modal" class="error-notebook-modal" role="dialog" aria-modal="true" aria-label="Caderno de Erros">
         <div class="error-notebook-wrapper">
             <!-- Title banner added above the book -->
             <img id="error-notebook-banner" src="assets/aesthetic/faixa.png" alt="Caderno de Erros">
             
             <div class="error-notebook-content">
                 <!-- Close button positioned absolutely in the corner of the book -->
-                <button id="error-notebook-close-btn" class="modal-close-btn" title="Fechar Caderno">&times;</button>
+                <button id="error-notebook-close-btn" class="modal-close-btn" title="Fechar Caderno" aria-label="Fechar Caderno de Erros">&times;</button>
                 
                 <div class="error-notebook-body">
                     <!-- Coluna Esquerda: Digitação e Lista de Erros alinhados com as linhas -->
@@ -586,6 +660,6 @@
 
     <!-- Anime.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=1.0.3"></script>
 </body>
 </html>

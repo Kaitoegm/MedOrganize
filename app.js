@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gachaCoins = parseInt(localStorage.getItem('med_cozy_gacha_coins')) || 0;
     let completedPomodoros = parseInt(localStorage.getItem('med_cozy_completed_pomodoros')) || 0;
     let completedTasksCount = parseInt(localStorage.getItem('med_cozy_completed_tasks')) || 0;
+    let studySeconds = parseInt(localStorage.getItem('med_cozy_study_seconds')) || 0;
 
     // --- Initial State and LocalStorage Load ---
     let tasks = JSON.parse(localStorage.getItem('med_cozy_tasks')) || [];
@@ -254,8 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pausa: 5
     };
 
-    // Spotify playlist setting
+    // Spotify/YouTube playlist settings
     let spotifyUrl = localStorage.getItem('med_cozy_spotify_url') || "https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhp79Z69";
+    let youtubeUrl = localStorage.getItem('med_cozy_youtube_url') || "https://youtube.com/playlist?list=PLiv5O-nkp6yIUsakTDGv1sYiqe2gPXLsq&si=BGYOw0y13VdITPwd";
 
     // Preparo Checklist items list
     let prepTasks = JSON.parse(localStorage.getItem('med_cozy_prep_tasks')) || [
@@ -304,6 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let totalDuration = 0;      // Total seconds
     let timerRunning = false;
     let currentStage = null;     // 'preparo', 'foco', 'pausa', or null
+    let isLeverAnimating = false;
+    let focusAlarmPlayed = false;
     let focusTaskId = null;      // ID of focused task
     let physicsAnimationFrameId = null;
     let currentRevealedAnimal = null;
@@ -328,6 +332,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sidebar
     const settingsToggleBtn = document.getElementById('settings-toggle-btn');
     const aestheticsToggleBtn = document.getElementById('aesthetics-toggle-btn');
+    const statsToggleBtn = document.getElementById('stats-toggle-btn');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+
+    // Stats Modal
+    const statsModal = document.getElementById('stats-modal');
+    const statsCloseBtn = document.getElementById('stats-close-btn');
 
     // Settings Modal
     const settingsModal = document.getElementById('settings-modal');
@@ -379,11 +389,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const musicToggleBtn = document.getElementById('music-toggle-btn');
     const musicPlayerPanel = document.getElementById('music-player-panel');
     const srcSpotifyBtn = document.getElementById('src-spotify-btn');
+    const srcYoutubeBtn = document.getElementById('src-youtube-btn');
     const srcRainBtn = document.getElementById('src-rain-btn');
     const spotifyContainer = document.getElementById('spotify-container');
-    const rainSynthContainer = document.getElementById('rain-synth-container');
+    const youtubeContainer = document.getElementById('youtube-container');
+    const ambianceContainer = document.getElementById('ambiance-container');
     const spotifyIframe = document.getElementById('spotify-iframe');
-    const rainSoundBtn = document.getElementById('rain-sound-btn');
+    const youtubeIframe = document.getElementById('youtube-iframe');
+    const ambianceSoundSelect = document.getElementById('ambiance-sound-select');
+    const ambiancePlayBtn = document.getElementById('ambiance-play-btn');
+    const ambianceVolumeSlider = document.getElementById('ambiance-volume');
+    
+    // Top bar study time element
+    const statStudyTime = document.getElementById('stat-study-time');
+    
+    // Custom YouTube playlist input
+    const setYoutubeUrlInput = document.getElementById('set-youtube-url');
     
     const rainContainer = document.getElementById('rain-container');
     const countdownOverlay = document.getElementById('countdown-overlay');
@@ -397,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorNotebookList = document.getElementById('error-notebook-list');
 
     // Close buttons for modals
-    const modalCloseBtns = document.querySelectorAll('#settings-modal .modal-close-btn, #aesthetics-modal .modal-close-btn, #error-notebook-modal .modal-close-btn');
+    const modalCloseBtns = document.querySelectorAll('#settings-modal .modal-close-btn, #aesthetics-modal .modal-close-btn, #error-notebook-modal .modal-close-btn, #stats-modal .modal-close-btn');
 
     // --- Dynamic Date Display ---
     function initDate() {
@@ -551,12 +572,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Settings Modal Logic ---
     function openSettings() {
         setPreparoInput.value = settings.preparo;
         setFocoInput.value = settings.foco;
         setPausaInput.value = settings.pausa;
         setSpotifyUrlInput.value = spotifyUrl;
+        if (setYoutubeUrlInput) setYoutubeUrlInput.value = youtubeUrl;
         
         // Hide checklist sub-panel by default
         prepChecklistEditor.classList.remove('open');
@@ -565,10 +586,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPrepEditorList();
         
         settingsModal.classList.add('open');
+        if (settingsToggleBtn) settingsToggleBtn.setAttribute('aria-expanded', 'true');
+
+        const closeBtn = settingsModal.querySelector('.modal-close-btn');
+        activeFocusTrapCleanup = setupFocusTrap(settingsModal, closeBtn, settingsToggleBtn);
     }
 
     function closeSettings() {
+        if (!settingsModal.classList.contains('open')) return;
         settingsModal.classList.remove('open');
+        if (settingsToggleBtn) settingsToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+            activeFocusTrapCleanup = null;
+        }
     }
 
     settingsToggleBtn.addEventListener('click', openSettings);
@@ -621,6 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setFocoInput.value = 30;
         setPausaInput.value = 5;
         setSpotifyUrlInput.value = "https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhp79Z69";
+        if (setYoutubeUrlInput) setYoutubeUrlInput.value = "https://youtube.com/playlist?list=PLiv5O-nkp6yIUsakTDGv1sYiqe2gPXLsq&si=BGYOw0y13VdITPwd";
         
         prepTasks = [
             "Pegar copo de água 💧",
@@ -633,10 +665,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function cleanSpotifyUrl(url) {
-        if (!url) return '';
-        // Convert typical playlist link to embed format
-        if (url.includes('open.spotify.com') && !url.includes('/embed/')) {
-            return url.replace('open.spotify.com/', 'open.spotify.com/embed/');
+        if (!url) return "https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhp79Z69";
+        const match = url.match(/spotify\.com\/(?:[a-zA-Z0-9_-]+\/)?(playlist|album|track)\/([a-zA-Z0-9]+)/);
+        if (match) {
+            const type = match[1];
+            const id = match[2];
+            return `https://open.spotify.com/embed/${type}/${id}`;
+        }
+        if (url.includes('/embed/')) {
+            return url;
+        }
+        return url;
+    }
+
+    function cleanYoutubeUrl(url) {
+        if (!url) return "https://www.youtube.com/embed/videoseries?list=PLiv5O-nkp6yIUsakTDGv1sYiqe2gPXLsq";
+        const match = url.match(/[?&]list=([^#\&\?]+)/);
+        if (match) {
+            return `https://www.youtube.com/embed/videoseries?list=${match[1]}`;
+        }
+        const videoMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^#\&\?]+)/);
+        if (videoMatch) {
+            return `https://www.youtube.com/embed/${videoMatch[1]}`;
+        }
+        if (url.includes('/embed/')) {
+            return url;
         }
         return url;
     }
@@ -651,6 +704,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         spotifyUrl = cleanSpotifyUrl(setSpotifyUrlInput.value.trim());
         localStorage.setItem('med_cozy_spotify_url', spotifyUrl);
+
+        if (setYoutubeUrlInput) {
+            youtubeUrl = cleanYoutubeUrl(setYoutubeUrlInput.value.trim());
+            localStorage.setItem('med_cozy_youtube_url', youtubeUrl);
+        }
+
+        // Refresh active player with new URLs
+        if (srcSpotifyBtn.classList.contains('active')) {
+            spotifyIframe.src = cleanSpotifyUrl(spotifyUrl);
+        } else if (srcYoutubeBtn && srcYoutubeBtn.classList.contains('active')) {
+            if (youtubeIframe) youtubeIframe.src = cleanYoutubeUrl(youtubeUrl);
+        }
 
         localStorage.setItem('med_cozy_prep_tasks', JSON.stringify(prepTasks));
 
@@ -672,10 +737,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAestheticsGrids();
         
         aestheticsModal.classList.add('open');
+        if (aestheticsToggleBtn) aestheticsToggleBtn.setAttribute('aria-expanded', 'true');
+
+        const closeBtn = aestheticsModal.querySelector('.modal-close-btn');
+        activeFocusTrapCleanup = setupFocusTrap(aestheticsModal, closeBtn, aestheticsToggleBtn);
     }
 
     function closeAesthetics() {
+        if (!aestheticsModal.classList.contains('open')) return;
         aestheticsModal.classList.remove('open');
+        if (aestheticsToggleBtn) aestheticsToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+            activeFocusTrapCleanup = null;
+        }
     }
 
     aestheticsToggleBtn.addEventListener('click', openAesthetics);
@@ -783,12 +858,92 @@ document.addEventListener('DOMContentLoaded', () => {
         playAudio('assets/sounds/ao marcar check em uma tarefa, na página inicial.mp3');
     });
 
+    // --- Keyboard Navigation & Focus Trapping (Phase 4) ---
+    let activeFocusTrapCleanup = null;
+
+    function setupFocusTrap(modal, closeBtn, triggerBtn) {
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+        }
+
+        const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const focusableElements = Array.from(modal.querySelectorAll(focusableSelectors));
+        
+        const visibleFocusableElements = focusableElements.filter(el => {
+            const style = window.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
+        });
+
+        if (visibleFocusableElements.length > 0) {
+            const firstInput = visibleFocusableElements.find(el => el.tagName === 'INPUT');
+            if (firstInput) {
+                firstInput.focus();
+            } else {
+                visibleFocusableElements[0].focus();
+            }
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Tab') {
+                const currentFocusable = Array.from(modal.querySelectorAll(focusableSelectors)).filter(el => {
+                    const style = window.getComputedStyle(el);
+                    return style.display !== 'none' && style.visibility !== 'hidden' && !el.disabled;
+                });
+                
+                if (currentFocusable.length === 0) {
+                    e.preventDefault();
+                    return;
+                }
+                const firstElement = currentFocusable[0];
+                const lastElement = currentFocusable[currentFocusable.length - 1];
+
+                if (e.shiftKey) { // Shift + Tab
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        e.preventDefault();
+                    }
+                } else { // Tab
+                    if (document.activeElement === lastElement) {
+                        firstElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                if (closeBtn) {
+                    closeBtn.click();
+                } else {
+                    closeSettings();
+                    closeAesthetics();
+                    closeErrorNotebook();
+                    closeShop();
+                    closeQuests();
+                }
+            }
+        }
+
+        modal.addEventListener('keydown', handleKeyDown);
+
+        // Hide background elements from screen readers
+        const backgroundElements = document.querySelectorAll('.sidebar-controls, .main-screen, #fullscreen-focus');
+        backgroundElements.forEach(el => el.setAttribute('aria-hidden', 'true'));
+
+        return function cleanup() {
+            modal.removeEventListener('keydown', handleKeyDown);
+            backgroundElements.forEach(el => el.removeAttribute('aria-hidden'));
+            if (triggerBtn) {
+                triggerBtn.focus();
+            }
+        };
+    }
+
     // Close all modals click handlers
     modalCloseBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             closeSettings();
             closeAesthetics();
             closeErrorNotebook();
+            closeStats();
         });
     });
 
@@ -797,7 +952,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === settingsModal) closeSettings();
         if (e.target === aestheticsModal) closeAesthetics();
         if (e.target === errorNotebookModal) closeErrorNotebook();
+        if (e.target === shopModal) closeShop();
+        if (e.target === statsModal) closeStats();
     });
+
+    // --- Statistics Modal Logic ---
+    function openStats() {
+        renderWeeklyChart();
+        statsModal.classList.add('open');
+        if (statsToggleBtn) statsToggleBtn.setAttribute('aria-expanded', 'true');
+        
+        const closeBtn = statsModal.querySelector('.modal-close-btn');
+        activeFocusTrapCleanup = setupFocusTrap(statsModal, closeBtn, statsToggleBtn);
+    }
+
+    function closeStats() {
+        if (!statsModal.classList.contains('open')) return;
+        statsModal.classList.remove('open');
+        if (statsToggleBtn) statsToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+            activeFocusTrapCleanup = null;
+        }
+    }
+
+    if (statsToggleBtn) {
+        statsToggleBtn.addEventListener('click', openStats);
+    }
 
     // --- Error Notebook Modal Logic ---
     function openErrorNotebook() {
@@ -805,10 +986,19 @@ document.addEventListener('DOMContentLoaded', () => {
         renderErrors();
         hideExplanation(); // Reset to flowchart view initially
         errorNotebookModal.classList.add('open');
+        if (errorNotebookToggleBtn) errorNotebookToggleBtn.setAttribute('aria-expanded', 'true');
+        
+        activeFocusTrapCleanup = setupFocusTrap(errorNotebookModal, errorNotebookCloseBtn, errorNotebookToggleBtn);
     }
 
     function closeErrorNotebook() {
+        if (!errorNotebookModal.classList.contains('open')) return;
         errorNotebookModal.classList.remove('open');
+        if (errorNotebookToggleBtn) errorNotebookToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+            activeFocusTrapCleanup = null;
+        }
     }
 
     if (errorNotebookToggleBtn) {
@@ -1036,18 +1226,27 @@ document.addEventListener('DOMContentLoaded', () => {
             animUrl = animalsCatalog.get(selectedAnimalId)?.url || '';
         }
 
-        // Set GIF sources
+        // Set GIF sources and descriptive alt text for accessibility
         focusBgImg.src = bgUrl;
+        focusBgImg.alt = `Plano de fundo: ${bgName || 'Quarto Aconchegante'}`;
+        
+        const animalAltText = `Seu companheiro de estudos: ${animName || 'Pato'}`;
         preparoAnimalImg.src = animUrl;
+        preparoAnimalImg.alt = animalAltText;
+        
         focoAnimalImg.src = animUrl;
+        focoAnimalImg.alt = animalAltText;
+        
         pausaAnimalImg.src = animUrl;
+        pausaAnimalImg.alt = animalAltText;
 
-        // Update Spotify Embed
+        // Update Embeds
         spotifyIframe.src = cleanSpotifyUrl(spotifyUrl);
+        if (youtubeIframe) youtubeIframe.src = cleanYoutubeUrl(youtubeUrl);
 
         // Reset player widget panel to closed state
         musicPlayerPanel.classList.remove('open');
-        stopRainSound();
+        stopAmbiance();
         showMusicTab('spotify');
 
         // Open focus screen
@@ -1056,9 +1255,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateFocusTimerDisplay() {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        focusTimerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        if (timeLeft < 0) {
+            const absTime = Math.abs(timeLeft);
+            const mins = Math.floor(absTime / 60);
+            const secs = absTime % 60;
+            focusTimerDisplay.textContent = `+${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            focusTimerDisplay.style.color = '#2ecc71'; // Beautiful cozy green
+        } else {
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            focusTimerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            focusFocusDisplayColorReset();
+        }
+    }
+
+    function focusFocusDisplayColorReset() {
+        if (focusTimerDisplay) {
+            focusTimerDisplay.style.color = '';
+        }
     }
 
     function stopActiveTimer() {
@@ -1084,9 +1298,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const tickHandler = () => {
             const now = Date.now();
-            const remaining = Math.max(0, Math.round((timerEndTime - now) / 1000));
+            let remaining;
+            if (currentStage === 'foco') {
+                remaining = Math.round((timerEndTime - now) / 1000);
+            } else {
+                remaining = Math.max(0, Math.round((timerEndTime - now) / 1000));
+            }
             
             if (remaining !== timeLeft) {
+                // If in focus stage, increment study time for each tick
+                if (currentStage === 'foco') {
+                    studySeconds++;
+                    localStorage.setItem('med_cozy_study_seconds', studySeconds.toString());
+                    
+                    // Increment weekly history
+                    const today = getFormattedToday();
+                    const history = JSON.parse(localStorage.getItem('med_cozy_weekly_study_history')) || {};
+                    history[today] = (history[today] || 0) + 1;
+                    localStorage.setItem('med_cozy_weekly_study_history', JSON.stringify(history));
+                    
+                    updateGamificationStats();
+                    renderWeeklyChart();
+                }
+
                 timeLeft = remaining;
                 updateFocusTimerDisplay();
                 
@@ -1096,9 +1330,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            if (timeLeft <= 0) {
-                stopActiveTimer();
-                if (activeCallback) activeCallback();
+            if (currentStage === 'foco') {
+                // Milestone at exactly 0
+                if (timeLeft === 0 && !focusAlarmPlayed) {
+                    focusAlarmPlayed = true;
+                    playAudio('assets/sounds/fim do pomodoro.mp3');
+                    addTokens(25);
+                    addCompletedPomodoro();
+                    showCozyAlert('Parabéns! Você concluiu seu tempo de foco! Continue estudando ou finalize a sessão quando quiser. 🌸', '🏆');
+                }
+            } else {
+                if (timeLeft <= 0) {
+                    stopActiveTimer();
+                    if (activeCallback) activeCallback();
+                }
             }
         };
 
@@ -1365,7 +1610,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timeLeft = totalDuration;
         updateFocusTimerDisplay();
 
-        stopRainSound();
+        stopAmbiance();
         playAudio('assets/sounds/início da sessão de foco/undertale-battle-start.mp3');
         
         focusControls.style.display = 'flex';
@@ -1375,13 +1620,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (skipPreparoBtn) skipPreparoBtn.style.display = 'none';
         if (focusFinishBtn) focusFinishBtn.style.display = 'inline-flex';
 
-        startActiveTimer(() => {
-            playFocusEndAlarm(); // Double chimes
-            focusControls.style.display = 'none';
-            focusCompletedActions.style.display = 'flex';
-            addTokens(25);
-            addCompletedPomodoro();
-        });
+        focusAlarmPlayed = false;
+        startActiveTimer(null);
     }
 
     // Stage 3: Pausa (Break)
@@ -1393,7 +1633,7 @@ document.addEventListener('DOMContentLoaded', () => {
         unfreezeActiveElements();
         setActiveView(pausaView);
         
-        stopRainSound();
+        stopAmbiance();
 
         // Reset timers
         totalDuration = settings.pausa * 60;
@@ -1449,11 +1689,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     transitionToFoco();
                 };
             } else if (currentStage === 'foco') {
-                nextAction = () => {
-                    playFocusEndAlarm();
-                    focusControls.style.display = 'none';
-                    focusCompletedActions.style.display = 'flex';
-                };
+                nextAction = null;
             } else if (currentStage === 'pausa') {
                 nextAction = () => {
                     playRetroChime(false);
@@ -1479,6 +1715,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (focusFinishBtn) {
         focusFinishBtn.addEventListener('click', () => {
+            // If the focus time has already finished (timeLeft <= 0)
+            if (timeLeft <= 0) {
+                stopActiveTimer();
+                stopAmbiance();
+                focusControls.style.display = 'none';
+                focusCompletedActions.style.display = 'flex';
+                return;
+            }
+
             // Anti-cheat: require at least 5 minutes of study or total duration if total is less
             const minFocusMinutes = Math.min(5, settings.foco);
             const timeSpentSeconds = totalDuration - timeLeft;
@@ -1500,9 +1745,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function exitFocusOverlay() {
         stopActiveTimer();
-        stopRainSound();
+        stopAmbiance();
         // Clear iframe to stop music playing
         spotifyIframe.src = '';
+        if (youtubeIframe) youtubeIframe.src = '';
         fullscreenFocus.className = 'fullscreen-focus';
         fullscreenFocus.classList.remove('timer-paused');
         unfreezeActiveElements();
@@ -1551,25 +1797,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Focus Screen Music Player Toggle ---
     musicToggleBtn.addEventListener('click', () => {
-        musicPlayerPanel.classList.toggle('open');
+        const isOpen = musicPlayerPanel.classList.toggle('open');
+        musicToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
     function showMusicTab(tab) {
+        srcSpotifyBtn.classList.remove('active');
+        if (srcYoutubeBtn) srcYoutubeBtn.classList.remove('active');
+        srcRainBtn.classList.remove('active');
+        
+        spotifyContainer.classList.remove('active');
+        if (youtubeContainer) youtubeContainer.classList.remove('active');
+        ambianceContainer.classList.remove('active');
+        
         if (tab === 'spotify') {
             srcSpotifyBtn.classList.add('active');
-            srcRainBtn.classList.remove('active');
             spotifyContainer.classList.add('active');
-            rainSynthContainer.classList.remove('active');
-        } else {
+            spotifyIframe.src = cleanSpotifyUrl(spotifyUrl);
+            if (youtubeIframe) youtubeIframe.src = '';
+        } else if (tab === 'youtube') {
+            if (srcYoutubeBtn) srcYoutubeBtn.classList.add('active');
+            if (youtubeContainer) youtubeContainer.classList.add('active');
+            if (youtubeIframe) youtubeIframe.src = cleanYoutubeUrl(youtubeUrl);
+            spotifyIframe.src = '';
+        } else if (tab === 'rain') {
             srcRainBtn.classList.add('active');
-            srcSpotifyBtn.classList.remove('active');
-            rainSynthContainer.classList.add('active');
-            spotifyContainer.classList.remove('active');
+            ambianceContainer.classList.add('active');
+            spotifyIframe.src = '';
+            if (youtubeIframe) youtubeIframe.src = '';
         }
     }
 
-    srcSpotifyBtn.addEventListener('click', () => showMusicTab('spotify'));
-    srcRainBtn.addEventListener('click', () => showMusicTab('rain'));
+    if (srcSpotifyBtn) srcSpotifyBtn.addEventListener('click', () => showMusicTab('spotify'));
+    if (srcYoutubeBtn) srcYoutubeBtn.addEventListener('click', () => showMusicTab('youtube'));
+    if (srcRainBtn) srcRainBtn.addEventListener('click', () => showMusicTab('rain'));
 
     // --- Custom Audio Synthesis (Web Audio API) ---
 
@@ -1664,64 +1925,256 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Ambient Rain Sound Generator
-    function startRainSound() {
-        try {
-            if (!rainAudioCtx) {
-                rainAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            
-            // Create white noise buffer
-            const bufferSize = 2 * rainAudioCtx.sampleRate;
-            const noiseBuffer = rainAudioCtx.createBuffer(1, bufferSize, rainAudioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
-            }
-            
-            rainNoiseSource = rainAudioCtx.createBufferSource();
-            rainNoiseSource.buffer = noiseBuffer;
-            rainNoiseSource.loop = true;
-            
-            const filter = rainAudioCtx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = 1000;
-            
-            const gainNode = rainAudioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.12, rainAudioCtx.currentTime);
-            
-            rainNoiseSource.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(rainAudioCtx.destination);
-            
-            rainNoiseSource.start();
-            rainSoundActive = true;
-            rainSoundBtn.classList.add('active');
-            rainSoundBtn.innerHTML = `🔊 Chuva Ligada`;
-        } catch (e) {
-            console.log("Failed to start rain synthesis", e);
+    // 4. Ambient Synthesized Sounds System (Rain, Fireplace, Wind Chimes, Ocean Waves)
+    let ambianceCtx = null;
+    let ambianceOutNode = null;
+    let activeAmbianceSynth = null;
+    let activeAmbiance = null; // 'rain', 'fireplace', 'chimes', 'waves'
+
+    function startRainSynth(ctx, outNode) {
+        const bufferSize = 2 * ctx.sampleRate;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
         }
+        
+        const source = ctx.createBufferSource();
+        source.buffer = noiseBuffer;
+        source.loop = true;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1000;
+        
+        const gain = ctx.createGain();
+        gain.gain.value = 0.25;
+        
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(outNode);
+        
+        source.start();
+        return {
+            stop: () => {
+                try { source.stop(); } catch(e){}
+            }
+        };
     }
 
-    function stopRainSound() {
-        if (rainNoiseSource) {
+    function startFireplaceSynth(ctx, outNode) {
+        const bufferSize = 2 * ctx.sampleRate;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        
+        const rumbleSource = ctx.createBufferSource();
+        rumbleSource.buffer = noiseBuffer;
+        rumbleSource.loop = true;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 80;
+        
+        const rumbleGain = ctx.createGain();
+        rumbleGain.gain.value = 0.8;
+        
+        rumbleSource.connect(filter);
+        filter.connect(rumbleGain);
+        rumbleGain.connect(outNode);
+        rumbleSource.start();
+        
+        let isStopped = false;
+        function triggerPop() {
+            if (isStopped) return;
             try {
-                rainNoiseSource.stop();
-            } catch (e) {}
-            rainNoiseSource = null;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(100 + Math.random() * 150, ctx.currentTime);
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.08 + Math.random() * 0.08, ctx.currentTime + 0.002);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.01 + Math.random() * 0.02);
+                osc.connect(gain);
+                gain.connect(outNode);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.04);
+            } catch(e){}
+            const nextTime = 80 + Math.random() * 450;
+            setTimeout(triggerPop, nextTime);
         }
-        rainSoundActive = false;
-        rainSoundBtn.classList.remove('active');
-        rainSoundBtn.innerHTML = `🔈 Ligar Som de Chuva`;
+        triggerPop();
+        
+        return {
+            stop: () => {
+                isStopped = true;
+                try { rumbleSource.stop(); } catch(e){}
+            }
+        };
     }
 
-    rainSoundBtn.addEventListener('click', () => {
-        if (rainSoundActive) {
-            stopRainSound();
-        } else {
-            startRainSound();
+    function startWindChimesSynth(ctx, outNode) {
+        const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+        let isStopped = false;
+        
+        function playChime() {
+            if (isStopped) return;
+            try {
+                const now = ctx.currentTime;
+                const freq = notes[Math.floor(Math.random() * notes.length)];
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(freq * 1.5 + 2, now);
+                
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.12 + Math.random() * 0.08, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0 + Math.random() * 2.0);
+                
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(outNode);
+                
+                osc1.start(now);
+                osc1.stop(now + 4.5);
+                osc2.start(now);
+                osc2.stop(now + 4.5);
+            } catch(e){}
+            const nextTime = 2000 + Math.random() * 4000;
+            setTimeout(playChime, nextTime);
         }
-    });
+        playChime();
+        
+        return {
+            stop: () => {
+                isStopped = true;
+            }
+        };
+    }
+
+    function startOceanWavesSynth(ctx, outNode) {
+        const bufferSize = 2 * ctx.sampleRate;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        
+        const source = ctx.createBufferSource();
+        source.buffer = noiseBuffer;
+        source.loop = true;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 350;
+        
+        const waveGain = ctx.createGain();
+        waveGain.gain.value = 0.05;
+        
+        const lfo = ctx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.12;
+        
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 0.22;
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(waveGain.gain);
+        
+        source.connect(filter);
+        filter.connect(waveGain);
+        waveGain.connect(outNode);
+        
+        source.start();
+        lfo.start();
+        
+        return {
+            stop: () => {
+                try { source.stop(); } catch(e){}
+                try { lfo.stop(); } catch(e){}
+            }
+        };
+    }
+
+    function stopAmbiance() {
+        if (activeAmbianceSynth) {
+            activeAmbianceSynth.stop();
+            activeAmbianceSynth = null;
+        }
+        activeAmbiance = null;
+        if (ambiancePlayBtn) {
+            ambiancePlayBtn.classList.remove('active');
+            ambiancePlayBtn.innerHTML = `🔈 Ligar Som Ambiente`;
+        }
+    }
+
+    function startAmbiance(type) {
+        stopAmbiance();
+        try {
+            if (!ambianceCtx) {
+                ambianceCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (!ambianceOutNode) {
+                ambianceOutNode = ambianceCtx.createGain();
+                ambianceOutNode.gain.value = ambianceVolumeSlider ? parseFloat(ambianceVolumeSlider.value) : 0.5;
+                ambianceOutNode.connect(ambianceCtx.destination);
+            }
+            if (ambianceCtx.state === 'suspended') {
+                ambianceCtx.resume();
+            }
+            
+            if (type === 'rain') {
+                activeAmbianceSynth = startRainSynth(ambianceCtx, ambianceOutNode);
+            } else if (type === 'fireplace') {
+                activeAmbianceSynth = startFireplaceSynth(ambianceCtx, ambianceOutNode);
+            } else if (type === 'chimes') {
+                activeAmbianceSynth = startWindChimesSynth(ambianceCtx, ambianceOutNode);
+            } else if (type === 'waves') {
+                activeAmbianceSynth = startOceanWavesSynth(ambianceCtx, ambianceOutNode);
+            }
+            
+            activeAmbiance = type;
+            if (ambiancePlayBtn) {
+                ambiancePlayBtn.classList.add('active');
+                ambiancePlayBtn.innerHTML = `🔊 Desligar Som`;
+            }
+        } catch(e) {
+            console.error("Failed to start ambiance synth", e);
+        }
+    }
+
+    if (ambiancePlayBtn) {
+        ambiancePlayBtn.addEventListener('click', () => {
+            if (activeAmbiance) {
+                stopAmbiance();
+            } else {
+                startAmbiance(ambianceSoundSelect ? ambianceSoundSelect.value : 'rain');
+            }
+        });
+    }
+
+    if (ambianceSoundSelect) {
+        ambianceSoundSelect.addEventListener('change', (e) => {
+            if (activeAmbiance) {
+                startAmbiance(e.target.value);
+            }
+        });
+    }
+
+    if (ambianceVolumeSlider) {
+        ambianceVolumeSlider.addEventListener('input', (e) => {
+            const vol = parseFloat(e.target.value);
+            if (ambianceOutNode) {
+                ambianceOutNode.gain.value = vol;
+            }
+        });
+    }
 
     // --- Raindrops Generator ---
     function generateRaindrops() {
@@ -2087,6 +2540,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (statTasks) statTasks.textContent = completedTasksCount;
         if (statTokens) statTokens.textContent = tokens;
         if (statGachaCoins) statGachaCoins.textContent = gachaCoins;
+        
+        if (statStudyTime) {
+            const hrs = Math.floor(studySeconds / 3600);
+            const mins = Math.floor((studySeconds % 3600) / 60);
+            statStudyTime.textContent = `${hrs}h ${String(mins).padStart(2, '0')}m`;
+        }
 
         if (shopTokensVal) shopTokensVal.textContent = tokens;
         if (shopGachaVal) shopGachaVal.textContent = gachaCoins;
@@ -2135,10 +2594,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateGamificationStats();
         switchShopTab(initialTab);
         shopModal.classList.add('open');
+        if (shopToggleBtn) shopToggleBtn.setAttribute('aria-expanded', 'true');
+        
+        activeFocusTrapCleanup = setupFocusTrap(shopModal, shopCloseBtn, shopToggleBtn);
     }
 
     function closeShop() {
+        if (!shopModal.classList.contains('open')) return;
         shopModal.classList.remove('open');
+        if (shopToggleBtn) shopToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) {
+            activeFocusTrapCleanup();
+            activeFocusTrapCleanup = null;
+        }
     }
 
     function switchShopTab(tab) {
@@ -2364,13 +2832,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const gachaLeverClickZone = document.getElementById('gacha-lever-click-zone');
     if (gachaLeverClickZone) {
         gachaLeverClickZone.addEventListener('click', () => {
-            if (gachaRollBtn && !gachaRollBtn.disabled) {
+            if (isLeverAnimating || (gachaRollBtn && gachaRollBtn.disabled)) return;
+            if (gachaRollBtn) {
                 gachaRollBtn.click();
             }
         });
 
         // Hover scale and rotation nudge to feel alive
         gachaLeverClickZone.addEventListener('mouseenter', () => {
+            if (isLeverAnimating || (gachaRollBtn && gachaRollBtn.disabled)) return;
             if (window.anime) {
                 anime.remove('#gacha-lever-handle');
                 anime({
@@ -2384,6 +2854,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         gachaLeverClickZone.addEventListener('mouseleave', () => {
+            if (isLeverAnimating || (gachaRollBtn && gachaRollBtn.disabled)) return;
             if (window.anime) {
                 anime.remove('#gacha-lever-handle');
                 anime({
@@ -2400,14 +2871,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Roll Gacha
     if (gachaRollBtn) {
         gachaRollBtn.addEventListener('click', () => {
+            if (isLeverAnimating) return;
+
             if (gachaCoins < 1) {
                 // Play a cute wobble / shake animation on the lever handle
                 if (window.anime) {
+                    isLeverAnimating = true;
                     anime({
                         targets: '#gacha-lever-handle',
                         rotate: [0, -15, 15, -10, 10, 0],
                         duration: 500,
-                        easing: 'easeInOutQuad'
+                        easing: 'easeInOutQuad',
+                        complete: () => {
+                            isLeverAnimating = false;
+                        }
                     });
                 }
                 showCozyAlert('Você precisa de pelo menos 1 Moeda Gacha para girar a máquina!', 'assets/aesthetic/moeda-gacha.png');
@@ -2433,12 +2910,17 @@ document.addEventListener('DOMContentLoaded', () => {
             playAudio('assets/sounds/ao desmarcar tarefa na pagina inicial.mp3');
             updateQuestProgress('gacha-roll', 1);
             
+            isLeverAnimating = true;
             anime({
                 targets: '#gacha-lever-handle',
                 rotate: '+=360',
                 duration: 800,
                 easing: 'easeInOutBack',
                 complete: () => {
+                    isLeverAnimating = false;
+                    if (window.anime) {
+                        anime.set('#gacha-lever-handle', { rotate: 0 }); // reset to 0 to prevent backward spin on hover leave
+                    }
                     const rolledAnimal = lockedAnimals[Math.floor(Math.random() * lockedAnimals.length)];
                     const targetCapsule = gachaGlassBowl.querySelector(`[data-id="${rolledAnimal.id}"]`);
                     
@@ -2802,12 +3284,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questsPanel) {
             questsPanel.classList.add('open');
             renderQuests();
+            if (questsToggleBtn) questsToggleBtn.setAttribute('aria-expanded', 'true');
+            
+            activeFocusTrapCleanup = setupFocusTrap(questsPanel, questsCloseBtn, questsToggleBtn);
         }
     }
 
     function closeQuests() {
-        if (questsPanel) {
+        if (questsPanel && questsPanel.classList.contains('open')) {
             questsPanel.classList.remove('open');
+            if (questsToggleBtn) questsToggleBtn.setAttribute('aria-expanded', 'false');
+            if (activeFocusTrapCleanup) {
+                activeFocusTrapCleanup();
+                activeFocusTrapCleanup = null;
+            }
         }
     }
 
@@ -2831,9 +3321,187 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- Touch Gestures for mobile (Swipe to Close Quests Panel) (Phase 6) ---
+    if (questsPanel) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        questsPanel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        questsPanel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            // Swipe right (horizontal)
+            if (Math.abs(diffX) > Math.abs(diffY) && diffX > 60) {
+                // If swipe distance is > 60px to the right, close the drawer
+                closeQuests();
+            }
+        }
+    }
+
+    // Helper to format study time as Xh XXm or Xm
+    function formatStudyTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        return `${hrs}h ${String(mins).padStart(2, '0')}m`;
+    }
+
+    // Render Weekly Study Chart
+    function renderWeeklyChart() {
+        const chartBars = document.getElementById('weekly-chart-bars');
+        const chartLabels = document.getElementById('weekly-chart-labels');
+        const historyTotalWeek = document.getElementById('history-total-week');
+        if (!chartBars || !chartLabels) return;
+        
+        const history = JSON.parse(localStorage.getItem('med_cozy_weekly_study_history')) || {};
+        
+        // Generate last 7 days
+        const last7Days = [];
+        const today = new Date();
+        const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(today.getDate() - i);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            const dateStr = `${yyyy}-${mm}-${dd}`;
+            
+            last7Days.push({
+                date: dateStr,
+                label: weekdays[d.getDay()],
+                seconds: history[dateStr] || 0
+            });
+        }
+        
+        // Calculate week total
+        const weekTotalSeconds = last7Days.reduce((acc, curr) => acc + curr.seconds, 0);
+        if (historyTotalWeek) {
+            historyTotalWeek.textContent = `${formatStudyTime(weekTotalSeconds)} esta semana`;
+        }
+        
+        // Find max seconds to scale chart (min scale is 60 mins / 3600s)
+        const maxSeconds = Math.max(3600, ...last7Days.map(d => d.seconds));
+        
+        // Update Y-axis labels dynamically
+        const yAxis = document.querySelector('.chart-y-axis');
+        if (yAxis) {
+            const maxMins = Math.round(maxSeconds / 60);
+            const halfMins = Math.round(maxMins / 2);
+            yAxis.innerHTML = `
+                <span>${maxMins}m</span>
+                <span>${halfMins}m</span>
+                <span>0m</span>
+            `;
+        }
+        
+        // Render bars and labels
+        chartBars.innerHTML = '';
+        chartLabels.innerHTML = '';
+        
+        last7Days.forEach(day => {
+            // Wrapper
+            const barWrapper = document.createElement('div');
+            barWrapper.className = 'chart-bar-wrapper';
+            
+            // Tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'chart-bar-tooltip';
+            tooltip.textContent = formatStudyTime(day.seconds);
+            
+            // Bar
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            const pct = (day.seconds / maxSeconds) * 100;
+            bar.style.height = `${Math.max(2, pct)}%`; // min height 2%
+            
+            // Highlight today!
+            if (day.date === getFormattedToday()) {
+                bar.style.background = 'var(--color-orange)';
+                bar.style.borderColor = 'var(--text-dark)';
+            }
+            
+            barWrapper.appendChild(tooltip);
+            barWrapper.appendChild(bar);
+            chartBars.appendChild(barWrapper);
+            
+            // Label
+            const labelItem = document.createElement('div');
+            labelItem.className = 'chart-label-item';
+            labelItem.textContent = day.label;
+            if (day.date === getFormattedToday()) {
+                labelItem.style.color = 'var(--color-orange)';
+                labelItem.style.fontWeight = '700';
+            }
+            chartLabels.appendChild(labelItem);
+        });
+    }
+
+    // --- Light/Dark Theme Management ---
+    function initTheme() {
+        const savedTheme = localStorage.getItem('med_cozy_theme');
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            document.body.classList.add('dark-theme');
+            if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-theme');
+            if (themeToggleBtn) themeToggleBtn.textContent = '🌙';
+        }
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('med_cozy_theme', isDark ? 'dark' : 'light');
+        if (themeToggleBtn) {
+            themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+        }
+        
+        // Custom premium feedback animation
+        if (themeToggleBtn && window.anime) {
+            anime({
+                targets: '#theme-toggle-btn',
+                scale: [1, 1.25, 0.95, 1],
+                rotate: [0, 45, -15, 0],
+                duration: 450,
+                easing: 'easeOutBack'
+            });
+        }
+        
+        playAudio('assets/sounds/ao marcar check em uma tarefa, na página inicial.mp3');
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (!localStorage.getItem('med_cozy_theme')) {
+                initTheme();
+            }
+        });
+    }
+
     // --- Initialize Application ---
+    initTheme();
     initDate();
     renderTasks();
     updateGamificationStats();
     initDailyQuests();
+    renderWeeklyChart();
 });
