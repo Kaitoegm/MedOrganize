@@ -310,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let focusAlarmPlayed = false;
     let focusTaskId = null;      // ID of focused task
     let physicsAnimationFrameId = null;
+    let gachaPhysicsFrameId = null;
+    let gachaCapsulesData = [];
     let currentRevealedAnimal = null;
     let activeRevealAudio = null;
 
@@ -1212,25 +1214,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Resolve Background & Animal (Manual or Random Selection)
         let bgUrl = '';
         let animUrl = '';
+        let resolvedBgName = '';
+        let resolvedAnimName = '';
         
         if (aestheticsMode === 'random') {
             const bgIds = Array.from(backgroundsCatalog.keys());
             const randomBgId = bgIds.at(Math.floor(Math.random() * bgIds.length));
-            bgUrl = backgroundsCatalog.get(randomBgId)?.url || '';
+            const bgObj = backgroundsCatalog.get(randomBgId);
+            bgUrl = bgObj?.url || '';
+            resolvedBgName = bgObj?.name || '';
 
             const animIds = Array.from(animalsCatalog.keys());
             const randomAnimId = animIds.at(Math.floor(Math.random() * animIds.length));
-            animUrl = animalsCatalog.get(randomAnimId)?.url || '';
+            const animObj = animalsCatalog.get(randomAnimId);
+            animUrl = animObj?.url || '';
+            resolvedAnimName = animObj?.name || '';
         } else {
-            bgUrl = backgroundsCatalog.get(selectedBgId)?.url || '';
-            animUrl = animalsCatalog.get(selectedAnimalId)?.url || '';
+            const bgObj = backgroundsCatalog.get(selectedBgId);
+            bgUrl = bgObj?.url || '';
+            resolvedBgName = bgObj?.name || '';
+
+            const animObj = animalsCatalog.get(selectedAnimalId);
+            animUrl = animObj?.url || '';
+            resolvedAnimName = animObj?.name || '';
         }
 
         // Set GIF sources and descriptive alt text for accessibility
         focusBgImg.src = bgUrl;
-        focusBgImg.alt = `Plano de fundo: ${bgName || 'Quarto Aconchegante'}`;
+        focusBgImg.alt = `Plano de fundo: ${resolvedBgName || 'Quarto Aconchegante'}`;
         
-        const animalAltText = `Seu companheiro de estudos: ${animName || 'Pato'}`;
+        const animalAltText = `Seu companheiro de estudos: ${resolvedAnimName || 'Pato'}`;
         preparoAnimalImg.src = animUrl;
         preparoAnimalImg.alt = animalAltText;
         
@@ -2532,7 +2545,14 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'disc-anim-heart', species: "Gatico", defaultName: "Gatico", url: "assets/animals/heart-heart-chase.gif" },
         { id: 'disc-anim-cute', species: "Flowi", defaultName: "Flowi", url: "assets/animals/kawaii-cute.gif" },
         { id: 'disc-anim-sanrio', species: "Emilia", defaultName: "Emilia", url: "assets/animals/sanrio-sanrio-characters.gif" },
-        { id: 'disc-anim-sappy', species: "Foquinha", defaultName: "Foquinha", url: "assets/animals/sappy-seals-sappy.gif" }
+        { id: 'disc-anim-sappy', species: "Foquinha", defaultName: "Foquinha", url: "assets/animals/sappy-seals-sappy.gif" },
+        { id: 'disc-anim-bulbulbul', species: "Bulbul", defaultName: "Bulbul", url: "assets/animals/Bulbulbul.gif" },
+        { id: 'disc-anim-bananao', species: "Bananão", defaultName: "Bananão", url: "assets/animals/bananão.gif" },
+        { id: 'disc-anim-char', species: "Charmander", defaultName: "Char", url: "assets/animals/char.gif" },
+        { id: 'disc-anim-kirby', species: "Kirby", defaultName: "Kirby", url: "assets/animals/kirby-on-a-warp-star.gif" },
+        { id: 'disc-anim-yongying', species: "Yong Ying", defaultName: "Ying", url: "assets/animals/yong-ying.gif" },
+        { id: 'disc-anim-chicken', species: "Galinha Stardew", defaultName: "Galinha", url: "assets/animals/chicken-stardew-valley.gif" },
+        { id: 'disc-anim-sarah', species: "Gatinha Sarah", defaultName: "Sarah", url: "assets/animals/sarah.gif" }
     ];
 
     function updateGamificationStats() {
@@ -2607,6 +2627,10 @@ document.addEventListener('DOMContentLoaded', () => {
             activeFocusTrapCleanup();
             activeFocusTrapCleanup = null;
         }
+        if (gachaPhysicsFrameId) {
+            cancelAnimationFrame(gachaPhysicsFrameId);
+            gachaPhysicsFrameId = null;
+        }
     }
 
     function switchShopTab(tab) {
@@ -2617,6 +2641,11 @@ document.addEventListener('DOMContentLoaded', () => {
         shopBgsPanel.classList.remove('active');
         shopAnimalsPanel.classList.remove('active');
         shopGachaPanel.classList.remove('active');
+
+        if (gachaPhysicsFrameId) {
+            cancelAnimationFrame(gachaPhysicsFrameId);
+            gachaPhysicsFrameId = null;
+        }
 
         if (tab === 'bgs') {
             tabShopBgs.classList.add('active');
@@ -2734,26 +2763,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!gachaGlassBowl) return;
         gachaGlassBowl.innerHTML = '';
         
+        if (gachaPhysicsFrameId) {
+            cancelAnimationFrame(gachaPhysicsFrameId);
+            gachaPhysicsFrameId = null;
+        }
+
+        const containerWidth = gachaGlassBowl.clientWidth || 173;
+        const containerHeight = gachaGlassBowl.clientHeight || 114;
+        
         const lockedAnimals = discoveryAnimals.filter(anim => !animalsCatalog.has(anim.id) && anim.id !== 'anim-duck');
+        gachaCapsulesData = [];
         
         lockedAnimals.forEach((anim, idx) => {
             const capsule = document.createElement('div');
-            capsule.className = 'gacha-capsule floating';
+            capsule.className = 'gacha-capsule'; // Removed floating animation
             capsule.dataset.id = anim.id;
             
             const color = CAPSULE_COLORS[idx % CAPSULE_COLORS.length];
             capsule.style.background = `linear-gradient(180deg, ${color} 50%, rgba(255, 255, 255, 0.25) 50%)`;
             
-            // Position capsules randomly within a circular boundary (R = 25px) matching the circular glass bowl
-            const angle = Math.random() * 2 * Math.PI;
-            const r = Math.random() * 25; // max radius 25px
-            const left = Math.floor(52.5 + r * Math.cos(angle) - 13); // Center is (52.5, 46.5), 13 is half capsule size (26)
-            const top = Math.floor(46.5 + r * Math.sin(angle) - 13);
-            capsule.style.left = `${left}px`;
-            capsule.style.top = `${top}px`;
+            // Spawn randomly in the upper half of the rectangular chamber
+            const x = Math.random() * (containerWidth - 26);
+            const y = Math.random() * (containerHeight / 2 - 26);
+            const vx = (Math.random() - 0.5) * 4;
+            const vy = Math.random() * 2;
             
-            capsule.style.animationDelay = `${Math.random() * 2}s`;
-            capsule.style.animationDuration = `${2.5 + Math.random() * 1.5}s`;
+            capsule.style.left = `${x}px`;
+            capsule.style.top = `${y}px`;
             
             const petImg = document.createElement('img');
             petImg.src = safeUrl(anim.url);
@@ -2761,7 +2797,110 @@ document.addEventListener('DOMContentLoaded', () => {
             capsule.appendChild(petImg);
             
             gachaGlassBowl.appendChild(capsule);
+
+            gachaCapsulesData.push({
+                element: capsule,
+                x: x,
+                y: y,
+                vx: vx,
+                vy: vy
+            });
         });
+
+        // Start physics loop if there are capsules
+        if (gachaCapsulesData.length > 0) {
+            gachaPhysicsFrameId = requestAnimationFrame(updateGachaPhysics);
+        }
+    }
+
+    function updateGachaPhysics() {
+        if (!gachaGlassBowl || !shopGachaPanel.classList.contains('active') || !shopModal.classList.contains('open')) {
+            gachaPhysicsFrameId = null;
+            return;
+        }
+
+        const containerWidth = gachaGlassBowl.clientWidth || 173;
+        const containerHeight = gachaGlassBowl.clientHeight || 114;
+        const gravity = 0.25;
+        const friction = 0.98;
+        const bounce = 0.3;
+        const diameter = 26;
+
+        // 1. Apply gravity, friction, and update position
+        gachaCapsulesData.forEach(c => {
+            c.vy += gravity;
+            c.vx *= friction;
+            c.vy *= friction;
+            
+            c.x += c.vx;
+            c.y += c.vy;
+
+            // Box boundaries collision
+            if (c.x < 0) {
+                c.x = 0;
+                c.vx = -c.vx * bounce;
+            } else if (c.x > containerWidth - diameter) {
+                c.x = containerWidth - diameter;
+                c.vx = -c.vx * bounce;
+            }
+
+            if (c.y < 0) {
+                c.y = 0;
+                c.vy = -c.vy * bounce;
+            } else if (c.y > containerHeight - diameter) {
+                c.y = containerHeight - diameter;
+                c.vy = -c.vy * bounce;
+            }
+        });
+
+        // 2. Resolve circle-circle collisions (5 iterations for solid physics)
+        const iterations = 5;
+        for (let iter = 0; iter < iterations; iter++) {
+            for (let i = 0; i < gachaCapsulesData.length; i++) {
+                for (let j = i + 1; j < gachaCapsulesData.length; j++) {
+                    const c1 = gachaCapsulesData[i];
+                    const c2 = gachaCapsulesData[j];
+
+                    const dx = c2.x - c1.x;
+                    const dy = c2.y - c1.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const minDist = diameter;
+
+                    if (dist < minDist && dist > 0.01) {
+                        const overlap = minDist - dist;
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+
+                        // Pushing them apart (solid collision)
+                        c1.x -= nx * overlap * 0.5;
+                        c1.y -= ny * overlap * 0.5;
+                        c2.x += nx * overlap * 0.5;
+                        c2.y += ny * overlap * 0.5;
+
+                        // Momentum/elastic collision response
+                        const kx = c1.vx - c2.vx;
+                        const ky = c1.vy - c2.vy;
+                        const relVel = kx * nx + ky * ny;
+
+                        if (relVel > 0) {
+                            const impulse = relVel * (1 + bounce);
+                            c1.vx -= nx * impulse * 0.5;
+                            c1.vy -= ny * impulse * 0.5;
+                            c2.vx += nx * impulse * 0.5;
+                            c2.vy += ny * impulse * 0.5;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Render positions on screen
+        gachaCapsulesData.forEach(c => {
+            c.element.style.left = `${c.x}px`;
+            c.element.style.top = `${c.y}px`;
+        });
+
+        gachaPhysicsFrameId = requestAnimationFrame(updateGachaPhysics);
     }
 
     function buyBackground(bg) {
@@ -2910,6 +3049,12 @@ document.addEventListener('DOMContentLoaded', () => {
             playAudio('assets/sounds/ao desmarcar tarefa na pagina inicial.mp3');
             updateQuestProgress('gacha-roll', 1);
             
+            // Give capsules high velocity to bounce and mix up when rolling!
+            gachaCapsulesData.forEach(c => {
+                c.vx = (Math.random() - 0.5) * 18;
+                c.vy = - (Math.random() * 10 + 10);
+            });
+
             isLeverAnimating = true;
             anime({
                 targets: '#gacha-lever-handle',

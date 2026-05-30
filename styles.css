@@ -2272,18 +2272,14 @@ body {
     overflow: visible;
 }
 
-/* Glass Display Chamber (Circular in the center of the image) */
+/* Glass Display Chamber (Rectangular, matching the panel bounds) */
 .gacha-display-glass {
     position: absolute;
-    left: 28%;
-    /* Centered horizontally */
-    top: 30%;
-    /* Align with glass bowl in image */
-    width: 44%;
-    /* Diameter is ~105px */
-    height: 30%;
-    /* Height is ~93px */
-    border-radius: 50%;
+    left: 14%;
+    top: 15%;
+    width: 72%;
+    height: 36.5%;
+    border-radius: 16px;
     overflow: hidden;
     display: block;
     z-index: 5;
@@ -2293,16 +2289,16 @@ body {
     box-shadow: none;
 }
 
-/* Glass shine overlay on top of capsules */
+/* Glass shine overlay on top of capsules (aligned with the rectangular glass) */
 .gacha-glass-overlay {
     position: absolute;
-    left: 28%;
-    top: 30%;
-    width: 44%;
-    height: 30%;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(0, 0, 0, 0.12) 100%);
-    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+    left: 14%;
+    top: 15%;
+    width: 72%;
+    height: 36.5%;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.0) 50%, rgba(0, 0, 0, 0.15) 100%);
+    box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.25);
     pointer-events: none;
     z-index: 6;
     /* Above capsules (z-index 5) */
@@ -4224,4 +4220,59 @@ body.dark-theme textarea {
 body.dark-theme .cozy-alert-content {
     background-color: var(--color-cream-white) !important;
     color: var(--text-dark) !important;
+}
+
+/* -------------------------------------------------------------
+   CORNER DECORATIONS (CHERRY BLOSSOMS & NIGHT MODE VERSION)
+   ------------------------------------------------------------- */
+.cherry-decor {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.85;
+    z-index: 5;
+    transition: opacity 0.3s ease;
+}
+
+/* Light mode defaults */
+.cherry-decor.light-only.cherry-left {
+    top: -15px;
+    left: -15px;
+    width: 180px;
+    transform: rotate(15deg);
+}
+
+.cherry-decor.light-only.cherry-right {
+    top: -20px;
+    right: -15px;
+    width: 220px;
+    transform: scaleX(-1) rotate(10deg);
+}
+
+/* Dark mode elements (hidden in light mode) */
+.cherry-decor.dark-only {
+    display: none !important;
+}
+
+/* Toggle visibility between themes */
+body.dark-theme .cherry-decor.light-only {
+    display: none !important;
+}
+
+body.dark-theme .cherry-decor.dark-only {
+    display: block !important;
+}
+
+/* Night version decoration (larger width for different aspect ratio) */
+.cherry-decor.dark-only.cherry-left {
+    top: -25px;
+    left: -20px;
+    width: 280px;
+    transform: rotate(5deg);
+}
+
+.cherry-decor.dark-only.cherry-right {
+    top: -30px;
+    right: -20px;
+    width: 320px;
+    transform: scaleX(-1) rotate(5deg);
 }
