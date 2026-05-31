@@ -244,6 +244,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let completedTasksCount = parseInt(localStorage.getItem('med_cozy_completed_tasks')) || 0;
     let studySeconds = parseInt(localStorage.getItem('med_cozy_study_seconds')) || 0;
 
+    // --- Pet Care Inventory ---
+    let inventory = JSON.parse(localStorage.getItem('med_cozy_inventory')) || { paozinho: 0, cha: 0, novelo: 0 };
+    function saveInventory() { localStorage.setItem('med_cozy_inventory', JSON.stringify(inventory)); }
+
+    // --- Rarity Definitions ---
+    const RARITIES = [
+        { key: 'comum',    label: 'Comum',    cssClass: 'rarity-comum',    threshold: 0,   ptsNext: 100 },
+        { key: 'raro',     label: 'Raro',     cssClass: 'rarity-raro',     threshold: 100, ptsNext: 250 },
+        { key: 'epico',    label: 'Épico',    cssClass: 'rarity-epico',    threshold: 350, ptsNext: 500 },
+        { key: 'lendario', label: 'Lendário', cssClass: 'rarity-lendario', threshold: 850, ptsNext: null }
+    ];
+    // Points per item
+    const ITEM_PTS = { paozinho: 15, cha: 25, novelo: 40 };
+    // Item costs in tokens
+    const ITEM_COST = { paozinho: 10, cha: 20, novelo: 30 };
+
+    function getRarityForPts(pts) {
+        let current = RARITIES[0];
+        for (const r of RARITIES) { if (pts >= r.threshold) current = r; }
+        return current;
+    }
+
+    function getPetPts(id) {
+        const data = animalsCatalog.get(id);
+        return data ? (data.pontos || 0) : 0;
+    }
+
+    function setPetPts(id, pts) {
+        const data = animalsCatalog.get(id);
+        if (!data) return;
+        data.pontos = Math.max(0, pts);
+        animalsCatalog.set(id, data);
+        // Persist
+        const obj = {};
+        animalsCatalog.forEach((v, k) => { obj[k] = v; });
+        localStorage.setItem('med_cozy_custom_animals', JSON.stringify(obj));
+    }
+
     // --- Initial State and LocalStorage Load ---
     let tasks = JSON.parse(localStorage.getItem('med_cozy_tasks')) || [];
     let errorLogs = JSON.parse(localStorage.getItem('med_cozy_errors')) || [];
@@ -419,6 +457,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close buttons for modals
     const modalCloseBtns = document.querySelectorAll('#settings-modal .modal-close-btn, #aesthetics-modal .modal-close-btn, #error-notebook-modal .modal-close-btn, #stats-modal .modal-close-btn');
+
+    // --- Pet Care DOM refs ---
+    const petCareSection    = document.getElementById('pet-care-section');
+    const petCareImg        = document.getElementById('pet-care-img');
+    const petCareName       = document.getElementById('pet-care-name');
+    const petRarityBadge    = document.getElementById('pet-rarity-badge');
+    const petProgressFill   = document.getElementById('pet-care-progress-fill');
+    const petPtsText        = document.getElementById('pet-care-pts-text');
+    const petFeedBtn        = document.getElementById('pet-feed-btn');
+    const petTeaBtn         = document.getElementById('pet-tea-btn');
+    const petToyBtn         = document.getElementById('pet-toy-btn');
+    const countPaozinho     = document.getElementById('count-paozinho');
+    const countCha          = document.getElementById('count-cha');
+    const countNovelo       = document.getElementById('count-novelo');
+    // Stock elements in shop
+    const stockPaozinho     = document.getElementById('stock-paozinho');
+    const stockCha          = document.getElementById('stock-cha');
+    const stockNovelo       = document.getElementById('stock-novelo');
+    // Minigames modal DOM refs
+    const minigamesModal    = document.getElementById('minigames-modal');
+    const minigamesCloseBtn = document.getElementById('minigames-close-btn');
+    const minigamesToggleBtn = document.getElementById('minigames-toggle-btn');
 
     // --- Dynamic Date Display ---
     function initDate() {
@@ -726,6 +786,62 @@ document.addEventListener('DOMContentLoaded', () => {
     let tempSelectedBg = selectedBgId;
     let tempSelectedAnimal = selectedAnimalId;
 
+    function renderPetCareUI() {
+        if (!petCareSection) return;
+        const id = selectedAnimalId;
+        const pet = animalsCatalog.get(id);
+        if (!pet) { petCareSection.style.display = 'none'; return; }
+        petCareSection.style.display = '';
+        if (petCareImg)  { petCareImg.src = safeUrl(pet.url || ''); }
+        if (petCareName) { petCareName.textContent = pet.name || 'Sem nome'; }
+        const pts = pet.pontos || 0;
+        const rarity = getRarityForPts(pts);
+        if (petRarityBadge) {
+            petRarityBadge.textContent = rarity.label;
+            petRarityBadge.className = 'pet-rarity-badge ' + rarity.cssClass;
+        }
+        if (rarity.ptsNext !== null) {
+            const ptsInTier = pts - rarity.threshold;
+            const needed = rarity.ptsNext;
+            const pct = Math.min(100, Math.round((ptsInTier / needed) * 100));
+            if (petProgressFill) petProgressFill.style.width = pct + '%';
+            if (petPtsText) petPtsText.textContent = `${ptsInTier} / ${needed}`;
+        } else {
+            if (petProgressFill) petProgressFill.style.width = '100%';
+            if (petPtsText) petPtsText.textContent = 'Máx! ✨';
+        }
+        syncInventoryUI();
+    }
+
+    function usePetItem(itemKey) {
+        const id = selectedAnimalId;
+        if (!animalsCatalog.has(id)) { showCozyAlert('Selecione um bichinho primeiro! 🐾', '😢'); return; }
+        if ((inventory[itemKey] || 0) <= 0) { showCozyAlert('Você não tem esse item! Compre na loja 🚀', '😢'); return; }
+        inventory[itemKey]--;
+        saveInventory();
+        const gain = ITEM_PTS[itemKey];
+        const oldPts = getPetPts(id);
+        const oldRarity = getRarityForPts(oldPts);
+        setPetPts(id, oldPts + gain);
+        const newPts = getPetPts(id);
+        const newRarity = getRarityForPts(newPts);
+        // Animate
+        const targetEl = petCareImg || petCareSection;
+        if (window.anime && targetEl) {
+            anime({ targets: targetEl, scale: [1, 1.2, 1], duration: 500, easing: 'easeOutElastic(1,0.6)' });
+        }
+        spawnFloatingText(petCareSection || document.body, `+${gain} 💖`, '#fd79a8');
+        // Level up?
+        if (newRarity.key !== oldRarity.key) {
+            setTimeout(() => showCozyAlert(`🎉 ${animalsCatalog.get(id)?.name} evoluiu para <strong>${newRarity.label}</strong>! Parabéns! 🌟`, '✨'), 600);
+        }
+        renderPetCareUI();
+    }
+
+    if (petFeedBtn) petFeedBtn.addEventListener('click', () => usePetItem('paozinho'));
+    if (petTeaBtn)  petTeaBtn.addEventListener('click',  () => usePetItem('cha'));
+    if (petToyBtn)  petToyBtn.addEventListener('click',  () => usePetItem('novelo'));
+
     function openAesthetics() {
         tempSelectedBg = selectedBgId;
         tempSelectedAnimal = selectedAnimalId;
@@ -735,6 +851,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Render grids
         renderAestheticsGrids();
+
+        // Render pet care UI
+        renderPetCareUI();
         
         aestheticsModal.classList.add('open');
         if (aestheticsToggleBtn) aestheticsToggleBtn.setAttribute('aria-expanded', 'true');
@@ -836,6 +955,54 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             gridAnimals.appendChild(card);
         });
+    }
+
+    function applyAesthetics() {
+        let bgUrl = '';
+        let animUrl = '';
+        let bgName = '';
+        let animName = '';
+        
+        if (aestheticsMode === 'random') {
+            const bgIds = Array.from(backgroundsCatalog.keys());
+            const randomBgId = bgIds.at(Math.floor(Math.random() * bgIds.length));
+            const bgObj = backgroundsCatalog.get(randomBgId);
+            bgUrl = bgObj?.url || '';
+            bgName = bgObj?.name || '';
+
+            const animIds = Array.from(animalsCatalog.keys());
+            const randomAnimId = animIds.at(Math.floor(Math.random() * animIds.length));
+            const animObj = animalsCatalog.get(randomAnimId);
+            animUrl = animObj?.url || '';
+            animName = animObj?.name || '';
+        } else {
+            const bgObj = backgroundsCatalog.get(selectedBgId);
+            bgUrl = bgObj?.url || '';
+            bgName = bgObj?.name || '';
+
+            const animObj = animalsCatalog.get(selectedAnimalId);
+            animUrl = animObj?.url || '';
+            animName = animObj?.name || '';
+        }
+
+        if (focusBgImg) {
+            focusBgImg.src = bgUrl;
+            focusBgImg.alt = `Plano de fundo: ${bgName || 'Quarto Aconchegante'}`;
+        }
+        
+        const animalAltText = `Seu companheiro de estudos: ${animName || 'Pato'}`;
+        if (preparoAnimalImg) {
+            preparoAnimalImg.src = animUrl;
+            preparoAnimalImg.alt = animalAltText;
+        }
+        if (focoAnimalImg) {
+            focoAnimalImg.src = animUrl;
+            focoAnimalImg.alt = animalAltText;
+        }
+        if (pausaAnimalImg) {
+            pausaAnimalImg.src = animUrl;
+            pausaAnimalImg.alt = animalAltText;
+        }
     }
 
     aestheticsSaveBtn.addEventListener('click', () => {
@@ -1209,36 +1376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         focusTaskId = taskId;
 
-        // Resolve Background & Animal (Manual or Random Selection)
-        let bgUrl = '';
-        let animUrl = '';
-        
-        if (aestheticsMode === 'random') {
-            const bgIds = Array.from(backgroundsCatalog.keys());
-            const randomBgId = bgIds.at(Math.floor(Math.random() * bgIds.length));
-            bgUrl = backgroundsCatalog.get(randomBgId)?.url || '';
-
-            const animIds = Array.from(animalsCatalog.keys());
-            const randomAnimId = animIds.at(Math.floor(Math.random() * animIds.length));
-            animUrl = animalsCatalog.get(randomAnimId)?.url || '';
-        } else {
-            bgUrl = backgroundsCatalog.get(selectedBgId)?.url || '';
-            animUrl = animalsCatalog.get(selectedAnimalId)?.url || '';
-        }
-
-        // Set GIF sources and descriptive alt text for accessibility
-        focusBgImg.src = bgUrl;
-        focusBgImg.alt = `Plano de fundo: ${bgName || 'Quarto Aconchegante'}`;
-        
-        const animalAltText = `Seu companheiro de estudos: ${animName || 'Pato'}`;
-        preparoAnimalImg.src = animUrl;
-        preparoAnimalImg.alt = animalAltText;
-        
-        focoAnimalImg.src = animUrl;
-        focoAnimalImg.alt = animalAltText;
-        
-        pausaAnimalImg.src = animUrl;
-        pausaAnimalImg.alt = animalAltText;
+        applyAesthetics();
 
         // Update Embeds
         spotifyIframe.src = cleanSpotifyUrl(spotifyUrl);
@@ -2609,33 +2747,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function switchShopTab(tab) {
-        tabShopBgs.classList.remove('active');
-        tabShopAnimals.classList.remove('active');
-        tabShopGacha.classList.remove('active');
+    const tabShopCare = document.getElementById('tab-shop-care');
+    const shopCarePanel = document.getElementById('shop-care-panel');
 
-        shopBgsPanel.classList.remove('active');
-        shopAnimalsPanel.classList.remove('active');
-        shopGachaPanel.classList.remove('active');
+    function syncInventoryUI() {
+        if (countPaozinho) countPaozinho.textContent = inventory.paozinho;
+        if (countCha)      countCha.textContent      = inventory.cha;
+        if (countNovelo)   countNovelo.textContent   = inventory.novelo;
+        if (stockPaozinho) stockPaozinho.textContent = inventory.paozinho;
+        if (stockCha)      stockCha.textContent      = inventory.cha;
+        if (stockNovelo)   stockNovelo.textContent   = inventory.novelo;
+    }
+    syncInventoryUI();
+
+    // Buy Care Items
+    function buyItem(itemKey) {
+        const cost = ITEM_COST[itemKey];
+        if (tokens < cost) { showCozyAlert(`Tokens insuficientes! Precisa de ${cost} 🪙`, '😢'); return; }
+        addTokens(-cost);
+        inventory[itemKey] = (inventory[itemKey] || 0) + 1;
+        saveInventory();
+        syncInventoryUI();
+        showCozyAlert(`Comprado! +1 ${itemKey === 'paozinho' ? '🍞 Pãozinho de Mel' : itemKey === 'cha' ? '🍵 Chá de Camomila' : '🧶 Novelo de Lã'}`, '💝');
+    }
+    const buyPaozinhoBtn = document.getElementById('buy-paozinho-btn');
+    const buyChaBtn      = document.getElementById('buy-cha-btn');
+    const buyNoveloBtn   = document.getElementById('buy-novelo-btn');
+    if (buyPaozinhoBtn) buyPaozinhoBtn.addEventListener('click', () => buyItem('paozinho'));
+    if (buyChaBtn)      buyChaBtn.addEventListener('click',      () => buyItem('cha'));
+    if (buyNoveloBtn)   buyNoveloBtn.addEventListener('click',   () => buyItem('novelo'));
+
+    function switchShopTab(tab) {
+        [tabShopBgs, tabShopAnimals, tabShopCare, tabShopGacha].forEach(t => t && t.classList.remove('active'));
+        [shopBgsPanel, shopAnimalsPanel, shopCarePanel, shopGachaPanel].forEach(p => p && p.classList.remove('active'));
 
         if (tab === 'bgs') {
-            tabShopBgs.classList.add('active');
-            shopBgsPanel.classList.add('active');
+            tabShopBgs && tabShopBgs.classList.add('active');
+            shopBgsPanel && shopBgsPanel.classList.add('active');
             renderShopBackgrounds();
         } else if (tab === 'animals') {
-            tabShopAnimals.classList.add('active');
-            shopAnimalsPanel.classList.add('active');
+            tabShopAnimals && tabShopAnimals.classList.add('active');
+            shopAnimalsPanel && shopAnimalsPanel.classList.add('active');
             renderShopAnimals();
+        } else if (tab === 'care') {
+            tabShopCare && tabShopCare.classList.add('active');
+            shopCarePanel && shopCarePanel.classList.add('active');
+            syncInventoryUI();
         } else if (tab === 'gacha') {
-            tabShopGacha.classList.add('active');
-            shopGachaPanel.classList.add('active');
+            tabShopGacha && tabShopGacha.classList.add('active');
+            shopGachaPanel && shopGachaPanel.classList.add('active');
             renderGachaCapsules();
         }
     }
 
-    if (tabShopBgs) tabShopBgs.addEventListener('click', () => switchShopTab('bgs'));
+    if (tabShopBgs)     tabShopBgs.addEventListener('click',     () => switchShopTab('bgs'));
     if (tabShopAnimals) tabShopAnimals.addEventListener('click', () => switchShopTab('animals'));
-    if (tabShopGacha) tabShopGacha.addEventListener('click', () => switchShopTab('gacha'));
+    if (tabShopCare)    tabShopCare.addEventListener('click',    () => switchShopTab('care'));
+    if (tabShopGacha)   tabShopGacha.addEventListener('click',   () => switchShopTab('gacha'));
 
     if (shopToggleBtn) shopToggleBtn.addEventListener('click', () => openShop('bgs'));
     if (shopCloseBtn) shopCloseBtn.addEventListener('click', closeShop);
@@ -3497,11 +3665,513 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ============================================================
+    // MINIGAMES MODAL
+    // ============================================================
+    function openMinigames() {
+        if (!minigamesModal) return;
+        minigamesModal.classList.add('open');
+        if (minigamesToggleBtn) minigamesToggleBtn.setAttribute('aria-expanded', 'true');
+        
+        // Reset to instructions tab by default on open
+        const tabInstrucoes = document.getElementById('tab-instrucoes');
+        if (tabInstrucoes) {
+            tabInstrucoes.click();
+        }
+        
+        initTermoGame();
+        activeFocusTrapCleanup = setupFocusTrap(minigamesModal, minigamesCloseBtn, minigamesToggleBtn);
+    }
+    function closeMinigames() {
+        if (!minigamesModal || !minigamesModal.classList.contains('open')) return;
+        minigamesModal.classList.remove('open');
+        if (minigamesToggleBtn) minigamesToggleBtn.setAttribute('aria-expanded', 'false');
+        if (activeFocusTrapCleanup) { activeFocusTrapCleanup(); activeFocusTrapCleanup = null; }
+    }
+    if (minigamesToggleBtn) minigamesToggleBtn.addEventListener('click', openMinigames);
+    if (minigamesCloseBtn)  minigamesCloseBtn.addEventListener('click',  closeMinigames);
+
+    // Minigame tabs click listener (e.g. Play vs Instructions)
+    document.querySelectorAll('.minigames-tabs .minigame-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.id; // tab-termo ou tab-instrucoes
+            const panelId = tabId.replace('tab-', '') + '-panel'; // termo-panel ou instrucoes-panel
+            
+            // Toggle active tab buttons
+            document.querySelectorAll('.minigames-tabs .minigame-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Toggle active panels
+            document.querySelectorAll('.minigame-panel').forEach(p => p.classList.remove('active'));
+            const activePanel = document.getElementById(panelId);
+            if (activePanel) activePanel.classList.add('active');
+        });
+    });
+
+    // ============================================================
+    // TERMO COZY — GAME ENGINE
+    // ============================================================
+    const TERMO_WORDS = [
+        'SAGAZ', 'MEXER', 'NOBRE', 'SENSO', 'AFETO', 'ALGOZ', 'PUDOR', 'SUTIL', 'TERMO', 'FATOS',
+        'MUNDO', 'FORTE', 'VÍDEO', 'SAÚDE', 'LUGAR', 'AMPLO', 'FÁCIL', 'TEMPO', 'AREAL', 'POUCO',
+        'NÍVEL', 'LÍDER', 'TÊNIS', 'DÓLAR', 'ÓBVIO', 'MÉDIO', 'MÓVEL', 'RUÍDO', 'ÉPOCA', 'AGUAS',
+        'ÍDOLO', 'ÚNICO', 'ÁLBUM', 'ÓRGÃO', 'MÁGOA', 'HERÓI', 'SAÍDA', 'SAÍDO', 'ÚTEIS', 'ÚMIDO',
+        'MÁFIA', 'ÓRFÃO', 'SÓTÃO', 'VÍRUS', 'PÓLEN', 'TÁXIS', 'TÁTIL', 'DÓCIL', 'FARDO', 'ÍCONE',
+        'ÊXODO', 'ÁTOMO', 'VÁCUO', 'LÚCIO', 'MANHA', 'PISCA', 'AQUÉM', 'BRADO', 'HORAS', 'PILHA',
+        'ROXOS', 'ETANO', 'JOVEM', 'VIGOR', 'PLANO', 'PONTO', 'PORTA', 'PRAZO', 'PREÇO', 'PROVA',
+        'RAIVA', 'RAZÃO', 'REINO', 'RITMO', 'ROSTO', 'SORTE', 'SUAVE', 'SUSTO', 'TIGRE', 'TOQUE',
+        'TOURO', 'TROCA', 'TURMA', 'VELHO', 'VERDE', 'VISÃO', 'VISTA', 'VOLTA', 'ZEBRA', 'ACASO',
+        'ACENO', 'ACHAR', 'ADEUS', 'AGORA', 'AINDA', 'AJUDA', 'ALUNO', 'AMIGO', 'ANDAR', 'ANTES',
+        'APELO', 'APOIO', 'AREIA', 'AROMA', 'ARTES', 'AVISO', 'BAIXO', 'BARCA', 'BATER', 'BEBER',
+        'BICHO', 'BOLSA', 'BRAVO', 'BRIGA', 'BROTO', 'BUSTO', 'CABRA', 'CAIXA', 'CALOR', 'CANTO',
+        'CARGO', 'CASAL', 'CAUSA', 'CEDER', 'CERTO', 'CHAVE', 'CHORO', 'CHUVA', 'CICLO', 'CINCO',
+        'CIRCO', 'CLARO', 'COISA', 'CONTO', 'CÓPIA', 'CORTE', 'COURO', 'COUVE', 'CRIME', 'CRISE',
+        'CUNHA', 'CURSO', 'CURTO', 'DANÇA', 'DENTE', 'DEVER', 'DIETA', 'DISCO', 'DITAR', 'DRAMA',
+        'EGITO', 'EMAIL', 'ENVIO', 'ETAPA', 'EXAME', 'EXTRA', 'FAIXA', 'FALAR', 'FALTA', 'FARSA',
+        'FAVOR', 'FEITO', 'FERIR', 'FESTA', 'FIBRA', 'FICAR', 'FIRMA', 'FIXAR', 'FLUXO', 'FOBIA',
+        'FOLHA', 'FONTE', 'FORMA', 'FOSSO', 'FRACO', 'FRASE', 'FREIO', 'FRUTA', 'FUNDO', 'GARRA',
+        'GELAR', 'GÊNIO', 'GENTE', 'GLOBO', 'GOLPE', 'GORDO', 'GREVE', 'GRIPE', 'GRUPO', 'HAVER',
+        'IGUAL', 'IMUNE', 'ITENS', 'JEITO', 'JOGAR', 'JUSTO', 'LAPSO', 'LAVAR', 'LEGAL', 'LEITE',
+        'LENTO', 'LEQUE', 'LIGAR', 'LIMPA', 'LONGA', 'LONGE', 'LUCRO', 'LUNAR', 'MANGA', 'MANTO',
+        'MARCA', 'MASSA', 'MATAR', 'MÉDIA', 'MEIGO', 'MEDIR', 'MINHA', 'MOLHO', 'MONTE', 'MORAR',
+        'MORTO', 'MOTOR', 'MUITO', 'MULTA', 'MURAL', 'NAÇÃO', 'NAVIO', 'NORTE', 'NOVAS', 'NOVOS',
+        'NUVEM', 'ÓBITO', 'OBRAS', 'OPÇÃO', 'OPTAR', 'OUTRO', 'PADRE', 'PAGAR', 'PAVIO', 'PEDAL',
+        'PEDRA', 'PERDA', 'PLENO', 'POEMA', 'POLVO', 'PORTO', 'PRESO', 'PULSO', 'PUNHO', 'QUASE',
+        'QUEDA', 'QUERO', 'RADAR', 'RÁDIO', 'RASGO', 'ROUBA', 'SALVO', 'SANAR', 'SECAR', 'SINAL',
+        'SOBRE', 'SUBIR', 'TARDE', 'TAXAS', 'TEMER', 'TESTE', 'TOMBO', 'TORTO', 'TOTAL', 'TRAÇO',
+        'TRATO', 'TROCO', 'TURNO', 'USUAL', 'VALOR', 'VALSA', 'VAPOR', 'VENDA', 'VERSO', 'VIRAR',
+        'VIVER', 'VOTAR', 'ÂMBAR', 'ÂNIMO', 'ÍMPIO', 'ÍGNEO', 'ÓSSEO', 'VIÚVA', 'VIÚVO', 'SAÚVA',
+        'REÚNE', 'FAÍNA', 'SÓCIO', 'TÉDIO', 'VÍCIO', 'VÁRIO', 'GÊNIO', 'FÚRIA', 'MÁXIM', 'TÁXIS',
+        'LÚCIO', 'ÊXITO', 'ÓRFÃO', 'PÓLEN', 'TÁTIL', 'DÓCIL', 'ÍCONE', 'ÊXODO', 'ÁTOMO', 'VÁCUO',
+        'ÁRDUO', 'CÍLIO', 'FÉLIX', 'FÉLIZ', 'ÁGAPE', 'ÉPICO'
+    ];
+
+    let termoState = {
+        secret: '',
+        guesses: [],
+        currentGuess: ['', '', '', '', ''],
+        selectedCol: 0,
+        row: 0,
+        gameOver: false,
+        won: false
+    };
+
+    const TERMO_LS_KEY    = 'med_cozy_termo_state';
+    const TERMO_DATE_KEY  = 'med_cozy_termo_date';
+
+    function termoPickWord() {
+        const idx = Math.floor(Math.random() * TERMO_WORDS.length);
+        return TERMO_WORDS[idx];
+    }
+
+    function removeAccents(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function initTermoGame() {
+        const board = document.getElementById('termo-board');
+        if (!board) return;
+
+        const today = (new Date()).toISOString().slice(0, 10);
+        const savedDate = localStorage.getItem(TERMO_DATE_KEY);
+        const savedState = JSON.parse(localStorage.getItem(TERMO_LS_KEY) || 'null');
+
+        const dailyStatus = document.getElementById('termo-daily-status');
+
+        if (savedDate === today && savedState) {
+            termoState = savedState;
+            // Migrar string para array se necessário
+            if (typeof termoState.currentGuess === 'string') {
+                const arr = Array(5).fill('');
+                for (let i = 0; i < Math.min(5, termoState.currentGuess.length); i++) {
+                    arr[i] = termoState.currentGuess[i];
+                }
+                termoState.currentGuess = arr;
+            }
+            if (termoState.selectedCol === undefined) {
+                termoState.selectedCol = 0;
+            }
+            if (dailyStatus) dailyStatus.textContent = '✅ Partida do dia em andamento';
+        } else {
+            // New daily game
+            termoState = { 
+                secret: termoPickWord(), 
+                guesses: [], 
+                currentGuess: ['', '', '', '', ''], 
+                selectedCol: 0,
+                row: 0, 
+                gameOver: false, 
+                won: false 
+            };
+            localStorage.setItem(TERMO_DATE_KEY, today);
+            saveTermoState();
+            if (dailyStatus) dailyStatus.textContent = '🌟 Gratuito hoje!';
+        }
+
+        renderTermoBoard();
+        updateTermoNewGameBtn();
+
+        // Physical keyboard listener (only once)
+        if (!board.dataset.listenerAttached) {
+            board.dataset.listenerAttached = '1';
+            document.addEventListener('keydown', handleTermoPhysicalKey);
+        }
+
+        // Virtual keyboard
+        document.querySelectorAll('.termo-key').forEach(btn => {
+            btn.onclick = null;
+            btn.addEventListener('click', () => handleTermoInput(btn.dataset.key));
+        });
+    }
+
+    function saveTermoState() {
+        localStorage.setItem(TERMO_LS_KEY, JSON.stringify(termoState));
+    }
+
+    function renderTermoBoard() {
+        const board = document.getElementById('termo-board');
+        if (!board) return;
+        board.innerHTML = '';
+        for (let r = 0; r < 6; r++) {
+            const row = document.createElement('div');
+            row.className = 'termo-row';
+            row.id = `termo-row-${r}`;
+            for (let c = 0; c < 5; c++) {
+                const tile = document.createElement('div');
+                tile.className = 'termo-tile';
+                tile.id = `termo-tile-${r}-${c}`;
+                
+                // Permitir cliques apenas na linha ativa para selecionar a coluna
+                if (r === termoState.row && !termoState.gameOver) {
+                    tile.style.cursor = 'pointer';
+                    tile.addEventListener('click', () => {
+                        termoState.selectedCol = c;
+                        updateCurrentRowDisplay();
+                    });
+                }
+                
+                row.appendChild(tile);
+            }
+            board.appendChild(row);
+        }
+        // Fill past guesses
+        termoState.guesses.forEach((guess, r) => {
+            revealRow(r, guess, false);
+        });
+        // Fill current partial guess
+        if (!termoState.gameOver) {
+            if (!Array.isArray(termoState.currentGuess)) {
+                termoState.currentGuess = Array(5).fill('');
+            }
+            if (termoState.selectedCol === undefined) {
+                termoState.selectedCol = 0;
+            }
+            updateCurrentRowDisplay();
+        }
+        updateTermoKeyboard();
+        // Show message if game over
+        if (termoState.gameOver) {
+            showTermoMessage(termoState.won ? '🎉 Você acertou!' : `Era: ${termoState.secret}`, termoState.won ? 'success' : 'fail');
+            showTermoEndBtns();
+        }
+    }
+
+    function revealRow(row, guess, animate = true) {
+        const secret = removeAccents(termoState.secret.toUpperCase());
+        const g = removeAccents(guess.toUpperCase());
+        const result = computeResult(g, secret);
+        const delay = animate ? 0 : -1;
+
+        result.forEach((res, c) => {
+            const tile = document.getElementById(`termo-tile-${row}-${c}`);
+            if (!tile) return;
+            // Auto-accent: if the letter is in the correct position (res === 'correct'),
+            // use the original character from the secret word (which has correct accents).
+            // Otherwise, use the user's input.
+            const displayLetter = (res === 'correct') ? termoState.secret[c].toUpperCase() : guess[c].toUpperCase();
+            tile.textContent = displayLetter;
+            if (animate) {
+                const flipDelay = c * 300;
+                setTimeout(() => {
+                    tile.classList.add('revealed', res);
+                }, flipDelay);
+            } else {
+                tile.classList.add(res);
+            }
+        });
+    }
+
+    function computeResult(guess, secret) {
+        const result = Array(5).fill('absent');
+        const secretArr = secret.split('');
+        const guessArr  = guess.split('');
+        const used = Array(5).fill(false);
+
+        // First pass — correct
+        guessArr.forEach((l, i) => {
+            if (l === secretArr[i]) { result[i] = 'correct'; used[i] = true; }
+        });
+        // Second pass — present
+        guessArr.forEach((l, i) => {
+            if (result[i] === 'correct') return;
+            const idx = secretArr.findIndex((s, j) => s === l && !used[j]);
+            if (idx !== -1) { result[i] = 'present'; used[idx] = true; }
+        });
+        return result;
+    }
+
+    function updateTermoKeyboard() {
+        const keyStates = {};
+        termoState.guesses.forEach(guess => {
+            const secret = removeAccents(termoState.secret.toUpperCase());
+            const g = removeAccents(guess.toUpperCase());
+            const result = computeResult(g, secret);
+            guess.toUpperCase().split('').forEach((l, i) => {
+                const prev = keyStates[l];
+                if (result[i] === 'correct') keyStates[l] = 'correct';
+                else if (result[i] === 'present' && prev !== 'correct') keyStates[l] = 'present';
+                else if (!prev) keyStates[l] = 'absent';
+            });
+        });
+        document.querySelectorAll('.termo-key').forEach(btn => {
+            const k = btn.dataset.key;
+            btn.classList.remove('correct', 'present', 'absent');
+            if (keyStates[k]) btn.classList.add(keyStates[k]);
+        });
+    }
+
+    function handleTermoPhysicalKey(e) {
+        if (!minigamesModal || !minigamesModal.classList.contains('open')) return;
+        if (termoState.gameOver) return;
+        const key = e.key.toUpperCase();
+        if (key === 'ENTER') { handleTermoInput('ENTER'); return; }
+        if (key === 'BACKSPACE') { handleTermoInput('BACKSPACE'); return; }
+        if (/^[A-Z]$/.test(key)) handleTermoInput(key);
+    }
+
+    function handleTermoInput(key) {
+        if (termoState.gameOver) return;
+        
+        if (!Array.isArray(termoState.currentGuess)) {
+            termoState.currentGuess = Array(5).fill('');
+        }
+        if (termoState.selectedCol === undefined) {
+            termoState.selectedCol = 0;
+        }
+
+        if (key === 'BACKSPACE') {
+            if (termoState.currentGuess[termoState.selectedCol] !== '') {
+                termoState.currentGuess[termoState.selectedCol] = '';
+            } else if (termoState.selectedCol > 0) {
+                termoState.selectedCol--;
+                termoState.currentGuess[termoState.selectedCol] = '';
+            }
+            updateCurrentRowDisplay();
+            saveTermoState();
+            return;
+        }
+        
+        if (key === 'ENTER') {
+            submitTermoGuess();
+            return;
+        }
+        
+        if (/^[A-Z]$/.test(key)) {
+            termoState.currentGuess[termoState.selectedCol] = key;
+            
+            // Avança cursor para a próxima vazia
+            let nextCol = termoState.selectedCol;
+            let foundEmpty = false;
+            for (let i = 1; i <= 5; i++) {
+                const checkIdx = (termoState.selectedCol + i) % 5;
+                if (termoState.currentGuess[checkIdx] === '') {
+                    nextCol = checkIdx;
+                    foundEmpty = true;
+                    break;
+                }
+            }
+            
+            if (!foundEmpty) {
+                if (termoState.selectedCol < 4) {
+                    nextCol = termoState.selectedCol + 1;
+                }
+            }
+            
+            termoState.selectedCol = nextCol;
+            updateCurrentRowDisplay();
+            saveTermoState();
+        }
+    }
+
+    function updateCurrentRowDisplay() {
+        for (let c = 0; c < 5; c++) {
+            const tile = document.getElementById(`termo-tile-${termoState.row}-${c}`);
+            if (!tile) continue;
+            const ch = termoState.currentGuess[c] || '';
+            tile.textContent = ch;
+            tile.classList.toggle('filled', ch !== '');
+            
+            // Destacar célula ativa focada
+            if (!termoState.gameOver && c === termoState.selectedCol) {
+                tile.classList.add('focused');
+            } else {
+                tile.classList.remove('focused');
+            }
+        }
+    }
+
+    function submitTermoGuess() {
+        if (!Array.isArray(termoState.currentGuess)) {
+            termoState.currentGuess = Array(5).fill('');
+        }
+        const guess = termoState.currentGuess.join('');
+        if (guess.length < 5 || termoState.currentGuess.includes('')) {
+            showTermoMessage('Palavra incompleta! 🐾', '');
+            const rowEl = document.getElementById(`termo-row-${termoState.row}`);
+            if (rowEl) {
+                rowEl.classList.add('shake');
+                setTimeout(() => rowEl.classList.remove('shake'), 600);
+            }
+            return;
+        }
+
+        // Validar dicionário contra TERMO_VALIDATION_WORDS (com fallback para TERMO_WORDS)
+        const normalizedGuess = removeAccents(guess.toUpperCase());
+        const validationList = (typeof TERMO_VALIDATION_WORDS !== 'undefined' && Array.isArray(TERMO_VALIDATION_WORDS)) 
+            ? TERMO_VALIDATION_WORDS 
+            : TERMO_WORDS;
+        const wordExists = validationList.some(w => removeAccents(w.toUpperCase()) === normalizedGuess);
+        if (!wordExists) {
+            showTermoMessage('Palavra não reconhecida! 🐾', 'fail');
+            const rowEl = document.getElementById(`termo-row-${termoState.row}`);
+            if (rowEl) {
+                rowEl.classList.add('shake');
+                setTimeout(() => rowEl.classList.remove('shake'), 600);
+            }
+            return;
+        }
+
+        termoState.guesses.push(guess);
+        revealRow(termoState.row, guess, true);
+
+        const secret = removeAccents(termoState.secret.toUpperCase());
+        const g = removeAccents(guess.toUpperCase());
+
+        const won = g === secret;
+        const lost = !won && termoState.row >= 5;
+
+        setTimeout(() => {
+            updateTermoKeyboard();
+        }, 5 * 300 + 100);
+
+        if (won || lost) {
+            termoState.gameOver = true;
+            termoState.won = won;
+            setTimeout(() => {
+                if (won) {
+                    showTermoMessage('🎉 Você acertou!', 'success');
+                    addTokens(20, document.getElementById('termo-board'));
+                    spawnFloatingText(document.getElementById('termo-board'), '+20 🪙', '#f1c40f');
+                } else {
+                    showTermoMessage(`😢 Era: ${termoState.secret}`, 'fail');
+                }
+                showTermoEndBtns();
+            }, 5 * 300 + 200);
+        }
+
+        termoState.row++;
+        termoState.currentGuess = ['', '', '', '', ''];
+        termoState.selectedCol = 0;
+        saveTermoState();
+    }
+
+    function showTermoMessage(msg, type) {
+        const el = document.getElementById('termo-message');
+        if (!el) return;
+        el.textContent = msg;
+        el.style.color = type === 'success' ? '#81b29a' : type === 'fail' ? '#e17055' : 'var(--color-orange)';
+    }
+
+    function showTermoEndBtns() {
+        const newBtn   = document.getElementById('termo-new-game-btn');
+        const shareBtn = document.getElementById('termo-share-btn');
+        if (newBtn)   newBtn.style.display = '';
+        if (shareBtn) shareBtn.style.display = '';
+    }
+
+    function updateTermoNewGameBtn() {
+        const newBtn = document.getElementById('termo-new-game-btn');
+        if (!newBtn) return;
+        if (termoState.gameOver) {
+            newBtn.style.display = '';
+            newBtn.textContent = 'Nova Partida (10 🪙)';
+        } else {
+            newBtn.style.display = 'none';
+        }
+    }
+
+    const termoNewGameBtn = document.getElementById('termo-new-game-btn');
+    if (termoNewGameBtn) {
+        termoNewGameBtn.addEventListener('click', () => {
+            if (tokens < 10 && termoState.gameOver) {
+                // Check if it's a new day (free)
+                const today = (new Date()).toISOString().slice(0, 10);
+                const savedDate = localStorage.getItem(TERMO_DATE_KEY);
+                if (savedDate === today) {
+                    showCozyAlert('Tokens insuficientes para uma nova partida! Precisa de 10 🪙', '😢');
+                    return;
+                }
+            }
+            // Charge only if same day and already played
+            const today = (new Date()).toISOString().slice(0, 10);
+            const savedDate = localStorage.getItem(TERMO_DATE_KEY);
+            const isSameDay = savedDate === today;
+            if (isSameDay && termoState.guesses.length > 0) {
+                if (tokens < 10) { showCozyAlert('Precisa de 10 tokens para nova partida! 🪙', '😢'); return; }
+                addTokens(-10);
+            }
+            termoState = { 
+                secret: termoPickWord(), 
+                guesses: [], 
+                currentGuess: ['', '', '', '', ''], 
+                selectedCol: 0,
+                row: 0, 
+                gameOver: false, 
+                won: false 
+            };
+            localStorage.setItem(TERMO_DATE_KEY, today);
+            saveTermoState();
+            renderTermoBoard();
+            const newBtn = document.getElementById('termo-new-game-btn');
+            if (newBtn) newBtn.style.display = 'none';
+            const shareBtn = document.getElementById('termo-share-btn');
+            if (shareBtn) shareBtn.style.display = 'none';
+            const msgEl = document.getElementById('termo-message');
+            if (msgEl) msgEl.textContent = '';
+        });
+    }
+
+    const termoShareBtn = document.getElementById('termo-share-btn');
+    if (termoShareBtn) {
+        termoShareBtn.addEventListener('click', () => {
+            const lines = termoState.guesses.map(guess => {
+                const secret = removeAccents(termoState.secret.toUpperCase());
+                const g = removeAccents(guess.toUpperCase());
+                return computeResult(g, secret).map(r => r === 'correct' ? '🟩' : r === 'present' ? '🟨' : '⬜').join('');
+            }).join('\n');
+            const text = `Termo Cozy 🌸\n${termoState.won ? `🎉 ${termoState.row}/6` : `😢 X/6`}\n\n${lines}`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => showCozyAlert('Copiado para a área de transferência! 💖', '🌸'));
+            }
+        });
+    }
+
     // --- Initialize Application ---
     initTheme();
     initDate();
     renderTasks();
     updateGamificationStats();
+    syncInventoryUI();
     initDailyQuests();
     renderWeeklyChart();
 });

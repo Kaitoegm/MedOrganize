@@ -1,6 +1,8 @@
 # Plano de Aprimoramento e Gamificação — MedOrganize Cozy
 
-Este documento descreve as instruções de design e desenvolvimento para aprimorar o MedOrganize Cozy, adicionando novos minijogos, ferramentas integradas não genéricas e dinâmicas de conquista de bichinhos e cenários, seguindo os princípios de game design e desenvolvimento de jogos web.
+Este documento descreve as instruções de design e desenvolvimento para aprimorar o MedOrganize Cozy. O plano foi reelaborado para focar inicialmente em duas mecânicas principais: **Pet Care** (Nível de Amizade & Interação) e o minijogo **Termo Cozy** (baseado no jogo term.ooo).
+
+Essas funcionalidades estarão acessíveis através de um menu lateral reordenado e abas dedicadas.
 
 ---
 
@@ -9,71 +11,57 @@ Este documento descreve as instruções de design e desenvolvimento para aprimor
 - **Plataforma**: Web (Desktop-first, Responsivo para Mobile)
 - **Tema**: Cozy, Pastel, Estilo Lofi & Studio Ghibli
 - **Cores**:
-  - Creme Suave (#fdfbf7) para fundo principal
-  - Marrom Aconchegante (#4a3a2a) para textos e bordas principais
-  - Rosa Cerejeira (#ffd2d7) para destaques e botões secundários
-  - Amarelo Ouro (#f1c40f) para Moedas/Tokens
-  - Azul Gacha (#3498db) para Moedas Gacha
-- **Estilo Visual**: Bordas arredondadas generosas (`border-radius: 16px` ou mais), sombras suaves (`box-shadow: 0 8px 16px rgba(74,58,42,0.08)`), micro-animações responsivas e elásticas de escala no hover (utilizando `anime.js` ou CSS transitions).
+  - Creme Suave (`#fdfbf7`) para fundo principal
+  - Marrom Aconchegante (`#4a3a2a`) para textos e bordas principais
+  - Rosa Cerejeira (`#ffd2d7`) para destaques e botões secundários
+  - Amarelo Ouro (`#f1c40f`) para Moedas/Tokens
+  - Azul Gacha (`#3498db`) para Moedas Gacha (se aplicável)
+- **Estilo Visual**: Bordas arredondadas generosas (`border-radius: 16px` ou mais), sombras suaves, micro-animações responsivas e elásticas de escala no hover (utilizando `anime.js` ou CSS transitions).
 
 ---
 
-## 🎮 NOVOS MINIJOGOS & MECÂNICAS DE CONQUISTA
+## 🧭 MENU LATERAL (SIDEBAR ORDER)
 
-Para enriquecer a obtenção de bichinhos e cenários sem perder o tom simples e aconchegante, o sistema de gamificação será expandido seguindo os princípios da skill `/game-development`:
+A ordem dos botões de controle no menu lateral deve ser exatamente a seguinte:
 
-### 1. Sistema de Cultivo Cozy ("Horta do Pingu")
-* **Objetivo**: Plantar sementes que crescem com o tempo de foco do usuário.
-* **Mecânica de Jogo**:
-  - O usuário compra **Sementes Mágicas** na loja usando MedTokens.
-  - Ao iniciar uma sessão de foco (Pomodoro), a semente é plantada em um vasinho virtual.
-  - A planta é "regada" automaticamente à medida que os minutos de foco passam.
-  - Ao colher a planta desenvolvida, o usuário ganha itens decorativos comuns ou tem uma chance percentual de obter um **Bichinho Raro** ou **Pedaço de Cenário**.
-* **Lógica de Jogo (FSM)**:
-  - Estados do Vaso: `Vazio` ➔ `Semente` ➔ `Broto` ➔ `Crescendo` ➔ `Pronto para Colheita`.
-
-### 2. Nível de Amizade & Interação ("Pet Care")
-* **Objetivo**: Aumentar a afinidade com os bichinhos desbloqueados para liberar novos cenários exclusivos.
-* **Mecânica de Jogo**:
-  - Cada bichinho possui uma barra de **Amizade (XP)**.
-  - O usuário pode gastar MedTokens para comprar **Lanchinhos** (ex: Pãozinho de Mel, Chá de Camomila) ou **Brinquedos** (ex: Novelo de Lã).
-  - Alimentar ou brincar com o bichinho reproduz uma animação fofa (ex: pulinho ou rotação rápida) e concede XP de amizade.
-  - Ao atingir níveis máximos de amizade, o bichinho "presenteia" o usuário com um plano de fundo exclusivo relacionado a ele.
-
-### 3. Minijogo da Memória Cozy ("Cartas da Tarde")
-* **Objetivo**: Gastar tokens para jogar um minijogo simples de memória valendo Moedas Gacha ou cupons de desconto na Loja Cozy.
-* **Mecânica de Jogo**:
-  - Custa 15 MedTokens para jogar uma rodada.
-  - Tabuleiro de 4x4 cartas com ilustrações fofas dos bichinhos e plantas.
-  - O usuário tem um número limite de movimentos (ex: 8 tentativas) para encontrar todos os pares.
-  - Caso vença, ganha uma Moeda Gacha. Caso perca, ganha um prêmio de consolação (ex: 5 tokens).
+1. **Loja Cozy & Gacha** (`shop-toggle-btn`): Mercado para comprar bichinhos, itens e comida.
+2. **Aparência & Bichinhos** (`aesthetics-toggle-btn`): Painel de customização dos bichinhos ativos e planos de fundo.
+3. **Minijogos** (`minigames-toggle-btn`): Nova aba contendo o minijogo Termo Cozy.
+4. **Missões Diárias** (`quests-toggle-btn`): Lista de missões diárias com recompensas em tokens.
+5. **Configurações** (`settings-toggle-btn`): Configurações de foco, tempos e links de áudio.
+6. **Estatísticas de Estudo** (`stats-toggle-btn`): Gráficos de produtividade e histórico de foco.
 
 ---
 
-## 🛠️ FERRAMENTAS NÃO GENÉRICAS DE AJUDA
+## 🎮 MECÂNICAS PRINCIPAIS: PET CARE & MINIJOGOS
 
-Para ajudar o usuário na rotina sem recorrer a ferramentas genéricas, serão adicionadas as seguintes utilidades integradas ao visual aconchegante:
+### 1. Nível de Amizade & Interação ("Pet Care")
+* **Objetivo**: Aumentar a afinidade com os bichinhos desbloqueados para obter conquistas e customizações.
+* **Funcionamento**:
+  - Cada bichinho do usuário possui uma barra de **Amizade (XP)** e um nível atual.
+  - O usuário pode acessar a Loja para comprar **Lanchinhos** (ex: Pãozinho de Mel, Chá de Camomila) ou **Brinquedos** (ex: Novelo de Lã) usando MedTokens.
+  - Ao alimentar ou brincar com o bichinho ativo (no painel de customização), o jogador gasta o item, reproduz uma animação fofa de pulo/coração (`anime.js`) e concede XP de amizade.
+  - Ao subir de nível, o bichinho ganha um bônus especial ou desbloqueia um item estético exclusivo.
 
-### A. O Diário do Foco (Scrapbook)
-* Substitui gráficos frios de produtividade por um caderno virtual decorado com adesivos (stickers).
-* Cada dia de foco concluído adiciona um "carimbo" ou sticker personalizado do bichinho ativo naquela página do diário, acompanhado de uma frase motivadora aleatória.
-
-### B. O Soundboard Interativo
-* Sons de fundo (chuva, vento, lofi, fogo estalando) que reagem ao clique nos bichinhos da tela. Por exemplo, clicar no Pingu faz o som de chuva aumentar suavemente por alguns segundos ou ativa um som de "quack" afinado no tom da música lofi atual.
-
-### C. Caderno de Erros ("Diário de Aprendizados")
-* Ferramenta para registrar pequenos erros ou dificuldades encontradas nos estudos. Ao invés de uma lista de falhas, o usuário ganha 5 XP para seu bichinho ativo ao preencher o campo *"O que aprendi com isso?"*, incentivando a mentalidade de crescimento de forma leve.
+### 2. Minijogo: Termo Cozy ("Termo")
+* **Objetivo**: Adivinhar a palavra de 5 letras em até 6 tentativas no estilo do site `term.ooo`.
+* **Funcionamento**:
+  - **Acesso**: Fica em uma janela/aba separada ("Minijogos") no menu lateral.
+  - **Mecânica de Jogo**:
+    - O jogador tenta adivinhar uma palavra secreta de 5 letras (em português).
+    - A cada palpite enviado:
+      - Letra correta na posição certa: Fica **Verde Cozy / Oliva** (ex: `#81b29a`).
+      - Letra correta na posição errada: Fica **Amarelo/Laranja Suave** (ex: `#f1c40f`).
+      - Letra incorreta: Fica **Cinza/Marrom Suave** (ex: `#e8e3d9`).
+    - Teclado virtual na tela que reflete as cores das letras já tentadas para facilitar a digitação no mobile.
+  - **Recompensa e Limites**:
+    - O jogador ganha MedTokens (ex: 20 tokens) ao acertar a palavra.
+    - Pode jogar gratuitamente 1 vez por dia. Jogadas extras custam MedTokens (ex: 10 tokens por tentativa/partida nova).
 
 ---
 
 ## ⚙️ ESPECIFICAÇÕES TÉCNICAS (GAME LOOP & STATE)
 
-Ao implementar os minijogos, siga as seguintes diretrizes da skill `/game-development`:
-1. **Separação de Input e Lógica**: Mantenha os cliques na horta ou nas cartas isolados da renderização gráfica direta, processando primeiro o estado no `localStorage` antes de atualizar o DOM.
-2. **Animações Fluidas**: Utilize o `anime.js` (já integrado no projeto) com funções de easing elásticas para dar a sensação de "brinquedo físico" (juiciness) a todos os cliques.
-3. **Persistência de Estado**: Todas as fases da horta (tempo restante para crescimento, tipo de semente) e níveis de amizade dos bichinhos devem ser salvos no objeto de estado do usuário em `localStorage` para evitar perda de progresso ao recarregar a página.
-
----
-💡 **Tip:** For consistent designs across multiple screens, create a DESIGN.md 
-file using the `design-md` skill. This ensures all generated pages share the 
-same visual language.
+1. **Separação de Input e Lógica**: Mantenha o estado do jogo (partida atual do Termo, XP dos bichinhos, estoque de comidas) no `localStorage`.
+2. **Animações Fluidas**: Use `anime.js` para as transições de revelação das letras do Termo (efeito flip 3D) e para a alimentação do pet.
+3. **Validação**: Impedir inserção de palavras inexistentes ou inválidas se possível, ou validar caracteres acentuados de forma amigável ao usuário (comparação sem acentos).

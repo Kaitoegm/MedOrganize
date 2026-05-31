@@ -21,15 +21,16 @@
 
     <!-- Sidebar Buttons Container (Top Left) -->
     <div class="sidebar-controls" role="navigation" aria-label="Menu Principal">
-        <!-- Settings Button -->
-        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações" aria-label="Configurações do Foco e Pomodoro" aria-haspopup="dialog" aria-expanded="false">
+        <!-- 1. Cozy Shop & Gacha Button -->
+        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha" aria-label="Loja Cozy e Máquina Gacha" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
         </button>
 
-        <!-- Aesthetics Panel Button (Directly Below Settings) -->
+        <!-- 2. Aesthetics / Customização Button -->
         <button id="aesthetics-toggle-btn" class="sidebar-btn aesthetics-btn" title="Aparência & Bichinhos" aria-label="Aparência, Plano de Fundo e Bichinhos" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22C17.5228 22 22 17.5228 22 12C22 11.5 21.5 11 21 11H18.5C18.2239 11 18 10.7761 18 10.5C18 9.11929 16.8807 8 15.5 8C15.2239 8 15 7.77614 15 7.5V5C15 2.23858 12.7614 0 10 0C4.47715 0 0 4.47715 0 10C0 16.6274 5.37258 22 12 22Z" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -40,16 +41,19 @@
             </svg>
         </button>
 
-        <!-- Cozy Shop & Gacha Button -->
-        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha" aria-label="Loja Cozy e Máquina Gacha" aria-haspopup="dialog" aria-expanded="false">
+        <!-- 3. Instruções / Termo Button -->
+        <button id="minigames-toggle-btn" class="sidebar-btn minigames-btn" title="Instruções" aria-label="Instruções e Termo Cozy" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"/>
-                <circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <rect x="8" y="5" width="8" height="6" rx="1.5"/>
+                <line x1="9" y1="15" x2="13" y2="15"/>
+                <line x1="11" y1="13" x2="11" y2="17"/>
+                <circle cx="15.5" cy="14.5" r="1" fill="currentColor"/>
+                <circle cx="16.5" cy="16.5" r="1" fill="currentColor"/>
             </svg>
         </button>
 
-        <!-- Quests Button (Daily Quests) -->
+        <!-- 4. Quests Button (Daily Quests) -->
         <button id="quests-toggle-btn" class="sidebar-btn quests-btn" title="Missões Diárias" aria-label="Missões Diárias e Conquistas" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -61,7 +65,15 @@
             <span id="quests-badge" class="quests-badge" style="display: none;">!</span>
         </button>
 
-        <!-- Stats Button (Estatísticas) -->
+        <!-- 5. Settings Button -->
+        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações" aria-label="Configurações do Foco e Pomodoro" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+
+        <!-- 6. Stats Button (Estatísticas) -->
         <button id="stats-toggle-btn" class="sidebar-btn stats-btn" title="Estatísticas de Estudo" aria-label="Estatísticas de Estudo" aria-haspopup="dialog" aria-expanded="false">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="18" y1="20" x2="18" y2="10"/>
@@ -428,10 +440,44 @@
                             <!-- Animal items dynamically injected -->
                         </div>
                     </div>
-                </div>
             </div>
 
-            <div class="aesthetics-footer">
+            <!-- PET CARE SECTION inside Aesthetics -->
+            <div class="aesthetics-section pet-care-section" id="pet-care-section" style="display:none;">
+                <h4>🐾 Cuidar do Bichinho Ativo</h4>
+                <div class="pet-care-card">
+                    <div class="pet-care-header">
+                        <div class="pet-care-img-wrap">
+                            <img id="pet-care-img" src="" alt="Bichinho Ativo" class="pet-care-preview">
+                        </div>
+                        <div class="pet-care-info">
+                            <div class="pet-care-name" id="pet-care-name">—</div>
+                            <div class="pet-rarity-badge" id="pet-rarity-badge">Comum</div>
+                            <div class="pet-care-pts-label">Pontos para próxima evolução:</div>
+                            <div class="pet-care-progress-wrap">
+                                <div class="pet-care-progress-bar">
+                                    <div class="pet-care-progress-fill" id="pet-care-progress-fill" style="width:0%"></div>
+                                </div>
+                                <span class="pet-care-pts-text" id="pet-care-pts-text">0 / 100</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pet-care-actions">
+                        <button id="pet-feed-btn" class="btn btn-secondary pet-action-btn" title="Alimentar o bichinho">
+                            🍞 Pãozinho <span class="item-count" id="count-paozinho">0</span>
+                        </button>
+                        <button id="pet-tea-btn" class="btn btn-secondary pet-action-btn" title="Dar chá">
+                            🍵 Chá <span class="item-count" id="count-cha">0</span>
+                        </button>
+                        <button id="pet-toy-btn" class="btn btn-secondary pet-action-btn" title="Brincar com o novelo">
+                            🧶 Novelo <span class="item-count" id="count-novelo">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="aesthetics-footer">
                 <button id="aesthetics-save-btn" class="btn btn-primary btn-full">Salvar Aparência</button>
             </div>
         </div>
@@ -470,7 +516,7 @@
                         <circle cx="8.5" cy="8.5" r="1.5"/>
                         <polyline points="21 15 16 10 5 21"/>
                     </svg>
-                    Planos de Fundo
+                    Fundos
                 </button>
                 <button id="tab-shop-animals" class="shop-tab-btn">
                     <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
@@ -482,13 +528,19 @@
                     </svg>
                     Bichinhos
                 </button>
+                <button id="tab-shop-care" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    Pet Care
+                </button>
                 <button id="tab-shop-gacha" class="shop-tab-btn">
                     <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/>
                         <line x1="9" y1="8" x2="9" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
                         <line x1="15" y1="8" x2="15" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
                     </svg>
-                    Gacha Máquina
+                    Gacha
                 </button>
             </div>
 
@@ -504,6 +556,52 @@
                 <div id="shop-animals-panel" class="shop-panel">
                     <div class="shop-grid" id="grid-shop-animals">
                         <!-- Animal items populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Pet Care Items Panel -->
+                <div id="shop-care-panel" class="shop-panel">
+                    <p class="shop-care-desc">Compre itens para cuidar dos seus bichinhos e ganhar pontos de evolução! 🐾</p>
+                    <div class="shop-care-grid">
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🍞</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Pãozinho de Mel</span>
+                                <span class="shop-care-effect">+15 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-paozinho">0</strong></div>
+                                <button id="buy-paozinho-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 10
+                                </button>
+                            </div>
+                        </div>
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🍵</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Chá de Camomila</span>
+                                <span class="shop-care-effect">+25 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-cha">0</strong></div>
+                                <button id="buy-cha-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 20
+                                </button>
+                            </div>
+                        </div>
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🧶</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Novelo de Lã</span>
+                                <span class="shop-care-effect">+40 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-novelo">0</strong></div>
+                                <button id="buy-novelo-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 30
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -658,8 +756,142 @@
         </div>
     </div>
 
+    <!-- MINIGAMES MODAL (Termo Cozy) -->
+    <div id="minigames-modal" class="minigames-modal" role="dialog" aria-modal="true" aria-labelledby="minigames-title">
+        <div class="minigames-modal-content">
+            <div class="minigames-header">
+                <h3 id="minigames-title">ℹ️ Instruções & Jogo</h3>
+                <button id="minigames-close-btn" class="modal-close-btn" aria-label="Fechar">&times;</button>
+            </div>
+            <!-- Minigame Tabs -->
+            <div class="minigames-tabs">
+                <button id="tab-instrucoes" class="minigame-tab-btn active">ℹ️ Instruções</button>
+                <button id="tab-termo" class="minigame-tab-btn">🎮 Jogar Termo</button>
+            </div>
+
+            <!-- TERMO GAME PANEL -->
+            <div id="termo-panel" class="minigame-panel">
+                <div class="termo-header">
+                    <p class="termo-subtitle">Adivinhe a palavra de 5 letras em até 6 tentativas! 🌸</p>
+                    <div class="termo-meta">
+                        <span id="termo-daily-status" class="termo-daily-tag">🌟 Gratuito hoje!</span>
+                        <span id="termo-reward-info" class="termo-reward-tag">🎁 Prêmio: 20 Tokens</span>
+                    </div>
+                </div>
+
+                <!-- Game Board: 6 rows × 5 cols -->
+                <div class="termo-board" id="termo-board">
+                    <!-- Rows injected by JS -->
+                </div>
+
+                <!-- Message area -->
+                <div id="termo-message" class="termo-message"></div>
+
+                <!-- Virtual Keyboard -->
+                <div class="termo-keyboard" id="termo-keyboard">
+                    <div class="termo-key-row" data-row="0">
+                        <button class="termo-key" data-key="Q">Q</button>
+                        <button class="termo-key" data-key="W">W</button>
+                        <button class="termo-key" data-key="E">E</button>
+                        <button class="termo-key" data-key="R">R</button>
+                        <button class="termo-key" data-key="T">T</button>
+                        <button class="termo-key" data-key="Y">Y</button>
+                        <button class="termo-key" data-key="U">U</button>
+                        <button class="termo-key" data-key="I">I</button>
+                        <button class="termo-key" data-key="O">O</button>
+                        <button class="termo-key" data-key="P">P</button>
+                    </div>
+                    <div class="termo-key-row" data-row="1">
+                        <button class="termo-key" data-key="A">A</button>
+                        <button class="termo-key" data-key="S">S</button>
+                        <button class="termo-key" data-key="D">D</button>
+                        <button class="termo-key" data-key="F">F</button>
+                        <button class="termo-key" data-key="G">G</button>
+                        <button class="termo-key" data-key="H">H</button>
+                        <button class="termo-key" data-key="J">J</button>
+                        <button class="termo-key" data-key="K">K</button>
+                        <button class="termo-key" data-key="L">L</button>
+                    </div>
+                    <div class="termo-key-row" data-row="2">
+                        <button class="termo-key termo-key-enter" data-key="ENTER">↵ OK</button>
+                        <button class="termo-key" data-key="Z">Z</button>
+                        <button class="termo-key" data-key="X">X</button>
+                        <button class="termo-key" data-key="C">C</button>
+                        <button class="termo-key" data-key="V">V</button>
+                        <button class="termo-key" data-key="B">B</button>
+                        <button class="termo-key" data-key="N">N</button>
+                        <button class="termo-key" data-key="M">M</button>
+                        <button class="termo-key termo-key-del" data-key="BACKSPACE">⌫</button>
+                    </div>
+                </div>
+
+                <div class="termo-footer">
+                    <button id="termo-new-game-btn" class="btn btn-secondary" style="display:none;">Nova Partida (10 🪙)</button>
+                    <button id="termo-share-btn" class="btn btn-primary" style="display:none;">Compartilhar 🌸</button>
+                </div>
+            </div>
+
+            <!-- INSTRUCTIONS PANEL -->
+            <div id="instrucoes-panel" class="minigame-panel active">
+                <div class="termo-header" style="margin-bottom: 0.6rem;">
+                    <h4 style="font-weight: 800; font-size: 1.15rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                        Como Jogar 🌸
+                    </h4>
+                    <p class="termo-subtitle">Descubra a palavra secreta de 5 letras em até 6 tentativas!</p>
+                </div>
+                <div class="instructions-content" style="display: flex; flex-direction: column; gap: 0.7rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    <p style="margin: 0; text-align: center;">A cada tentativa, a cor das peças mudará para mostrar o progresso:</p>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile correct" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">T</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">M</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: #2e7d32;">T</strong> está na palavra e na posição correta! 🟩
+                        </p>
+                    </div>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">C</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                            <span class="termo-tile present" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">P</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: #b7860d;">R</strong> está na palavra, mas em outra posição. 🟨
+                        </p>
+                    </div>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">V</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">D</span>
+                            <span class="termo-tile absent" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: var(--text-light);">E</strong> não faz parte da palavra. ⬜
+                        </p>
+                    </div>
+                    
+                    <p style="font-size: 0.78rem; text-align: center; font-weight: 800; color: var(--text-dark); margin: 0.1rem 0 0; line-height: 1.35;">
+                        💡 O jogo aceita vogais sem acento! O acento correto é inserido automaticamente na revelação.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Anime.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="app.js?v=1.0.3"></script>
+    <script src="termo_validation_words.js"></script>
+    <script src="app.js?v=1.0.4"></script>
 </body>
 </html>
