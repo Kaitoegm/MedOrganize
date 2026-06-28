@@ -3821,6 +3821,11 @@ document.addEventListener('DOMContentLoaded', () => {
         minigamesModal.classList.remove('open');
         if (minigamesToggleBtn) minigamesToggleBtn.setAttribute('aria-expanded', 'false');
         if (activeFocusTrapCleanup) { activeFocusTrapCleanup(); activeFocusTrapCleanup = null; }
+        cancelFishingLoop();
+        clearTimeout(waitTimeout);
+        clearTimeout(biteTimeout);
+        isHolding = false;
+        fishingPhase = 'lobby';
     }
     if (minigamesToggleBtn) minigamesToggleBtn.addEventListener('click', openMinigames);
     if (minigamesCloseBtn)  minigamesCloseBtn.addEventListener('click',  closeMinigames);
@@ -3828,8 +3833,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Minigame tabs click listener (e.g. Play vs Instructions)
     document.querySelectorAll('.minigames-tabs .minigame-tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const tabId = btn.id; // tab-termo ou tab-instrucoes
-            const panelId = tabId.replace('tab-', '') + '-panel'; // termo-panel ou instrucoes-panel
+            const tabId = btn.id; // tab-termo ou tab-instrucoes ou tab-pesca
+            const panelId = tabId.replace('tab-', '') + '-panel'; // termo-panel ou instrucoes-panel ou pesca-panel
             
             // Toggle active tab buttons
             document.querySelectorAll('.minigames-tabs .minigame-tab-btn').forEach(b => b.classList.remove('active'));
@@ -3838,7 +3843,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Toggle active panels
             document.querySelectorAll('.minigame-panel').forEach(p => p.classList.remove('active'));
             const activePanel = document.getElementById(panelId);
-            if (activePanel) activePanel.classList.add('active');
+            if (activePanel) {
+                activePanel.classList.add('active');
+                if (tabId === 'tab-pesca') {
+                    switchFishingSubTab('jogar');
+                }
+            }
         });
     });
 
@@ -4299,6 +4309,2155 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+      // ============================================================
+  // MINIJOGO DE PESCA COZY — SISTEMA COMPLETO (ESTILO PUFFERDLE)
+  // ============================================================
+
+  // --- Base de dados de peixes (55 espécies do Stardew Valley / Pufferdle) ---
+  const FISH_DATABASE = [
+    {
+      id: "pufferfish",
+      emoji: "🐡",
+      name: "Baiacu",
+      englishName: "Pufferfish",
+      difficulty: 80,
+      behavior: "Floater",
+      seasons: ["Summer"],
+      weather: ["Sun"],
+      time: [12, 16],
+      locations: ["Ocean", "Ginger Ocean"],
+      desc: "Se infla quando ameaçado.",
+    },
+    {
+      id: "anchovy",
+      emoji: "🐟",
+      name: "Anchova",
+      englishName: "Anchovy",
+      difficulty: 30,
+      behavior: "Dart",
+      seasons: ["Spring", "Fall"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Ocean"],
+      desc: "Um pequeno peixe prateado encontrado no oceano.",
+    },
+    {
+      id: "tuna",
+      emoji: "🐟",
+      name: "Atum",
+      englishName: "Tuna",
+      difficulty: 70,
+      behavior: "Smooth",
+      seasons: ["Summer", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Ocean", "Ginger Ocean"],
+      desc: "Um grande peixe que vive no oceano.",
+    },
+    {
+      id: "sardine",
+      emoji: "🐟",
+      name: "Sardinha",
+      englishName: "Sardine",
+      difficulty: 30,
+      behavior: "Dart",
+      seasons: ["Spring", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Ocean"],
+      desc: "Um peixe comum do oceano.",
+    },
+    {
+      id: "bream",
+      emoji: "🐟",
+      name: "Sargo",
+      englishName: "Bream",
+      difficulty: 35,
+      behavior: "Smooth",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [18, 26],
+      locations: ["Town", "Forest"],
+      desc: "Um peixe de rio bastante comum que se torna ativo à noite.",
+    },
+    {
+      id: "largemouth_bass",
+      emoji: "🐟",
+      name: "Achigã",
+      englishName: "Largemouth Bass",
+      difficulty: 50,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Lake"],
+      desc: "Um peixe popular que vive em lagos.",
+    },
+    {
+      id: "smallmouth_bass",
+      emoji: "🐟",
+      name: "Achigã-pequeno",
+      englishName: "Smallmouth Bass",
+      difficulty: 28,
+      behavior: "Mixed",
+      seasons: ["Spring", "Fall"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Town", "Pond"],
+      desc: "Um peixe de água doce muito sensível à poluição.",
+    },
+    {
+      id: "rainbow_trout",
+      emoji: "🐠",
+      name: "Truta Arco-Íris",
+      englishName: "Rainbow Trout",
+      difficulty: 45,
+      behavior: "Mixed",
+      seasons: ["Summer"],
+      weather: ["Sun"],
+      time: [6, 19],
+      locations: ["Town", "Forest", "Lake"],
+      desc: "Uma truta de água doce com marcações coloridas.",
+    },
+    {
+      id: "salmon",
+      emoji: "🐟",
+      name: "Salmão",
+      englishName: "Salmon",
+      difficulty: 50,
+      behavior: "Mixed",
+      seasons: ["Fall"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Town", "Forest"],
+      desc: "Nada rio acima para desovar.",
+    },
+    {
+      id: "walleye",
+      emoji: "🐟",
+      name: "Areinha",
+      englishName: "Walleye",
+      difficulty: 45,
+      behavior: "Smooth",
+      seasons: ["Fall", "Winter"],
+      weather: ["Rain"],
+      time: [12, 26],
+      locations: ["Town", "Forest", "Pond", "Lake"],
+      desc: "Um peixe de água doce pego à noite.",
+    },
+    {
+      id: "perch",
+      emoji: "🐟",
+      name: "Perca",
+      englishName: "Perch",
+      difficulty: 35,
+      behavior: "Dart",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Town", "Forest", "Pond", "Lake"],
+      desc: "Um peixe de água doce do inverno.",
+    },
+    {
+      id: "carp",
+      emoji: "🫧",
+      name: "Carpa",
+      englishName: "Carp",
+      difficulty: 15,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Sewers", "Woods", "Lake"],
+      desc: "Um peixe de lago comum.",
+    },
+    {
+      id: "catfish",
+      emoji: "🦈",
+      name: "Bagre",
+      englishName: "Catfish",
+      difficulty: 75,
+      behavior: "Mixed",
+      seasons: ["Spring", "Fall"],
+      weather: ["Rain"],
+      time: [6, 24],
+      locations: ["Town", "Forest", "Woods", "Swamp"],
+      desc: "An uncommon fish found in streams.",
+    },
+    {
+      id: "pike",
+      emoji: "🐟",
+      name: "Lúcio",
+      englishName: "Pike",
+      difficulty: 60,
+      behavior: "Dart",
+      seasons: ["Summer", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Town", "Forest", "Pond"],
+      desc: "Um peixe de água doce difícil de capturar.",
+    },
+    {
+      id: "sunfish",
+      emoji: "🐠",
+      name: "Peixe-sol",
+      englishName: "Sunfish",
+      difficulty: 30,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer"],
+      weather: ["Sun", "Wind"],
+      time: [6, 19],
+      locations: ["Town", "Forest"],
+      desc: "Um peixe de rio comum.",
+    },
+    {
+      id: "red_mullet",
+      emoji: "🐟",
+      name: "Trilha",
+      englishName: "Red Mullet",
+      difficulty: 55,
+      behavior: "Smooth",
+      seasons: ["Summer", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Ocean"],
+      desc: "Long ago these were kept as pets.",
+    },
+    {
+      id: "herring",
+      emoji: "🐟",
+      name: "Arenque",
+      englishName: "Herring",
+      difficulty: 25,
+      behavior: "Dart",
+      seasons: ["Spring", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Ocean"],
+      desc: "Um peixe comum do oceano.",
+    },
+    {
+      id: "eel",
+      emoji: "🐍",
+      name: "Enguia",
+      englishName: "Eel",
+      difficulty: 70,
+      behavior: "Smooth",
+      seasons: ["Spring", "Fall"],
+      weather: ["Rain"],
+      time: [16, 26],
+      locations: ["Ocean"],
+      desc: "Uma longa enguia escorregadia.",
+    },
+    {
+      id: "octopus",
+      emoji: "🐙",
+      name: "Polvo",
+      englishName: "Octopus",
+      difficulty: 95,
+      behavior: "Sinker",
+      seasons: ["Summer"],
+      weather: ["Any"],
+      time: [6, 13],
+      locations: ["Ocean", "Market"],
+      desc: "Uma criatura misteriosa e inteligente.",
+    },
+    {
+      id: "red_snapper",
+      emoji: "🐟",
+      name: "Pargo",
+      englishName: "Red Snapper",
+      difficulty: 40,
+      behavior: "Mixed",
+      seasons: ["Summer", "Fall"],
+      weather: ["Rain"],
+      time: [6, 19],
+      locations: ["Ocean"],
+      desc: "Um peixe popular de bela coloração vermelha.",
+    },
+    {
+      id: "squid",
+      emoji: "🦑",
+      name: "Lula",
+      englishName: "Squid",
+      difficulty: 75,
+      behavior: "Sinker",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [18, 26],
+      locations: ["Ocean"],
+      desc: "Uma criatura marinha profunda.",
+    },
+    {
+      id: "sea_cucumber",
+      emoji: "🥒",
+      name: "Pepino-do-mar",
+      englishName: "Sea Cucumber",
+      difficulty: 40,
+      behavior: "Sinker",
+      seasons: ["Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Ocean", "Market"],
+      desc: "Uma criatura escorregadia encontrada no fundo do mar.",
+    },
+    {
+      id: "super_cucumber",
+      emoji: "🥒",
+      name: "Super Pepino-do-mar",
+      englishName: "Super Cucumber",
+      difficulty: 80,
+      behavior: "Sinker",
+      seasons: ["Summer", "Fall"],
+      weather: ["Any"],
+      time: [18, 26],
+      locations: ["Ocean", "Ginger Ocean", "Market"],
+      desc: "Uma variedade roxa rara do pepino-do-mar.",
+    },
+    {
+      id: "ghostfish",
+      emoji: "👻",
+      name: "Peixe-fantasma",
+      englishName: "Ghostfish",
+      difficulty: 50,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Mines"],
+      desc: "Um peixe pálido e cego que vive em lagos subterrâneos.",
+    },
+    {
+      id: "stonefish",
+      emoji: "🪨",
+      name: "Peixe-pedra",
+      englishName: "Stonefish",
+      difficulty: 65,
+      behavior: "Sinker",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Mines"],
+      desc: "Um peixe bizarro moldado como pedra.",
+    },
+    {
+      id: "ice_pip",
+      emoji: "❄️",
+      name: "Bicuda de Gelo",
+      englishName: "Ice Pip",
+      difficulty: 85,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Mines"],
+      desc: "Um peixe raro das águas geladas das minas.",
+    },
+    {
+      id: "lava_eel",
+      emoji: "🔥",
+      name: "Enguia de Lava",
+      englishName: "Lava Eel",
+      difficulty: 90,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Mines", "Volcano"],
+      desc: "Pode de alguma forma sobreviver na lava fervente.",
+    },
+    {
+      id: "sandfish",
+      emoji: "🐟",
+      name: "Peixe-da-areia",
+      englishName: "Sandfish",
+      difficulty: 65,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 20],
+      locations: ["Desert"],
+      desc: "Tenta se esconder usando camuflagem na areia.",
+    },
+    {
+      id: "scorpion_carp",
+      emoji: "🦂",
+      name: "Carpa Escorpião",
+      englishName: "Scorpion Carp",
+      difficulty: 90,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 20],
+      locations: ["Desert"],
+      desc: "Como uma carpa comum, mas com ferrão venenoso.",
+    },
+    {
+      id: "flounder",
+      emoji: "🐟",
+      name: "Linguado",
+      englishName: "Flounder",
+      difficulty: 50,
+      behavior: "Sinker",
+      seasons: ["Spring", "Summer"],
+      weather: ["Any"],
+      time: [6, 20],
+      locations: ["Ocean", "Ginger Ocean"],
+      desc: "Vive no fundo chato da lagoa.",
+    },
+    {
+      id: "midnight_carp",
+      emoji: "🐟",
+      name: "Carpa da Meia-noite",
+      englishName: "Midnight Carp",
+      difficulty: 55,
+      behavior: "Mixed",
+      seasons: ["Fall", "Winter"],
+      weather: ["Any"],
+      time: [20, 26],
+      locations: ["Lake", "Pond", "Ginger Pond", "Ginger River"],
+      desc: "Esse peixe arisco só sai à noite.",
+    },
+    {
+      id: "sturgeon",
+      emoji: "🐟",
+      name: "Esturjão",
+      englishName: "Sturgeon",
+      difficulty: 78,
+      behavior: "Mixed",
+      seasons: ["Summer", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Lake"],
+      desc: "Um peixe pré-histórico muito valioso.",
+    },
+    {
+      id: "tiger_trout",
+      emoji: "🐠",
+      name: "Truta Tigre",
+      englishName: "Tiger Trout",
+      difficulty: 60,
+      behavior: "Dart",
+      seasons: ["Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Town", "Forest"],
+      desc: "Uma truta híbrida com listras marcantes.",
+    },
+    {
+      id: "bullhead",
+      emoji: "🐟",
+      name: "Cabeçudo",
+      englishName: "Bullhead",
+      difficulty: 46,
+      behavior: "Smooth",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Lake"],
+      desc: "Come qualquer coisa no fundo do lago.",
+    },
+    {
+      id: "tilapia",
+      emoji: "🐟",
+      name: "Tilápia",
+      englishName: "Tilapia",
+      difficulty: 50,
+      behavior: "Mixed",
+      seasons: ["Summer", "Fall"],
+      weather: ["Any"],
+      time: [6, 14],
+      locations: ["Ocean", "Ginger River"],
+      desc: "Prefere águas mornas.",
+    },
+    {
+      id: "chub",
+      emoji: "🐟",
+      name: "Chub",
+      englishName: "Chub",
+      difficulty: 35,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Forest", "Lake"],
+      desc: "Um peixe comum com apetite voraz.",
+    },
+    {
+      id: "dorado",
+      emoji: "🐠",
+      name: "Dourado",
+      englishName: "Dorado",
+      difficulty: 78,
+      behavior: "Mixed",
+      seasons: ["Summer"],
+      weather: ["Any"],
+      time: [6, 19],
+      locations: ["Forest"],
+      desc: "Peixe predador de escamas douradas brilhantes.",
+    },
+    {
+      id: "albacore",
+      emoji: "🐟",
+      name: "Albacora",
+      englishName: "Albacore",
+      difficulty: 60,
+      behavior: "Mixed",
+      seasons: ["Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 11, 18, 26],
+      locations: ["Ocean"],
+      desc: "Peixe oceânico ágil.",
+    },
+    {
+      id: "shad",
+      emoji: "🐟",
+      name: "Sável",
+      englishName: "Shad",
+      difficulty: 45,
+      behavior: "Smooth",
+      seasons: ["Spring", "Summer", "Fall"],
+      weather: ["Rain"],
+      time: [9, 26],
+      locations: ["Town", "Forest"],
+      desc: "Retorna aos rios de água doce para desovar.",
+    },
+    {
+      id: "lingcod",
+      emoji: "🐟",
+      name: "Lingcod",
+      englishName: "Lingcod",
+      difficulty: 85,
+      behavior: "Mixed",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Town", "Forest", "Lake"],
+      desc: "Predador feroz que come qualquer coisa.",
+    },
+    {
+      id: "halibut",
+      emoji: "🐟",
+      name: "Halibute",
+      englishName: "Halibut",
+      difficulty: 50,
+      behavior: "Sinker",
+      seasons: ["Spring", "Summer", "Winter"],
+      weather: ["Any"],
+      time: [6, 11, 19, 2],
+      locations: ["Ocean"],
+      desc: "Um peixe achatado do fundo do oceano.",
+    },
+    {
+      id: "woodskip",
+      emoji: "🪵",
+      name: "Peixe-da-madeira",
+      englishName: "Woodskip",
+      difficulty: 50,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Woods"],
+      desc: "Um peixe sensível que só consegue viver em poças profundas no bosque.",
+    },
+    {
+      id: "void_salmon",
+      emoji: "🖤",
+      name: "Salmão do Vazio",
+      englishName: "Void Salmon",
+      difficulty: 80,
+      behavior: "Mixed",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Swamp"],
+      desc: "Um salmão alterado por energias sombrias.",
+    },
+    {
+      id: "slimejack",
+      emoji: "🟢",
+      name: "Slimejack",
+      englishName: "Slimejack",
+      difficulty: 55,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Bug"],
+      desc: "Coberto por uma gosma muito lisa!",
+    },
+    {
+      id: "stingray",
+      emoji: "🦈",
+      name: "Arraia",
+      englishName: "Stingray",
+      difficulty: 80,
+      behavior: "Sinker",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Cove"],
+      desc: "Tímida e prefere ficar enterrada na areia.",
+    },
+    {
+      id: "lionfish",
+      emoji: "🐟",
+      name: "Peixe-leão",
+      englishName: "Lionfish",
+      difficulty: 50,
+      behavior: "Smooth",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Ginger Ocean"],
+      desc: "Um peixe predador com espinhos venenosos.",
+    },
+    {
+      id: "blue_discus",
+      emoji: "🐟",
+      name: "Disco Azul",
+      englishName: "Blue Discus",
+      difficulty: 60,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Ginger Pond", "Ginger River"],
+      desc: "Peixe tropical de águas calmas.",
+    },
+    {
+      id: "midnight_squid",
+      emoji: "🦑",
+      name: "Lula da Meia-noite",
+      englishName: "Midnight Squid",
+      difficulty: 55,
+      behavior: "Sinker",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [17, 26],
+      locations: ["Market"],
+      desc: "Lula mística pego nas profundezas.",
+    },
+    {
+      id: "spook_fish",
+      emoji: "🐟",
+      name: "Peixe-espectro",
+      englishName: "Spook Fish",
+      difficulty: 60,
+      behavior: "Dart",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [17, 26],
+      locations: ["Market"],
+      desc: "Olhos enormes adaptados para escuridão.",
+    },
+    {
+      id: "blobfish",
+      emoji: "🐟",
+      name: "Peixe-gota",
+      englishName: "Blobfish",
+      difficulty: 75,
+      behavior: "Floater",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [17, 26],
+      locations: ["Market"],
+      desc: "Uma criatura flutuante e preguiçosa.",
+    },
+    {
+      id: "crimsonfish",
+      emoji: "🐟",
+      name: "Peixe-carmesim",
+      englishName: "Crimsonfish",
+      difficulty: 95,
+      behavior: "Mixed",
+      seasons: ["Summer"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Ocean"],
+      desc: "O peixe lendário do verão.",
+    },
+    {
+      id: "angler",
+      emoji: "🐟",
+      name: "Peixe-diabo",
+      englishName: "Angler",
+      difficulty: 85,
+      behavior: "Smooth",
+      seasons: ["Fall"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Town"],
+      desc: "O peixe lendário do outono.",
+    },
+    {
+      id: "legend",
+      emoji: "👑",
+      name: "Lenda",
+      englishName: "Legend",
+      difficulty: 110,
+      behavior: "Mixed",
+      seasons: ["Spring"],
+      weather: ["Rain"],
+      time: [6, 26],
+      locations: ["Lake"],
+      desc: "O rei dos peixes!",
+    },
+    {
+      id: "glacierfish",
+      emoji: "❄️",
+      name: "Peixe-glaciar",
+      englishName: "Glacierfish",
+      difficulty: 100,
+      behavior: "Mixed",
+      seasons: ["Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Forest"],
+      desc: "O peixe lendário do inverno.",
+    },
+    {
+      id: "mutant_carp",
+      emoji: "🟢",
+      name: "Carpa Mutante",
+      englishName: "Mutant Carp",
+      difficulty: 80,
+      behavior: "Dart",
+      seasons: ["Spring", "Summer", "Fall", "Winter"],
+      weather: ["Any"],
+      time: [6, 26],
+      locations: ["Sewers"],
+      desc: "Mutante das águas do esgoto.",
+    },
+  ];
+
+  // --- Base de dados de varinhas ---
+  const ROD_DATABASE = [
+    {
+      id: "bambu",
+      emoji: "🎣",
+      name: "Vareta de Bambu",
+      stats: "Básica · Peixes comuns",
+      stars: "⭐",
+      price: 0,
+      rareBoost: 0,
+      sizeMultiplier: 1.0,
+      damping: 0.7,
+      length: 52,
+    },
+    {
+      id: "madeira",
+      emoji: "🪵",
+      name: "Vara de Madeira",
+      stats: "Boa · Peixes incomuns",
+      stars: "⭐⭐",
+      price: 50,
+      rareBoost: 0.08,
+      sizeMultiplier: 1.1,
+      damping: 0.65,
+      length: 64,
+    },
+    {
+      id: "fibra",
+      emoji: "🎿",
+      name: "Vara de Fibra",
+      stats: "Avançada · Peixes raros",
+      stars: "⭐⭐⭐",
+      price: 120,
+      rareBoost: 0.18,
+      sizeMultiplier: 1.2,
+      damping: 0.6,
+      length: 76,
+    },
+    {
+      id: "crystal",
+      emoji: "💎",
+      name: "Vara de Cristal",
+      stats: "Elite · Peixes épicos",
+      stars: "⭐⭐⭐⭐",
+      price: 280,
+      rareBoost: 0.3,
+      sizeMultiplier: 1.35,
+      damping: 0.5,
+      length: 88,
+    },
+    {
+      id: "sakura",
+      emoji: "🌸",
+      name: "Vara Sakura",
+      stats: "Lendária · Todos os peixes",
+      stars: "⭐⭐⭐⭐⭐",
+      price: 600,
+      rareBoost: 0.5,
+      sizeMultiplier: 1.5,
+      damping: 0.4,
+      length: 100,
+    },
+  ];
+
+  // --- Missões de pesca ---
+  const FISHING_MISSIONS_DEF = [
+    {
+      id: "fm_first",
+      text: "🎣 Pescar seu primeiro peixe",
+      type: "catch_any",
+      target: 1,
+      reward: 15,
+    },
+    {
+      id: "fm_3fish",
+      text: "🐟 Pescar 3 peixes em um dia",
+      type: "catch_any",
+      target: 3,
+      reward: 25,
+    },
+    {
+      id: "fm_5fish",
+      text: "🌊 Pescar 5 peixes em um dia",
+      type: "catch_any",
+      target: 5,
+      reward: 50,
+    },
+    {
+      id: "fm_rare",
+      text: "⭐ Pescar um peixe de dif. 60+",
+      type: "catch_difficulty",
+      target: 60,
+      reward: 40,
+    },
+    {
+      id: "fm_epic",
+      text: "💎 Pescar um peixe de dif. 80+",
+      type: "catch_difficulty",
+      target: 80,
+      reward: 60,
+    },
+    {
+      id: "fm_legendary",
+      text: "🐉 Pescar um peixe Lendário (dif. 95+)",
+      type: "catch_difficulty",
+      target: 95,
+      reward: 150,
+    },
+    {
+      id: "fm_catalog5",
+      text: "📖 Descobrir 5 espécies no catálogo",
+      type: "discover",
+      target: 5,
+      reward: 35,
+    },
+    {
+      id: "fm_catalog15",
+      text: "📖 Descobrir 15 espécies no catálogo",
+      type: "discover",
+      target: 15,
+      reward: 80,
+    },
+    {
+      id: "fm_rod",
+      text: "🪄 Comprar uma varinha nova",
+      type: "buy_rod",
+      target: 1,
+      reward: 20,
+    },
+    {
+      id: "fm_10total",
+      text: "🏆 Pescar 10 peixes no total",
+      type: "catch_total",
+      target: 10,
+      reward: 100,
+    },
+  ];
+
+  const FISHING_STATE_KEY = "med_cozy_fishing_state";
+  const FISHING_COLLECTION_KEY = "med_cozy_fish_collection";
+  const FISHING_MISSIONS_KEY = "med_cozy_fishing_missions";
+  const FISHING_MISSIONS_DATE = "med_cozy_fishing_missions_date";
+
+  // --- Pufferdle Assets (Base64) ---
+  const PUFFERDLE_BG_BASE64 =
+    "data:image/png;base64,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";
+  const PUFFERDLE_FISH_BASE64 =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAABbmlDQ1BpY2MAACiRdZE7SwNBFIU/EyXigyAKilikULFIICiKpUQwTbRIIvhqks1LyGPZTZBgK9hYBCxEG1+F/0BbwVZBEBRBxM7eVyNhvZMEEiSZZfZ+nJlzmTkDtkBay5jtXshk80bQ73OtrK65HO/Y6WOQabwRzdQXQwthWo6fR9pUffCoXq33NR3dsbipQVun8IymG3nhOeHAVl5XvCc8oKUiMeETYbchBxS+VXq0ym+Kk1X+UmyEg/NgUz1dyQaONrCWMjLCE8KjmXRBq51H3aQnnl0OSR2WOYJJED8+XEQpsEmaPB6pWcmsuc9b8S2RE48mf50ihjiSpMTrFrUgXeNSE6LH5UtTVLn/z9NMTE1Wu/f4oOPVsj7HwLEP5ZJl/Z5aVvkM7C9wna37c5LT7Lfopbo2egzOHbi8qWvRA7jahaFnPWJEKpJdpi2RgI8L6F2F/nvoWq9mVVvn/AnC2/JEd3B4BOOy37nxB2MyaDiJEgNzAAAACXBIWXMAAA9hAAAPYQGoP6dpAAABtklEQVQ4EY2TP0jDUBDGL6GIm+CkCAUnEVwdLAo6qUPtKFURXURxEgcXRxdB3KTSxUWsm386qJMOEgdXF9eSUkEQujr4fN+9XPKiSZuDhrvmy+/d3btzKLD5ZV+Jf1dbEZfo58mJgs4eCwFaOByKKe8bTY5vJjU4I9Cc6k6rSuORdi6vY0AEs4VxygrMkQa5q4skmfQVWtQ/UWPo10uZHrxXwkFb+RnVPUNk5StV8nzVe3SlRtUU/9y1SsyHBgfzKSkPV/5HBraNnF1wiOzgb++fcobUAcgwu0QbCP+z6anDLD2fUxrQRR/QYDRaPhQgIGICrFfrlAbMsdgAFUQQE5UZjHc9YwP62YLb1cKe2cq2N8gQgHC7iGHdsotgQbnFjSJ9v32EbIBsoLyYy5shx8DL9pgyRfGvXFNmHBj1EfMXma+S905fPzdZK00PpXfm0+HdY3pfXwo5JwebdHvXpGQYZME8JUHtLQEUML0hFC8zPEs7umSEemx46m1om3Ah5XDtZE6hz2YoXa8c1kzWDr69ZtFtZkOyCrdtlydVpJeZAsfoyFigTwKCPP0CkmB/lzzoq0h/AeMm724JwW+BAAAAAElFTkSuQmCC";
+
+  const imgBg = new Image();
+  imgBg.src = PUFFERDLE_BG_BASE64;
+  const imgFish = new Image();
+  imgFish.src = PUFFERDLE_FISH_BASE64;
+
+  function randRange(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  let fishingState = {
+    attemptsToday: 0,
+    lastAttemptDate: "",
+    equippedRod: "bambu",
+    boughtRods: ["bambu"],
+    totalCaught: 0,
+    maxStreak: 0,
+    streak: 0,
+  };
+  let fishCollection = {};
+  let fishingMissions = [];
+  let fishingMissionsDate = "";
+  let fishingRecentCatches = [];
+  let fishingWeather = "sunny";
+  let fishingLoopRAF = null;
+  let fishingPhase = "lobby";
+  let fishingIsTankMode = false;
+  let currentFish = null;
+  let waitTimeout = null;
+  let biteTimeout = null;
+
+  // Physics state
+  let ypos = 200;
+  let length = 52;
+  let barSpeed = 0;
+  let fishPos = 250;
+  let fishTargetPos = 150;
+  let fishSpeed = 0;
+  let fishAcceleration = 0;
+  let progress = 0.3;
+  let transparency = false;
+  let isHolding = false;
+  let perfect = true;
+  let floaterSinkerAcceleration = 0;
+  let barShake = [0, 0];
+  let fishShake = [0, 0];
+  let fishTimer = 0;
+  let lastPhysicsTick = 0;
+  let physicsAccumulator = 0;
+
+  function getTodayDateString() {
+    const d = new Date();
+    return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getDate().toString().padStart(2, "0")}`;
+  }
+
+  function getCurrentSeason() {
+    const month = new Date().getMonth();
+    if (month >= 2 && month <= 4) return "Spring";
+    if (month >= 5 && month <= 7) return "Summer";
+    if (month >= 8 && month <= 10) return "Fall";
+    return "Winter";
+  }
+
+  function getSeasonLabel(season) {
+    switch (season) {
+      case "Spring":
+        return "Primavera 🌸";
+      case "Summer":
+        return "Verão ☀️";
+      case "Fall":
+        return "Outono 🍂";
+      case "Winter":
+        return "Inverno ❄️";
+      default:
+        return season;
+    }
+  }
+
+  const WEATHER_CONFIGS = {
+    sunny: {
+      label: "☀️ Sol",
+      cssClass: "sunny",
+      desc: "Uma tarde ensolarada! Peixes comuns estão mais ativos.",
+      rareModifier: 1.0,
+    },
+    rainy: {
+      label: "🌧️ Chuva",
+      cssClass: "rainy",
+      desc: "A chuva agita as águas... peixes incomuns aparecem mais!",
+      rareModifier: 1.3,
+    },
+    night: {
+      label: "🌙 Noite de Lua",
+      cssClass: "night",
+      desc: "À luz da lua, peixes de águas profundas saem para nadar...",
+      rareModifier: 1.6,
+    },
+    stormy: {
+      label: "⚡ Tempestade",
+      cssClass: "stormy",
+      desc: "Tempestade nas águas — lendários à espreita!",
+      rareModifier: 2.2,
+    },
+  };
+
+  function pickFishingWeather() {
+    const hour = new Date().getHours();
+    const seed = hour + new Date().getDate();
+    const roll = (seed * 37 + 13) % 100;
+
+    if (roll < 8) fishingWeather = "stormy";
+    else if (roll < 22) fishingWeather = "night";
+    else if (roll < 45) fishingWeather = "rainy";
+    else fishingWeather = "sunny";
+
+    if (hour >= 20 || hour <= 5) {
+      fishingWeather = fishingWeather === "stormy" ? "stormy" : "night";
+    }
+  }
+
+  function getCurrentLocation() {
+    const day = new Date().getDay();
+    switch (day) {
+      case 0:
+        return {
+          id: "Ocean",
+          label: "Oceano Cozy 🌊",
+          desc: "Sinta a brisa salgada do mar... Peixes oceânicos estão ativos.",
+        };
+      case 1:
+        return {
+          id: "Lake",
+          label: "Lago da Montanha ⛰️",
+          desc: "Águas profundas de altitude. Ideal para peixes de lago.",
+        };
+      case 2:
+        return {
+          id: "Forest",
+          label: "Rio da Floresta 🌲",
+          desc: "Cercado por árvores antigas. Peixes de água doce gostam daqui.",
+        };
+      case 3:
+        return {
+          id: "Town",
+          label: "Rio da Cidade 🏘️",
+          desc: "As águas cruzam as casinhas aconchegantes. Quem sabe o que morde aqui?",
+        };
+      case 4:
+        return {
+          id: "Mines",
+          label: "Lago das Minas 💎",
+          desc: "Um lago místico no subsolo. Cuidado com peixes das profundezas!",
+        };
+      case 5:
+        return {
+          id: "Desert",
+          label: "Oásis do Deserto 🏜️",
+          desc: "Águas mornas sob o sol escaldante do deserto.",
+        };
+      case 6:
+      default:
+        const hour = new Date().getHours();
+        if (hour >= 18) {
+          return {
+            id: "Market",
+            label: "Mercado Noturno 🌙",
+            desc: "O mercado flutuante atrai criaturas das profundezas escuras.",
+          };
+        } else if (hour % 3 === 0) {
+          return {
+            id: "Woods",
+            label: "Bosque Secreto 🌳",
+            desc: "Um lago escondido por troncos caídos, repleto de mistério.",
+          };
+        } else if (hour % 3 === 1) {
+          return {
+            id: "Sewers",
+            label: "Esgoto Místico 🟢",
+            desc: "Águas esverdeadas e misteriosas onde vivem mutantes.",
+          };
+        } else {
+          return {
+            id: "Swamp",
+            label: "Pântano da Bruxa 🔮",
+            desc: "Um lago com névoa roxa e águas impregnadas de magia.",
+          };
+        }
+    }
+  }
+
+  function applyWeatherToUI() {
+    const cfg = WEATHER_CONFIGS[fishingWeather];
+    const badge = document.getElementById("fishing-weather-badge");
+    const desc = document.getElementById("fishing-weather-desc");
+    const water = document.getElementById("fishing-water-preview");
+    const rain = document.getElementById("fishing-rain-drops");
+
+    if (badge) {
+      badge.className = `fishing-weather-badge ${cfg.cssClass}`;
+      badge.textContent = cfg.label;
+    }
+    if (desc) {
+      const loc = getCurrentLocation();
+      desc.innerHTML = `<strong>${loc.label}</strong> · ${cfg.desc}`;
+    }
+    if (water) {
+      water.className = `fishing-water-preview weather-${fishingWeather}`;
+    }
+    if (rain) {
+      rain.innerHTML = "";
+      if (fishingWeather === "rainy" || fishingWeather === "stormy") {
+        const count = fishingWeather === "stormy" ? 18 : 10;
+        for (let i = 0; i < count; i++) {
+          const drop = document.createElement("div");
+          drop.className = "fishing-rain-drop";
+          drop.style.left = Math.random() * 100 + "%";
+          drop.style.animationDelay = Math.random() * 1.5 + "s";
+          drop.style.animationDuration = 0.5 + Math.random() * 0.5 + "s";
+          rain.appendChild(drop);
+        }
+      }
+    }
+  }
+
+  function fishingLoadState() {
+    const today = getTodayDateString();
+    const savedState = JSON.parse(
+      localStorage.getItem(FISHING_STATE_KEY) || "null",
+    );
+    if (savedState) fishingState = { ...fishingState, ...savedState };
+
+    fishCollection = JSON.parse(
+      localStorage.getItem(FISHING_COLLECTION_KEY) || "{}",
+    );
+    fishingRecentCatches = JSON.parse(
+      localStorage.getItem("med_cozy_fishing_recent") || "[]",
+    );
+
+    loadFishingMissions();
+
+    if (fishingState.lastAttemptDate !== today) {
+      fishingState.attemptsToday = 0;
+      fishingState.lastAttemptDate = today;
+      fishingState.streak = 0;
+      fishingSaveState();
+    }
+    pickFishingWeather();
+  }
+
+  function fishingSaveState() {
+    localStorage.setItem(FISHING_STATE_KEY, JSON.stringify(fishingState));
+  }
+
+  function fishingSaveCollection() {
+    localStorage.setItem(
+      FISHING_COLLECTION_KEY,
+      JSON.stringify(fishCollection),
+    );
+  }
+
+  function getActiveRod() {
+    return (
+      ROD_DATABASE.find((r) => r.id === fishingState.equippedRod) ||
+      ROD_DATABASE[0]
+    );
+  }
+
+  function getCastCost() {
+    return fishingState.attemptsToday >= 3 ? 5 : 0;
+  }
+
+  function selectRandomFish(isTankTarget = null) {
+    if (isTankTarget) return isTankTarget;
+
+    const loc = getCurrentLocation().id;
+    const season = getCurrentSeason();
+    const weather =
+      fishingWeather === "rainy" || fishingWeather === "stormy"
+        ? "Rain"
+        : "Sun";
+    const hour = new Date().getHours();
+
+    let available = FISH_DATABASE.filter((f) => {
+      if (!f.locations.includes(loc)) {
+        if (
+          loc === "Special" ||
+          ["Market", "Woods", "Sewers", "Swamp"].includes(loc)
+        ) {
+          if (!f.locations.includes(loc)) return false;
+        } else {
+          return false;
+        }
+      }
+      if (f.seasons.length > 0 && !f.seasons.includes(season)) {
+        return false;
+      }
+      if (
+        f.weather.length > 0 &&
+        !f.weather.includes("Any") &&
+        !f.weather.includes(weather)
+      ) {
+        return false;
+      }
+      const [minH, maxH] = f.time;
+      if (minH < maxH) {
+        if (hour < minH || hour > maxH) return false;
+      } else {
+        if (hour < minH && hour > maxH) return false;
+      }
+      return true;
+    });
+
+    if (available.length === 0) {
+      available = FISH_DATABASE.filter((f) => f.locations.includes(loc));
+      if (available.length === 0) {
+        return FISH_DATABASE.find((f) => f.id === "carp") || FISH_DATABASE[0];
+      }
+    }
+    const idx = Math.floor(Math.random() * available.length);
+    return available[idx];
+  }
+
+  function switchFishingSubTab(tabId) {
+    const tabBtns = document.querySelectorAll(".fishing-subtab-btn");
+    const panels = document.querySelectorAll(".fishing-subpanel");
+    tabBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.id === `ftab-${tabId}`);
+    });
+    panels.forEach((p) => {
+      p.classList.toggle("active", p.id === `fpanel-${tabId}`);
+    });
+    if (tabId === "jogar") {
+      fishingPhase = "lobby";
+      switchFishingScreen("lobby");
+      initFishingPanel();
+    } else if (tabId === "catalogo") {
+      renderFishingCatalog();
+    } else if (tabId === "varinhas") {
+      renderFishingRods();
+    } else if (tabId === "missoes") {
+      renderFishingMissions();
+    }
+  }
+
+  function switchFishingScreen(screenId) {
+    const screens = document.querySelectorAll(".fishing-screen");
+    screens.forEach((s) => {
+      s.classList.toggle("active", s.id === `fishing-screen-${screenId}`);
+    });
+  }
+
+  function initFishingPanel() {
+    fishingLoadState();
+    applyWeatherToUI();
+    const equipped = getActiveRod();
+    const activeRodName = document.getElementById("fishing-active-rod-name");
+    if (activeRodName) {
+      activeRodName.innerHTML = `${equipped.emoji} ${equipped.name}`;
+    }
+    updateFishingAttemptsUI();
+    const recentSection = document.getElementById("fishing-recent-section");
+    const recentList = document.getElementById("fishing-recent-list");
+    if (recentList) {
+      recentList.innerHTML = "";
+      if (fishingRecentCatches.length > 0 && recentSection) {
+        recentSection.style.display = "block";
+        fishingRecentCatches.slice(0, 5).forEach((c) => {
+          const badge = document.createElement("div");
+          badge.className = `fishing-recent-badge rarity-${c.rarity || "comum"}`;
+          badge.innerHTML = `<span>${c.emoji}</span> <strong>${c.name}</strong> (${c.size}cm)`;
+          recentList.appendChild(badge);
+        });
+      } else if (recentSection) {
+        recentSection.style.display = "none";
+      }
+    }
+  }
+
+  function updateFishingAttemptsUI() {
+    const attemptsBadge = document.getElementById("fishing-attempts-display");
+    const streakWrap = document.getElementById("fishing-streak-wrap");
+    const streakCount = document.getElementById("fishing-streak-count");
+    const castBtn = document.getElementById("fishing-cast-btn");
+    if (attemptsBadge) {
+      if (fishingState.attemptsToday < 3) {
+        attemptsBadge.textContent = `${3 - fishingState.attemptsToday} lançamentos grátis hoje`;
+        attemptsBadge.className = "fishing-attempts-badge free";
+      } else {
+        attemptsBadge.textContent = `Lançamento: 5 🪙`;
+        attemptsBadge.className = "fishing-attempts-badge paid";
+      }
+    }
+    if (streakWrap && streakCount) {
+      if (fishingState.streak > 0) {
+        streakWrap.style.display = "inline-flex";
+        streakCount.textContent = `x${fishingState.streak}`;
+      } else {
+        streakWrap.style.display = "none";
+      }
+    }
+    if (castBtn) {
+      if (fishingState.attemptsToday >= 3) {
+        castBtn.innerHTML = `Lançar Linha 🎣 (5 🪙)`;
+      } else {
+        castBtn.innerHTML = `Lançar Linha 🎣`;
+      }
+    }
+  }
+
+  function startWaitingPhase() {
+    if (fishingIsTankMode) {
+      fishingPhase = "waiting";
+      switchFishingScreen("waiting");
+      triggerBite();
+      return;
+    }
+    const cost = getCastCost();
+    if (cost > 0 && tokens < cost) {
+      const lobbyMsg = document.getElementById("fishing-lobby-msg");
+      if (lobbyMsg) {
+        lobbyMsg.textContent =
+          "Moedas insuficientes! Conclua tarefas ou pomodoros para ganhar moedas.";
+        setTimeout(() => {
+          lobbyMsg.textContent = "";
+        }, 3000);
+      }
+      return;
+    }
+    if (cost > 0) {
+      addTokens(-cost);
+    }
+    fishingState.attemptsToday++;
+    fishingSaveState();
+    updateFishingAttemptsUI();
+    fishingPhase = "waiting";
+    switchFishingScreen("waiting");
+    const rod = getActiveRod();
+    const baseWait = 2500 + Math.random() * 3000;
+    const waitTime = baseWait / rod.sizeMultiplier;
+    waitTimeout = setTimeout(() => {
+      triggerBite();
+    }, waitTime);
+  }
+
+  function triggerBite() {
+    fishingPhase = "bite";
+    switchFishingScreen("bite");
+    playPopSound();
+    biteTimeout = setTimeout(() => {
+      fishingPhase = "fail";
+      switchFishingScreen("fail");
+      fishingState.streak = 0;
+      fishingSaveState();
+      updateFishingAttemptsUI();
+    }, 1200);
+  }
+
+  function reactToBite() {
+    clearTimeout(biteTimeout);
+    if (fishingPhase !== "bite") return;
+    startMinigame();
+  }
+
+  function startMinigame() {
+    fishingPhase = "minigame";
+    switchFishingScreen("minigame");
+
+    // Adjust canvas dimensions to 94x300
+    const canvas = document.getElementById("fishing-canvas");
+    if (canvas) {
+      canvas.width = 94;
+      canvas.height = 300;
+    }
+
+    const rod = getActiveRod();
+    // A is length: 48 + 4 * rodLevel
+    let rodLevel = 1;
+    if (rod.id === "madeira") rodLevel = 4;
+    else if (rod.id === "fibra") rodLevel = 7;
+    else if (rod.id === "crystal") rodLevel = 10;
+    else if (rod.id === "sakura") rodLevel = 13;
+
+    length = 48 + 4 * rodLevel;
+    ypos = 288 - length;
+    barSpeed = 0;
+    fishPos = 254;
+    const difficulty = currentFish.difficulty;
+    fishTargetPos = Math.floor(((100 - Math.min(100, difficulty)) / 100) * 274);
+    fishSpeed = 0;
+    fishAcceleration = 0;
+    progress = 0.3;
+    transparency = false;
+    isHolding = false;
+    perfect = true;
+    floaterSinkerAcceleration = 0;
+    barShake = [0, 0];
+    fishShake = [0, 0];
+    fishTimer = 0;
+    lastPhysicsTick = performance.now();
+    physicsAccumulator = 0;
+    cancelFishingLoop();
+
+    function tick(timestamp) {
+      if (fishingPhase !== "minigame") return;
+      let dt = timestamp - lastPhysicsTick;
+      lastPhysicsTick = timestamp;
+      if (dt > 250) dt = 250;
+      physicsAccumulator += dt;
+      const timestep = 1000 / 60;
+      while (physicsAccumulator >= timestep) {
+        updatePhysics();
+        physicsAccumulator -= timestep;
+      }
+      drawCanvas();
+      fishingLoopRAF = requestAnimationFrame(tick);
+    }
+    fishingLoopRAF = requestAnimationFrame(tick);
+  }
+
+  function cancelFishingLoop() {
+    if (fishingLoopRAF) {
+      cancelAnimationFrame(fishingLoopRAF);
+      fishingLoopRAF = null;
+    }
+  }
+
+  function checkOverlap() {
+    // Pufferdle overlap formula
+    const w = fishPos;
+    const m = ypos;
+    const A = length;
+    return (
+      (w + 6 <= m - 16 + A && w - 8 >= m - 16) ||
+      (w >= 274 - A && m >= 284 - A - 4)
+    );
+  }
+
+  function updatePhysics() {
+    const difficulty = currentFish.difficulty;
+    const typeStr = currentFish.behavior;
+    let motionType = 0;
+    if (typeStr === "Dart") motionType = 1;
+    else if (typeStr === "Smooth") motionType = 2;
+    else if (typeStr === "Sinker") motionType = 3;
+    else if (typeStr === "Floater") motionType = 4;
+
+    fishTimer++;
+    if (progress >= 1.0) {
+      handleMinigameEnd(true);
+      return;
+    } else if (progress <= 0.0) {
+      handleMinigameEnd(false);
+      return;
+    }
+
+    // Pufferdle target decision logic
+    if (
+      Math.random() < (difficulty * (2 !== motionType ? 1 : 20)) / 4000 &&
+      (2 !== motionType || -1 === fishTargetPos)
+    ) {
+      const spaceBelow = 274 - fishPos;
+      const spaceAbove = fishPos;
+      const percent = Math.min(99, difficulty + randRange(10, 45)) / 100;
+      fishTargetPos =
+        fishPos +
+        randRange(Math.min(0 - spaceAbove, spaceBelow), spaceBelow) * percent;
+    }
+
+    // Constant drift force
+    let i = 0;
+    if (motionType === 4) {
+      i = Math.max(i - 0.01, -1.5);
+    } else if (motionType === 3) {
+      i = Math.min(i + 0.01, 1.5);
+    }
+
+    // Speed calculations
+    if (Math.abs(fishPos - fishTargetPos) > 3 && -1 !== fishTargetPos) {
+      const h =
+        (fishTargetPos - fishPos) /
+        (randRange(10, 30) + (100 - Math.min(100, difficulty)));
+      fishSpeed += (h - fishSpeed) / 5;
+    } else {
+      fishTargetPos =
+        2 !== motionType && Math.random() < difficulty / 2000
+          ? fishPos +
+            (Math.random() < 0.5 ? randRange(-100, 51) : randRange(50, 101))
+          : -1;
+    }
+
+    // Darting logic
+    if (motionType === 1 && Math.random() < difficulty / 1000) {
+      fishTargetPos =
+        fishPos +
+        (Math.random() < 0.5
+          ? randRange(-100 - 2 * difficulty, -51)
+          : randRange(50, 101 + 2 * difficulty));
+    }
+
+    fishTargetPos = Math.max(-1, Math.min(fishTargetPos, 274));
+
+    fishPos += fishSpeed + i;
+    if (fishPos > 269) {
+      fishPos = 269;
+    } else if (fishPos < 0) {
+      fishPos = 0;
+    }
+
+    const bobberInBar = checkOverlap();
+
+    // Gravity & Acceleration (thrust)
+    let f = isHolding ? -0.125 : 0.125;
+    if (isHolding && f < 0 && (ypos === 6 || ypos === 288 - length)) {
+      barSpeed = 0;
+    }
+
+    const rod = getActiveRod();
+    if (bobberInBar) {
+      f *= rod.damping;
+    }
+
+    barSpeed += f;
+    ypos += barSpeed;
+
+    // Vertical borders
+    if (ypos + length > 288) {
+      ypos = 288 - length;
+      barSpeed = (0 - barSpeed) * (2 / 3);
+    } else if (ypos < 6) {
+      ypos = 6;
+      barSpeed = (0 - barSpeed) * (2 / 3);
+    }
+
+    // Progress updates and shake
+    if (bobberInBar) {
+      progress += 0.002;
+      fishShake[0] = randRange(-10, 11) / 20;
+      fishShake[1] = randRange(-10, 11) / 20;
+      barShake = [0, 0];
+      transparency = false;
+    } else {
+      if (perfect) perfect = false;
+      progress -= 0.003;
+      progress = Math.max(0, progress);
+      barShake[0] = randRange(-10, 11) / 20;
+      barShake[1] = randRange(-10, 11) / 20;
+      fishShake = [0, 0];
+      transparency = true;
+    }
+  }
+
+  function drawCanvas() {
+    const canvas = document.getElementById("fishing-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = canvas.width,
+      H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background gauge
+    if (imgBg.complete && imgBg.naturalWidth > 0) {
+      ctx.drawImage(imgBg, 0, 0, W, H);
+    } else {
+      ctx.fillStyle = "#fdfbf7";
+      ctx.beginPath();
+      ctx.roundRect(0, 0, W, H, 16);
+      ctx.fill();
+    }
+
+    // Green bar (Bobber)
+    const overlap = !transparency;
+    ctx.save();
+    ctx.globalAlpha = overlap ? 1 : 0.6;
+    ctx.fillStyle = "#216501";
+    ctx.fillRect(33 + barShake[0], ypos + 2 + barShake[1], 18, length - 4);
+    ctx.fillStyle = "#82E500";
+    ctx.fillRect(35 + barShake[0], ypos + 4 + barShake[1], 14, length - 8);
+    ctx.fillStyle = "#49c100";
+    ctx.fillRect(35 + barShake[0], ypos + barShake[1], 14, 2);
+    ctx.fillStyle = "#baff59";
+    ctx.fillRect(35 + barShake[0], ypos + 2 + barShake[1], 14, 2);
+    ctx.fillStyle = "#49c100";
+    ctx.fillRect(35 + barShake[0], ypos + length - 4 + barShake[1], 14, 2);
+    ctx.fillStyle = "#216501";
+    ctx.fillRect(35 + barShake[0], ypos + length - 2 + barShake[1], 14, 2);
+    ctx.restore();
+
+    // Fish sprite
+    if (imgFish.complete && imgFish.naturalWidth > 0) {
+      ctx.drawImage(imgFish, 32 + fishShake[0], fishPos + fishShake[1], 19, 19);
+    } else {
+      ctx.font = "16px serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        currentFish.emoji,
+        41 + fishShake[0],
+        fishPos + 9 + fishShake[1],
+      );
+    }
+
+    // Progress bar RGB track (x=63, width=7)
+    const n = Math.min(progress, 1);
+    if (n > 0) {
+      const r = Math.floor(n <= 0.5 ? 255 : 2 * (1 - n) * 255);
+      const g = Math.floor(Math.min(255, 2 * n * 255));
+      ctx.fillStyle = `rgb(${r}, ${g}, 0)`;
+      ctx.fillRect(63, 292 - 288 * n, 7, 288 * n);
+    }
+
+    // Sync HTML progress bar controls (Captura bar)
+    const catchBar = document.getElementById("fishing-catch-bar");
+    if (catchBar) {
+      const pct = Math.round(n * 100);
+      catchBar.style.width = pct + "%";
+      catchBar.className = "fishing-catch-bar";
+      if (n < 0.25) {
+        catchBar.classList.add("danger");
+      } else if (n > 0.85) {
+        catchBar.classList.add("full");
+      }
+    }
+
+    if (fishingIsTankMode) {
+      ctx.fillStyle = "#216501";
+      ctx.font = "bold 8px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("TREINO", 47, H - 6);
+    }
+  }
+
+  function handleMinigameEnd(success) {
+    cancelFishingLoop();
+    if (success) {
+      fishingPhase = "success";
+      switchFishingScreen("success");
+      const fish = currentFish;
+      const minSize = Math.max(10, Math.floor(fish.difficulty * 0.4));
+      const maxSize = Math.max(minSize + 5, Math.floor(fish.difficulty * 1.2));
+      const size =
+        Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
+      if (!fishCollection[fish.id]) {
+        fishCollection[fish.id] = { count: 0, maxSize: 0 };
+      }
+      const isNewRecord = size > fishCollection[fish.id].maxSize;
+      const isNewSpecies = fishCollection[fish.id].count === 0;
+      fishCollection[fish.id].count++;
+      if (isNewRecord) {
+        fishCollection[fish.id].maxSize = size;
+      }
+      fishingSaveCollection();
+      let baseReward = Math.floor(fish.difficulty / 5) + 5;
+      let finalTokens = baseReward;
+      if (perfect) {
+        finalTokens = Math.floor(finalTokens * 1.5);
+      }
+      if (!fishingIsTankMode) {
+        fishingState.streak++;
+        if (fishingState.streak > fishingState.maxStreak) {
+          fishingState.maxStreak = fishingState.streak;
+        }
+        fishingState.totalCaught++;
+        fishingSaveState();
+        addTokens(
+          finalTokens,
+          document.getElementById("fishing-screen-success"),
+        );
+        const catchObj = {
+          id: fish.id,
+          name: fish.name,
+          emoji: fish.emoji,
+          size: size,
+          rarity: getFishRarityLabel(fish.difficulty),
+        };
+        fishingRecentCatches.unshift(catchObj);
+        if (fishingRecentCatches.length > 5) fishingRecentCatches.pop();
+        localStorage.setItem(
+          "med_cozy_fishing_recent",
+          JSON.stringify(fishingRecentCatches),
+        );
+        checkFishingMissions("catch_any", 1);
+        checkFishingMissions("catch_total", 1);
+        checkFishingMissions("discover", Object.keys(fishCollection).length);
+        if (fish.difficulty >= 60) checkFishingMissions("catch_difficulty", 60);
+        if (fish.difficulty >= 80) checkFishingMissions("catch_difficulty", 80);
+        if (fish.difficulty >= 95) checkFishingMissions("catch_difficulty", 95);
+      }
+      const caughtEmoji = document.getElementById("fishing-caught-emoji");
+      const caughtName = document.getElementById("fishing-caught-name");
+      const caughtRarity = document.getElementById("fishing-caught-rarity");
+      const recordBadge = document.getElementById("fishing-new-record-badge");
+      const caughtSize = document.getElementById("fishing-caught-size");
+      const caughtReward = document.getElementById("fishing-caught-reward");
+      const caughtDesc = document.getElementById("fishing-caught-desc");
+      if (caughtEmoji) caughtEmoji.textContent = fish.emoji;
+      if (caughtName)
+        caughtName.innerHTML = `${fish.name} <span style="font-size:0.8rem; font-weight:normal; opacity:0.7;">(${fish.englishName})</span>`;
+      if (caughtRarity) {
+        const rLabel = getFishRarityLabel(fish.difficulty);
+        caughtRarity.textContent = rLabel;
+        caughtRarity.className = `fishing-result-rarity-badge rarity-${rLabel.toLowerCase()}`;
+      }
+      if (recordBadge) {
+        recordBadge.style.display =
+          isNewRecord && !isNewSpecies && !fishingIsTankMode
+            ? "inline-block"
+            : "none";
+      }
+      if (caughtSize) {
+        caughtSize.textContent = `📏 Tamanho: ${size} cm`;
+      }
+      if (caughtReward) {
+        if (fishingIsTankMode) {
+          caughtReward.textContent = `🧪 Treino concluído (sem moedas)`;
+        } else {
+          caughtReward.innerHTML = `🪙 +${finalTokens} tokens ${perfect ? '<span style="color:#2ecc71; font-weight:bold;">(Perfeito! x1.5)</span>' : ""}`;
+        }
+      }
+      if (caughtDesc) {
+        caughtDesc.textContent = fish.desc;
+      }
+    } else {
+      fishingPhase = "fail";
+      switchFishingScreen("fail");
+      if (!fishingIsTankMode) {
+        fishingState.streak = 0;
+        fishingSaveState();
+      }
+    }
+  }
+
+  function getFishRarityLabel(diff) {
+    if (diff >= 95) return "Lendário";
+    if (diff >= 80) return "Épico";
+    if (diff >= 60) return "Raro";
+    if (diff >= 35) return "Incomum";
+    return "Comum";
+  }
+
+  function renderFishingCatalog() {
+    const grid = document.getElementById("fishing-catalog-grid");
+    const countLabel = document.getElementById("fishing-catalog-count");
+    if (!grid) return;
+    grid.innerHTML = "";
+    const discoveredKeys = Object.keys(fishCollection);
+    if (countLabel) {
+      countLabel.textContent = `${discoveredKeys.length}/${FISH_DATABASE.length} descobertos`;
+    }
+    FISH_DATABASE.forEach((fish) => {
+      const hasCaught = fishCollection[fish.id] !== undefined;
+      const card = document.createElement("div");
+      const rLabel = getFishRarityLabel(fish.difficulty).toLowerCase();
+      card.className = `fishing-catalog-card ${hasCaught ? "discovered" : "locked"} border-${rLabel}`;
+      if (hasCaught) {
+        const info = fishCollection[fish.id];
+        const seasonList = fish.seasons
+          .map((s) => getSeasonLabel(s))
+          .join(", ");
+        const weatherList = fish.weather
+          .map((w) => {
+            if (w === "Sun") return "Ensolarado ☀️";
+            if (w === "Rain") return "Chuvoso 🌧️";
+            if (w === "Wind") return "Ventania 🍃";
+            return "Qualquer ☁️";
+          })
+          .join(", ");
+        const timeTextFormatted =
+          fish.time[0] === 6 && fish.time[1] === 26
+            ? "Qualquer hora"
+            : `${fish.time[0]}h - ${fish.time[1] === 26 ? 2 : fish.time[1]}h`;
+        card.innerHTML = `
+                    <div class="fish-card-top">
+                        <span class="fish-card-emoji">${fish.emoji}</span>
+                        <div class="fish-card-name-group">
+                            <strong class="fish-card-title">${fish.name}</strong>
+                            <span class="fish-card-english">${fish.englishName}</span>
+                        </div>
+                        <span class="fish-card-rarity rarity-${rLabel}">${getFishRarityLabel(fish.difficulty)}</span>
+                    </div>
+                    <p class="fish-card-desc">"${fish.desc}"</p>
+                    <div class="fish-card-details">
+                        <div><strong>Estações:</strong> ${seasonList}</div>
+                        <div><strong>Climas:</strong> ${weatherList}</div>
+                        <div><strong>Locais:</strong> ${fish.locations.map((l) => translateLocation(l)).join(", ")}</div>
+                        <div><strong>Horário:</strong> ${timeTextFormatted}</div>
+                        <div><strong>Dificuldade:</strong> ${fish.difficulty} (${fish.behavior})</div>
+                        <div class="fish-card-stats">🎣 Pescados: ${info.count} | 📏 Maior: ${info.maxSize}cm</div>
+                    </div>
+                    <button class="btn btn-secondary fish-tank-btn" data-fish-id="${fish.id}">Treinar no Aquário 🧪</button>
+                `;
+      } else {
+        card.innerHTML = `
+                    <div class="fish-card-top locked">
+                        <span class="fish-card-emoji locked">?</span>
+                        <div class="fish-card-name-group">
+                            <strong class="fish-card-title locked">Espécie Desconhecida</strong>
+                            <span class="fish-card-english locked">???</span>
+                        </div>
+                    </div>
+                    <p class="fish-card-desc locked">Pesque este peixe no clima e local corretos para destrancar suas informações.</p>
+                `;
+      }
+      grid.appendChild(card);
+    });
+    document.querySelectorAll(".fish-tank-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const fishId = e.target.getAttribute("data-fish-id");
+        startTankMode(fishId);
+      });
+    });
+  }
+
+  function translateLocation(loc) {
+    switch (loc) {
+      case "Ginger Ocean":
+        return "Oceans das Ilhas";
+      case "Town":
+        return "Rio da Cidade";
+      case "Forest":
+        return "Rio da Floresta";
+      case "Lake":
+        return "Lago da Montanha";
+      case "Pond":
+        return "Lagoa da Floresta";
+      case "Woods":
+        return "Bosque Secreto";
+      case "Sewers":
+        return "Os Esgotos";
+      case "Swamp":
+        return "Pântano da Bruxa";
+      case "Market":
+        return "Mercado Noturno";
+      case "Volcano":
+        return "Caldeira do Vulcão";
+      case "Desert":
+        return "O Oásis";
+      case "Ginger Pond":
+        return "Lagoa das Ilhas";
+      case "Ginger River":
+        return "Rio das Ilhas";
+      case "Bug":
+        return "Covil dos Insetos Mutantes";
+      case "Cove":
+        return "Pirate Cove";
+      case "Ocean":
+        return "O Oceano";
+      default:
+        return loc;
+    }
+  }
+
+  function startTankMode(fishId) {
+    const fish = FISH_DATABASE.find((f) => f.id === fishId);
+    if (!fish) return;
+    fishingIsTankMode = true;
+    currentFish = fish;
+    switchFishingSubTab("jogar");
+    fishingPhase = "minigame";
+    switchFishingScreen("minigame");
+    startMinigame();
+  }
+
+  function loadFishingMissions() {
+    const today = getTodayDateString();
+    const savedDate = localStorage.getItem(FISHING_MISSIONS_DATE) || "";
+    const saved = JSON.parse(
+      localStorage.getItem(FISHING_MISSIONS_KEY) || "null",
+    );
+    if (savedDate !== today || !saved || saved.length === 0) {
+      const shuffled = [...FISHING_MISSIONS_DEF].sort(
+        () => 0.5 - Math.random(),
+      );
+      fishingMissions = shuffled.slice(0, 3).map((m) => ({
+        ...m,
+        progress: 0,
+        completed: false,
+        claimed: false,
+      }));
+      fishingMissionsDate = today;
+      saveFishingMissions();
+    } else {
+      fishingMissions = saved;
+      fishingMissionsDate = savedDate;
+    }
+  }
+
+  function saveFishingMissions() {
+    localStorage.setItem(FISHING_MISSIONS_KEY, JSON.stringify(fishingMissions));
+    localStorage.setItem(FISHING_MISSIONS_DATE, fishingMissionsDate);
+  }
+
+  function checkFishingMissions(type, val) {
+    let changed = false;
+    fishingMissions.forEach((m) => {
+      if (m.completed || m.claimed) return;
+      if (m.type === type) {
+        if (type === "discover") {
+          m.progress = val;
+        } else if (type === "catch_difficulty") {
+          if (currentFish && currentFish.difficulty >= m.target) {
+            m.progress += val;
+          }
+        } else {
+          m.progress += val;
+        }
+        if (m.progress >= m.target) {
+          m.progress = m.target;
+          m.completed = true;
+        }
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveFishingMissions();
+      renderFishingMissions();
+    }
+  }
+
+  function renderFishingMissions() {
+    const list = document.getElementById("fishing-missions-list");
+    if (!list) return;
+    list.innerHTML = "";
+    if (fishingMissions.length === 0) {
+      list.innerHTML =
+        '<p class="fishing-missions-empty">Nenhuma missão ativa hoje.</p>';
+      return;
+    }
+    fishingMissions.forEach((m) => {
+      const card = document.createElement("div");
+      card.className = `fishing-mission-card ${m.completed ? "completed" : ""} ${m.claimed ? "claimed" : ""}`;
+      let btnHtml = "";
+      if (m.claimed) {
+        btnHtml =
+          '<span class="fishing-mission-status claimed">Resgatado ✓</span>';
+      } else if (m.completed) {
+        btnHtml = `<button class="btn btn-success claim-mission-btn" data-mission-id="${m.id}">Resgatar ${m.reward} 🪙</button>`;
+      } else {
+        btnHtml = `<span class="fishing-mission-progress">${m.progress}/${m.target}</span>`;
+      }
+      card.innerHTML = `
+                <div class="fishing-mission-info">
+                    <p class="fishing-mission-text">${m.text}</p>
+                    <span class="fishing-mission-reward">🪙 Recompensa: ${m.reward} tokens</span>
+                </div>
+                <div class="fishing-mission-action">
+                    ${btnHtml}
+                </div>
+            `;
+      list.appendChild(card);
+    });
+    document.querySelectorAll(".claim-mission-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const missionId = e.target.getAttribute("data-mission-id");
+        claimMission(missionId, e.target);
+      });
+    });
+  }
+
+  function claimMission(missionId, buttonEl) {
+    const mission = fishingMissions.find((m) => m.id === missionId);
+    if (!mission || !mission.completed || mission.claimed) return;
+    mission.claimed = true;
+    saveFishingMissions();
+    addTokens(mission.reward, buttonEl);
+    renderFishingMissions();
+  }
+
+  function renderFishingRods() {
+    const list = document.getElementById("fishing-rods-list");
+    if (!list) return;
+    list.innerHTML = "";
+    ROD_DATABASE.forEach((rod) => {
+      const isBought = fishingState.boughtRods.includes(rod.id);
+      const isEquipped = fishingState.equippedRod === rod.id;
+      const card = document.createElement("div");
+      card.className = `fishing-rod-card ${isEquipped ? "equipped" : ""} ${isBought ? "bought" : ""}`;
+      let btnHtml = "";
+      if (isEquipped) {
+        btnHtml =
+          '<button class="btn btn-success active" disabled>Equipado ✓</button>';
+      } else if (isBought) {
+        btnHtml = `<button class="btn btn-primary equip-rod-btn" data-rod-id="${rod.id}">Equipar</button>`;
+      } else {
+        btnHtml = `<button class="btn btn-secondary buy-rod-btn" data-rod-id="${rod.id}">Comprar (${rod.price} 🪙)</button>`;
+      }
+      card.innerHTML = `
+                <span class="fishing-rod-emoji">${rod.emoji}</span>
+                <div class="fishing-rod-details">
+                    <h5 class="fishing-rod-card-name">${rod.name}</h5>
+                    <p class="fishing-rod-stars">${rod.stars}</p>
+                    <p class="fishing-rod-stats">${rod.stats}</p>
+                    <p class="fishing-rod-specs">Tamanho da Barra: ${rod.length}px | Aderência: ${Math.round((1 - rod.damping) * 100)}%</p>
+                </div>
+                <div class="fishing-rod-action">
+                    ${btnHtml}
+                </div>
+            `;
+      list.appendChild(card);
+    });
+    document.querySelectorAll(".equip-rod-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const rodId = e.target.getAttribute("data-rod-id");
+        equipRod(rodId);
+      });
+    });
+    document.querySelectorAll(".buy-rod-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const rodId = e.target.getAttribute("data-rod-id");
+        buyRod(rodId, e.target);
+      });
+    });
+  }
+
+  function equipRod(rodId) {
+    if (!fishingState.boughtRods.includes(rodId)) return;
+    fishingState.equippedRod = rodId;
+    fishingSaveState();
+    renderFishingRods();
+    const activeRodName = document.getElementById("fishing-active-rod-name");
+    if (activeRodName) {
+      const rod = getActiveRod();
+      activeRodName.innerHTML = `${rod.emoji} ${rod.name}`;
+    }
+  }
+
+  function buyRod(rodId, buttonEl) {
+    const rod = ROD_DATABASE.find((r) => r.id === rodId);
+    if (!rod || fishingState.boughtRods.includes(rodId)) return;
+    if (tokens < rod.price) {
+      spawnFloatingText(buttonEl, "Saldo insuficiente!", "#e74c3c");
+      return;
+    }
+    addTokens(-rod.price, buttonEl);
+    fishingState.boughtRods.push(rodId);
+    fishingState.equippedRod = rodId;
+    fishingSaveState();
+    checkFishingMissions("buy_rod", 1);
+    renderFishingRods();
+    const activeRodName = document.getElementById("fishing-active-rod-name");
+    if (activeRodName) {
+      activeRodName.innerHTML = `${rod.emoji} ${rod.name}`;
+    }
+  }
+
+  // --- Fishing System Click & Interaction Event Listeners ---
+  // Sub-tabs navigation click events
+  document.querySelectorAll(".fishing-subtab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const subtabId = btn.id.replace("ftab-", "");
+      switchFishingSubTab(subtabId);
+    });
+  });
+
+  // Lobby: Cast Line button click
+  const castBtn = document.getElementById("fishing-cast-btn");
+  if (castBtn) {
+    castBtn.addEventListener("click", () => {
+      if (fishingPhase === "lobby") {
+        currentFish = selectRandomFish();
+        fishingIsTankMode = false;
+        startWaitingPhase();
+      }
+    });
+  }
+
+  // Bite screen: React to bite click
+  const reactBtn = document.getElementById("fishing-react-btn");
+  if (reactBtn) {
+    reactBtn.addEventListener("click", () => {
+      reactToBite();
+    });
+  }
+
+  // Success screen: Keep fish button click
+  const keepBtn = document.getElementById("fishing-keep-btn");
+  if (keepBtn) {
+    keepBtn.addEventListener("click", () => {
+      switchFishingSubTab("jogar");
+    });
+  }
+
+  // Fail screen: Retry button click
+  const retryBtn = document.getElementById("fishing-retry-btn");
+  if (retryBtn) {
+    retryBtn.addEventListener("click", () => {
+      switchFishingSubTab("jogar");
+    });
+  }
+
+  // Global inputs for global playability: mouse, touch, and keys (like Pufferdle)
+  const handleStartFishingInput = (e) => {
+    if (fishingPhase === "minigame") {
+      isHolding = true;
+    } else if (fishingPhase === "bite") {
+      reactToBite();
+    }
+  };
+
+  const handleStopFishingInput = (e) => {
+    if (fishingPhase === "minigame") {
+      isHolding = false;
+    }
+  };
+
+  // Global document event listeners
+  document.addEventListener("mousedown", handleStartFishingInput);
+  document.addEventListener("mouseup", handleStopFishingInput);
+  document.addEventListener("touchstart", handleStartFishingInput, {
+    passive: true,
+  });
+  document.addEventListener("touchend", handleStopFishingInput, {
+    passive: true,
+  });
+
+  // Hold button listeners (keeps CSS active states, hover effects, and fallback controls)
+  const holdBtn = document.getElementById("fishing-hold-btn");
+  if (holdBtn) {
+    const startHold = (e) => {
+      e.preventDefault();
+      isHolding = true;
+    };
+    const stopHold = (e) => {
+      e.preventDefault();
+      isHolding = false;
+    };
+    holdBtn.addEventListener("mousedown", startHold);
+    holdBtn.addEventListener("touchstart", startHold, { passive: false });
+    holdBtn.addEventListener("mouseup", stopHold);
+    holdBtn.addEventListener("touchend", stopHold, { passive: false });
+    holdBtn.addEventListener("mouseleave", stopHold);
+  }
+
+  // Minigame screen: Keyboard support (Space, c, or C)
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space" || e.key === "c" || e.key === "C") {
+      if (fishingPhase === "minigame") {
+        e.preventDefault();
+        isHolding = true;
+      } else if (fishingPhase === "bite") {
+        e.preventDefault();
+        reactToBite();
+      }
+    }
+  });
+  document.addEventListener("keyup", (e) => {
+    if (e.code === "Space" || e.key === "c" || e.key === "C") {
+      isHolding = false;
+    }
+  });
+
+  // --- Pomodoro Break View Interaction Listeners ---
+  const pausaFeedBtn = document.getElementById("pausa-feed-btn");
+  const checkPausaTeaBtn = document.getElementById("pausa-tea-btn");
+  const checkPausaToyBtn = document.getElementById("pausa-toy-btn");
+  if (pausaFeedBtn)
+    pausaFeedBtn.addEventListener("click", () => usePetItem("paozinho"));
+  if (checkPausaTeaBtn)
+    checkPausaTeaBtn.addEventListener("click", () => usePetItem("cha"));
+  if (checkPausaToyBtn)
+    checkPausaToyBtn.addEventListener("click", () => usePetItem("novelo"));
+
+  const pausaOpenMinigamesBtn = document.getElementById(
+    "pausa-open-minigames-btn",
+  );
+  if (pausaOpenMinigamesBtn) {
+    pausaOpenMinigamesBtn.addEventListener("click", () => {
+      openMinigames();
+    });
+  }
+  const pausaOpenShopBtn = document.getElementById("pausa-open-shop-btn");
+  if (pausaOpenShopBtn) {
+    pausaOpenShopBtn.addEventListener("click", () => {
+      openShop("bgs");
+    });
+  }
+
+
 
     // --- Initialize Application ---
     initTheme();

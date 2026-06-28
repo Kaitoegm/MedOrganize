@@ -770,6 +770,9 @@
             <div class="minigames-tabs">
                 <button id="tab-instrucoes" class="minigame-tab-btn active">ℹ️ Instruções</button>
                 <button id="tab-termo" class="minigame-tab-btn">🎮 Jogar Termo</button>
+          <button id="tab-pesca" class="minigame-tab-btn" style="display: none">
+            🎣 Pesca Cozy
+          </button>
             </div>
 
             <!-- TERMO GAME PANEL -->
@@ -834,7 +837,264 @@
                 </div>
             </div>
 
-            <!-- INSTRUCTIONS PANEL -->
+                    <!-- FISHING MINIGAME PANEL -->
+        <div id="pesca-panel" class="minigame-panel">
+          <!-- Fishing Sub-Tabs -->
+          <div class="fishing-subtabs">
+            <button id="ftab-jogar" class="fishing-subtab-btn active">
+              🎣 Pescar
+            </button>
+            <button id="ftab-catalogo" class="fishing-subtab-btn">
+              📖 Catálogo
+            </button>
+            <button id="ftab-varinhas" class="fishing-subtab-btn">
+              🪄 Varinhas
+            </button>
+            <button id="ftab-missoes" class="fishing-subtab-btn">
+              📜 Missões
+            </button>
+          </div>
+
+          <!-- SUB-PANEL: PESCAR -->
+          <div id="fpanel-jogar" class="fishing-subpanel active">
+            <!-- TELA: LOBBY (estado inicial) -->
+            <div id="fishing-screen-lobby" class="fishing-screen active">
+              <div class="fishing-lobby-visual">
+                <div class="fishing-water-preview" id="fishing-water-preview">
+                  <div class="fishing-ripple r1"></div>
+                  <div class="fishing-ripple r2"></div>
+                  <div class="fishing-ripple r3"></div>
+                  <span class="fishing-lobby-fish-emoji">🐟</span>
+                  <!-- Partículas de chuva (visíveis conforme clima) -->
+                  <div class="fishing-rain-drops" id="fishing-rain-drops"></div>
+                </div>
+                <!-- Badge de Clima -->
+                <div id="fishing-weather-badge" class="fishing-weather-badge">
+                  ☀️ Sol
+                </div>
+              </div>
+              <div class="fishing-lobby-info">
+                <h4 class="fishing-lobby-title">Lagoa Cozy 🌿</h4>
+                <p class="fishing-lobby-desc" id="fishing-weather-desc">
+                  Lance sua linha e veja o que a lagoa guarda...
+                </p>
+                <div class="fishing-lobby-meta-row">
+                  <div class="fishing-attempts-info">
+                    <span
+                      id="fishing-attempts-display"
+                      class="fishing-attempts-badge"
+                      >3 lançamentos grátis hoje</span
+                    >
+                  </div>
+                  <!-- Streak display -->
+                  <div
+                    id="fishing-streak-wrap"
+                    class="fishing-streak-wrap"
+                    style="display: none"
+                  >
+                    <span class="fishing-streak-fire">🔥</span>
+                    <span id="fishing-streak-count" class="fishing-streak-count"
+                      >x1</span
+                    >
+                  </div>
+                </div>
+                <div class="fishing-rod-display">
+                  <span class="fishing-rod-label">Varinha ativa:</span>
+                  <span id="fishing-active-rod-name" class="fishing-rod-name"
+                    >🎣 Vareta de Bambu</span
+                  >
+                </div>
+              </div>
+              <button
+                id="fishing-cast-btn"
+                class="btn btn-primary fishing-cast-btn"
+              >
+                Lançar Linha 🎣
+              </button>
+              <div id="fishing-lobby-msg" class="fishing-lobby-msg"></div>
+              <!-- Recentes -->
+              <div
+                id="fishing-recent-section"
+                class="fishing-recent-section"
+                style="display: none"
+              >
+                <p class="fishing-recent-label">Últimas capturas:</p>
+                <div id="fishing-recent-list" class="fishing-recent-list"></div>
+              </div>
+            </div>
+
+            <!-- TELA: ESPERA (boia flutuando) -->
+            <div id="fishing-screen-waiting" class="fishing-screen">
+              <div class="fishing-waiting-scene">
+                <div class="fishing-water-waiting">
+                  <div class="fishing-bobber-float">
+                    <div class="fishing-bobber-ball"></div>
+                    <div class="fishing-bobber-stick"></div>
+                  </div>
+                  <div class="fishing-bubble b1"></div>
+                  <div class="fishing-bubble b2"></div>
+                  <div class="fishing-bubble b3"></div>
+                </div>
+              </div>
+              <p class="fishing-wait-text">Aguardando fisgada... 🌊</p>
+              <p class="fishing-wait-hint">Fique de olho!</p>
+            </div>
+
+            <!-- TELA: ALERTA DE FISGADA -->
+            <div id="fishing-screen-bite" class="fishing-screen">
+              <div class="fishing-bite-alert">
+                <div class="fishing-bite-exclaim">!</div>
+                <p class="fishing-bite-text">Fisga! Pressione agora!</p>
+              </div>
+              <button
+                id="fishing-react-btn"
+                class="btn btn-primary fishing-react-btn"
+              >
+                🎣 Fisgar!
+              </button>
+            </div>
+
+            <!-- TELA: MINIJOGO (barra estilo Stardew) -->
+            <div id="fishing-screen-minigame" class="fishing-screen">
+              <div class="fishing-minigame-layout">
+                <!-- Canvas do minijogo -->
+                <div class="fishing-gauge-wrapper">
+                  <canvas
+                    id="fishing-canvas"
+                    class="fishing-canvas"
+                    width="94"
+                    height="300"
+                  ></canvas>
+                </div>
+                <!-- Info e controle -->
+                <div class="fishing-minigame-controls">
+                  <div class="fishing-progress-section">
+                    <p class="fishing-progress-label">Captura</p>
+                    <div class="fishing-progress-track">
+                      <div
+                        id="fishing-catch-bar"
+                        class="fishing-catch-bar"
+                      ></div>
+                    </div>
+                  </div>
+                  <p class="fishing-control-hint">
+                    Segure para subir a barra verde!
+                  </p>
+                  <button id="fishing-hold-btn" class="fishing-hold-btn">
+                    Segurar 🎣
+                  </button>
+                  <p class="fishing-kbd-hint">ou tecle <kbd>Espaço</kbd></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- TELA: SUCESSO -->
+            <div id="fishing-screen-success" class="fishing-screen">
+              <div class="fishing-result-card fishing-result-win">
+                <!-- Container de confete (injetado via JS para épicos/lendários) -->
+                <div
+                  id="fishing-confetti-container"
+                  class="fishing-confetti-container"
+                ></div>
+                <div
+                  class="fishing-result-fish-emoji"
+                  id="fishing-caught-emoji"
+                >
+                  🐟
+                </div>
+                <h4 class="fishing-result-name" id="fishing-caught-name">
+                  Tilápia
+                </h4>
+                <div
+                  class="fishing-result-rarity-badge"
+                  id="fishing-caught-rarity"
+                >
+                  Comum
+                </div>
+                <!-- Badge de novo recorde (visível só quando bate tamanho máximo) -->
+                <div
+                  id="fishing-new-record-badge"
+                  class="fishing-new-record-badge"
+                >
+                  🏆 Novo Recorde!
+                </div>
+                <div class="fishing-result-stats">
+                  <span id="fishing-caught-size">📏 Tamanho: 18 cm</span>
+                  <span id="fishing-caught-reward">🪙 +10 tokens</span>
+                </div>
+                <p class="fishing-result-desc" id="fishing-caught-desc">
+                  Uma peixinha simpática!
+                </p>
+              </div>
+              <button
+                id="fishing-keep-btn"
+                class="btn btn-success fishing-result-btn"
+              >
+                Guardar na Sacola 🐟
+              </button>
+            </div>
+
+            <!-- TELA: FALHA -->
+            <div id="fishing-screen-fail" class="fishing-screen">
+              <div class="fishing-result-card fishing-result-fail">
+                <div class="fishing-result-fish-emoji">💦</div>
+                <h4 class="fishing-result-name">O peixe escapou...</h4>
+                <p class="fishing-result-desc">
+                  Quase! Tente novamente, pescadore!
+                </p>
+              </div>
+              <button
+                id="fishing-retry-btn"
+                class="btn btn-secondary fishing-result-btn"
+              >
+                Tentar de novo 🎣
+              </button>
+            </div>
+          </div>
+          <!-- /fpanel-jogar -->
+
+          <!-- SUB-PANEL: CATÁLOGO -->
+          <div id="fpanel-catalogo" class="fishing-subpanel">
+            <div class="fishing-catalog-header">
+              <h4 class="fishing-catalog-title">📖 Catálogo de Peixes</h4>
+              <span id="fishing-catalog-count" class="fishing-catalog-count"
+                >0/12 descobertos</span
+              >
+            </div>
+            <div id="fishing-catalog-grid" class="fishing-catalog-grid">
+              <!-- Cards injetados via JS -->
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: VARINHAS -->
+          <div id="fpanel-varinhas" class="fishing-subpanel">
+            <div class="fishing-rod-shop-header">
+              <h4 class="fishing-rod-shop-title">🪄 Varinhas de Pesca</h4>
+              <p class="fishing-rod-shop-desc">
+                Varinhas melhores atraem peixes mais raros!
+              </p>
+            </div>
+            <div id="fishing-rods-list" class="fishing-rods-list">
+              <!-- Itens injetados via JS -->
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: MISSÕES -->
+          <div id="fpanel-missoes" class="fishing-subpanel">
+            <div class="fishing-missions-header">
+              <h4 class="fishing-missions-title">📜 Missões de Pesca</h4>
+              <p class="fishing-missions-desc">
+                Complete missões para ganhar recompensas especiais!
+              </p>
+            </div>
+            <div id="fishing-missions-list" class="fishing-missions-list">
+              <!-- Missões injetadas via JS -->
+            </div>
+          </div>
+        </div>
+        <!-- /pesca-panel -->
+
+        <!-- INSTRUCTIONS PANEL -->
             <div id="instrucoes-panel" class="minigame-panel active">
                 <div class="termo-header" style="margin-bottom: 0.6rem;">
                     <h4 style="font-weight: 800; font-size: 1.15rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.2rem;">
