@@ -1,0 +1,271 @@
+/*
+ * tablet-overrides.css
+ * MedOrganize Cozy — Adaptações para Tablet (Capacitor)
+ * Breakpoints: 768px+ (tablet portrait) | 1024px+ (tablet landscape)
+ * Todos os ajustes aqui são ADICIONAIS ao styles.css — sem quebrar o site original.
+ */
+
+/* =====================================================
+   1. TOUCH TARGETS — Mínimo 48×48px (Android HIG)
+   ===================================================== */
+@media (max-device-width: 1366px) and (pointer: coarse) {
+
+  /* Botões da sidebar esquerda */
+  .sidebar-btn {
+    width: 56px !important;
+    height: 56px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Botão tema claro/escuro */
+  .theme-toggle-btn {
+    width: 52px !important;
+    height: 52px !important;
+    font-size: 1.4rem !important;
+  }
+
+  /* Botões dentro de modais */
+  button,
+  .btn,
+  .modal-btn,
+  .close-btn,
+  .panel-close-btn,
+  [role="button"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Input de tarefas — altura maior para dedo */
+  #task-input {
+    height: 56px !important;
+    font-size: 1.1rem !important;
+    padding: 0 1.2rem !important;
+  }
+
+  /* Itens de tarefa — mais fácil de tocar */
+  .task-item {
+    min-height: 56px !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Checkbox de tarefa */
+  .task-checkbox,
+  .check-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+/* =====================================================
+   2. LAYOUT TABLET PORTRAIT (768px – 1023px)
+   ===================================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  /* Container principal — usa mais largura do tablet */
+  .app-container {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding: 0 24px !important;
+  }
+
+  /* Fonte base ligeiramente maior */
+  body {
+    font-size: 16px !important;
+  }
+
+  /* Header com mais espaço */
+  .app-header {
+    padding: 20px 0 16px !important;
+  }
+
+  /* Barra de gamificação — mais espaçada */
+  .gamification-bar {
+    gap: 20px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+
+  .stat-item {
+    font-size: 0.95rem !important;
+  }
+
+  /* Logo maior */
+  .logo-area h1 {
+    font-size: 2.2rem !important;
+  }
+
+  /* Sidebar mais espaçada */
+  .sidebar-controls {
+    left: 12px !important;
+    top: 12px !important;
+    gap: 10px !important;
+  }
+}
+
+/* =====================================================
+   3. LAYOUT TABLET LANDSCAPE (1024px+)
+   ===================================================== */
+@media (min-width: 1024px) {
+
+  /* Container principal — aproveita a largura */
+  .main-screen {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: start !important;
+  }
+
+  .app-container {
+    max-width: 900px !important;
+    margin: 0 auto !important;
+    padding: 0 32px !important;
+  }
+
+  /* Fonte base */
+  body {
+    font-size: 17px !important;
+  }
+
+  /* Header */
+  .app-header {
+    padding: 24px 0 20px !important;
+  }
+
+  .logo-area h1 {
+    font-size: 2.6rem !important;
+  }
+
+  /* Gamification bar horizontal */
+  .gamification-bar {
+    gap: 28px !important;
+    justify-content: center !important;
+  }
+
+  /* Sidebar */
+  .sidebar-controls {
+    left: 20px !important;
+    top: 20px !important;
+  }
+
+  /* Input de tarefas */
+  #task-input {
+    font-size: 1.15rem !important;
+  }
+
+  /* Lista de tarefas */
+  .task-list {
+    max-height: calc(100vh - 320px) !important;
+  }
+
+  /* Tela de foco fullscreen */
+  #fullscreen-focus .focus-content-wrapper {
+    gap: 40px !important;
+  }
+}
+
+/* =====================================================
+   4. TELA DE FOCO — Melhorias para tablet
+   ===================================================== */
+@media (min-width: 768px) and (pointer: coarse) {
+
+  /* Timer maior e mais legível */
+  .focus-timer,
+  #focus-timer,
+  .timer-display {
+    font-size: clamp(4rem, 12vw, 8rem) !important;
+  }
+
+  /* Botões de controle do timer */
+  .focus-controls button,
+  .timer-controls button {
+    min-width: 64px !important;
+    min-height: 64px !important;
+    font-size: 1.3rem !important;
+  }
+
+  /* Área de tarefas dentro do foco */
+  .focus-task-item {
+    min-height: 52px !important;
+    font-size: 1rem !important;
+  }
+}
+
+/* =====================================================
+   5. MODAIS — Tamanho adequado para tablet
+   ===================================================== */
+@media (min-width: 768px) {
+
+  /* Modais/painéis centrados com largura máxima */
+  .settings-panel,
+  .aesthetics-panel,
+  .shop-panel,
+  .quests-panel,
+  .stats-panel,
+  [class$="-panel"],
+  [class$="-modal"] {
+    max-width: 600px !important;
+    margin: 0 auto !important;
+  }
+
+  /* Painel lateral (slide-in) — largura fixa */
+  .sidebar-panel,
+  .panel-container {
+    width: 400px !important;
+    max-width: 50vw !important;
+  }
+}
+
+/* =====================================================
+   6. SCROLL — Estilo nativo para touch
+   ===================================================== */
+@media (pointer: coarse) {
+
+  /* Scroll suave e nativo em todas as áreas roláveis */
+  .task-list,
+  .completed-list,
+  .panel-content,
+  .modal-body,
+  .shop-grid,
+  .quests-list {
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
+    overscroll-behavior: contain !important;
+  }
+
+  /* Esconde scrollbar visível (mantém funcional) */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* =====================================================
+   7. SAFE AREA — Notch / bordas arredondadas (iPad)
+   ===================================================== */
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* =====================================================
+   8. PREVENÇÃO DE SELEÇÃO DE TEXTO ACIDENTAL
+   ===================================================== */
+@media (pointer: coarse) {
+  .sidebar-btn,
+  .theme-toggle-btn,
+  .task-item,
+  .stat-item,
+  button {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}

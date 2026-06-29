@@ -244,16 +244,32 @@
                     <div class="phase-badge badge-foco">Foco</div>
                 </div>
 
-                <!-- STAGE 3: PAUSA -->
+                <!-- STAGE 3: PAUSA — Redesigned relaxing break screen -->
                 <div id="pausa-view" class="stage-view">
-                    <div class="stage-header">
-                        <h2>Hora de descansar! 🌸</h2>
-                        <p class="stage-subtitle">Alongue-se, tome uma água ou relaxe.</p>
-                    </div>
-                    <!-- Cute transparent animal sticker -->
+                    <!-- fog-overlay behind everything (z-index: 0) -->
+                    <div id="fog-overlay" class="fog-overlay" aria-hidden="true"></div>
+
+                    <!-- Mascote descansando (z-index: 2, floats above fog) -->
                     <div class="illustration-container">
-                        <img id="pausa-animal-img" class="focus-animal-gif" src="" alt="Pausa Animal">
+                        <img id="pausa-animal-img" class="focus-animal-gif pausa-mascote" src="" alt="Pausa Animal">
                     </div>
+                    
+                    <!-- breathing animation (z-index: 1) -->
+                    <div id="breathing-container" class="breathing-circle-container hidden">
+                        <div class="breathing-fog"></div>
+                        <span id="breathing-text" class="breathing-text">Inspire...</span>
+                    </div>
+
+                    <!-- Rotating suggestions — appear BELOW the mascote in flex-column flow -->
+                    <div id="break-suggestion" class="break-suggestion">
+                        <span id="break-suggestion-text">💧 Tome uma água...</span>
+                    </div>
+
+                    <!-- Fog toggle button -->
+                    <button id="fog-toggle-btn" class="fog-toggle-btn" title="Ativar respiração guiada">
+                        🌫️ Respirar
+                    </button>
+
                     <div class="phase-badge badge-pausa">Pausa</div>
                 </div>
             </div>
@@ -287,6 +303,13 @@
                     <button id="focus-btn-voltar" class="btn btn-secondary">Voltar</button>
                     <button id="focus-btn-prosseguir" class="btn btn-primary">Pausa ➔</button>
                     <button id="focus-btn-concluir" class="btn btn-success">Concluir 🎉</button>
+                </div>
+
+                <!-- Break-only controls: appear on hover during pausa-stage -->
+                <div id="pausa-hover-controls" class="pausa-hover-controls">
+                    <button id="pausa-skip-btn" class="btn btn-secondary">⏭ Pular Descanso</button>
+                    <button id="pausa-next-btn" class="btn btn-primary">▶ Próximo Pomodoro</button>
+                    <button id="pausa-finish-btn" class="btn btn-success">Finalizar 🎉</button>
                 </div>
             </div>
 

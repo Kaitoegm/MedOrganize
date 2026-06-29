@@ -1514,6 +1514,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stage 1: Preparo (Preparation)
     function transitionToPreparo() {
         currentStage = 'preparo';
+        const tl = document.querySelector('.timer-label');
+        if (tl) tl.textContent = 'Preparação';
         
         fullscreenFocus.className = 'fullscreen-focus open preparo-stage';
         setActiveView(preparoView);
@@ -1732,7 +1734,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Stage 2: Foco (Study Focus)
     function transitionToFoco() {
+        stopBreakMode();
         currentStage = 'foco';
+        const tl = document.querySelector('.timer-label');
+        if (tl) tl.textContent = 'Sessão de Foco';
         
         fullscreenFocus.className = 'fullscreen-focus open foco-stage';
         fullscreenFocus.classList.remove('timer-paused');
@@ -1767,14 +1772,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stage 3: Pausa (Break)
     function transitionToPausa() {
         currentStage = 'pausa';
+        const tl = document.querySelector('.timer-label');
+        if (tl) tl.textContent = 'Descanso';
+        startBreakMode();
         
         fullscreenFocus.className = 'fullscreen-focus open pausa-stage';
         fullscreenFocus.classList.remove('timer-paused');
         unfreezeActiveElements();
         setActiveView(pausaView);
         
-        stopAmbiance();
-
         // Reset timers
         totalDuration = settings.pausa * 60;
         timeLeft = totalDuration;
@@ -1886,6 +1892,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function exitFocusOverlay() {
         stopActiveTimer();
         stopAmbiance();
+        stopBreakMode();
         // Clear iframe to stop music playing
         spotifyIframe.src = '';
         if (youtubeIframe) youtubeIframe.src = '';
@@ -6458,10 +6465,217 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+    // =========================================================
+    // MODO DESCANSO — SISTEMA COMPLETO
+    // =========================================================
+
+    const BREAK_SUGGESTIONS = [
+        '💧 Tome uma água...',
+        '👁️ Olhe para longe por 20 segundos...',
+        '🤸 Levante e se espreguice!',
+        '🌸 Respire fundo e solte devagar...',
+        '☕ Hora de um chazinho ou café?',
+        '💤 Fecha os olhos por um momento...',
+        '🚶 Dê uma caminhada curta pelo quarto...',
+        '🎶 Deixe a música fluir...',
+        '🌿 Alongue o pescoço e os ombros...',
+        '😊 Você está indo muito bem!'
+    ];
+
+    let suggestionInterval = null;
+    let currentSuggestionIndex = 0;
+    let breathingInterval = null;
+    let breakAmbianceActive = false;
+
+    function startBreakMode() {
+        startRotatingSuggestions();
+        startBreakAmbiance();
+        initFogToggle();
+        initPausaHoverControls();
+    }
+
+    function stopBreakMode() {
+        stopRotatingSuggestions();
+        stopBreakAmbiance();
+        stopBreathingAnimation();
+        // Reset fog
+        const fogOverlay = document.getElementById('fog-overlay');
+        const breathingContainer = document.getElementById('breathing-container');
+        const fogBtn = document.getElementById('fog-toggle-btn');
+        if (fogOverlay) fogOverlay.classList.remove('active');
+        if (breathingContainer) breathingContainer.classList.remove('visible');
+        if (breathingContainer) breathingContainer.classList.add('hidden');
+        if (fogBtn) fogBtn.classList.remove('active');
+    }
+
+    // --- Rotating Suggestions ---
+    function startRotatingSuggestions() {
+        const textEl = document.getElementById('break-suggestion-text');
+        const containerEl = document.getElementById('break-suggestion');
+        if (!textEl || !containerEl) return;
+
+        currentSuggestionIndex = Math.floor(Math.random() * BREAK_SUGGESTIONS.length);
+        textEl.textContent = BREAK_SUGGESTIONS[currentSuggestionIndex];
+        containerEl.classList.remove('fading');
+
+        clearInterval(suggestionInterval);
+        suggestionInterval = setInterval(() => {
+            containerEl.classList.add('fading');
+            setTimeout(() => {
+                currentSuggestionIndex = (currentSuggestionIndex + 1) % BREAK_SUGGESTIONS.length;
+                textEl.textContent = BREAK_SUGGESTIONS[currentSuggestionIndex];
+                containerEl.classList.remove('fading');
+            }, 420);
+        }, 30000); // every 30s
+    }
+
+    function stopRotatingSuggestions() {
+        clearInterval(suggestionInterval);
+    }
+
+    // --- Auto Ambient Sound (fade-in on break) ---
+    function startBreakAmbiance() {
+        if (breakAmbianceActive) return;
+        // Use the existing ambiance system — pick 'chimes' by default
+        if (ambianceSoundSelect) ambianceSoundSelect.value = 'chimes';
+        const preferredType = 'chimes';
+        try {
+            if (!ambianceCtx) {
+                ambianceCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (!ambianceOutNode) {
+                ambianceOutNode = ambianceCtx.createGain();
+                ambianceOutNode.connect(ambianceCtx.destination);
+            }
+            // Start at 0 volume and fade in over 2s
+            ambianceOutNode.gain.setValueAtTime(0, ambianceCtx.currentTime);
+            ambianceOutNode.gain.linearRampToValueAtTime(
+                ambianceVolumeSlider ? parseFloat(ambianceVolumeSlider.value) : 0.35,
+                ambianceCtx.currentTime + 2
+            );
+            if (ambianceCtx.state === 'suspended') ambianceCtx.resume();
+            startAmbiance(preferredType);
+            breakAmbianceActive = true;
+        } catch(e) {
+            console.warn('Break ambiance failed:', e);
+        }
+    }
+
+    function stopBreakAmbiance() {
+        if (!breakAmbianceActive) return;
+        // Fade out over 1.5s then stop
+        if (ambianceCtx && ambianceOutNode) {
+            try {
+                ambianceOutNode.gain.linearRampToValueAtTime(0, ambianceCtx.currentTime + 1.5);
+                setTimeout(() => {
+                    stopAmbiance();
+                    // Restore volume for next use
+                    if (ambianceOutNode) {
+                        ambianceOutNode.gain.setValueAtTime(
+                            ambianceVolumeSlider ? parseFloat(ambianceVolumeSlider.value) : 0.35,
+                            ambianceCtx.currentTime
+                        );
+                    }
+                }, 1600);
+            } catch(e) {
+                stopAmbiance();
+            }
+        }
+        breakAmbianceActive = false;
+    }
+
+    // --- Fog & Breathing Toggle ---
+    function initFogToggle() {
+        const fogBtn = document.getElementById('fog-toggle-btn');
+        if (!fogBtn || fogBtn._fogInitialized) return;
+        fogBtn._fogInitialized = true;
+
+        fogBtn.addEventListener('click', () => {
+            const fogOverlay = document.getElementById('fog-overlay');
+            const breathingContainer = document.getElementById('breathing-container');
+            const isActive = fogBtn.classList.contains('active');
+
+            if (isActive) {
+                // Turn off
+                fogBtn.classList.remove('active');
+                if (fogOverlay) fogOverlay.classList.remove('active');
+                if (breathingContainer) {
+                    breathingContainer.classList.remove('visible');
+                    breathingContainer.classList.add('hidden');
+                }
+                stopBreathingAnimation();
+                fogBtn.textContent = '🌫️ Respirar';
+            } else {
+                // Turn on
+                fogBtn.classList.add('active');
+                if (fogOverlay) fogOverlay.classList.add('active');
+                if (breathingContainer) {
+                    breathingContainer.classList.remove('hidden');
+                    breathingContainer.classList.add('visible');
+                }
+                startBreathingAnimation();
+                fogBtn.textContent = '✕ Fechar névoa';
+            }
+        });
+    }
+
+    // --- Breathing Text Sync ---
+    function startBreathingAnimation() {
+        const breathingText = document.getElementById('breathing-text');
+        if (!breathingText) return;
+        breathingText.textContent = 'Inspire...';
+        clearInterval(breathingInterval);
+
+        let tick = 0;
+        // 19s cycle at 100ms = 190 ticks: 0-40 Inspire, 41-110 Segure, 111-189 Expire
+        breathingInterval = setInterval(() => {
+            tick = (tick + 1) % 190;
+            if (tick === 0)   breathingText.textContent = 'Inspire...';
+            else if (tick === 41)  breathingText.textContent = 'Segure...';
+            else if (tick === 111) breathingText.textContent = 'Expire...';
+        }, 100);
+    }
+
+    function stopBreathingAnimation() {
+        clearInterval(breathingInterval);
+    }
+
+    // --- Pausa Hover Controls ---
+    function initPausaHoverControls() {
+        const pausaNextBtn = document.getElementById('pausa-next-btn');
+        const pausaFinishBtn = document.getElementById('pausa-finish-btn');
+        const pausaSkipBtn = document.getElementById('pausa-skip-btn');
+
+        if (pausaSkipBtn) {
+            pausaSkipBtn.addEventListener('click', () => {
+                stopBreakMode();
+                stopActiveTimer();
+                transitionToFoco();
+            });
+        }
+
+        if (pausaNextBtn) {
+            pausaNextBtn.addEventListener('click', () => {
+                stopBreakMode();
+                stopActiveTimer();
+                transitionToFoco();
+            });
+        }
+
+        if (pausaFinishBtn) {
+            pausaFinishBtn.addEventListener('click', () => {
+                stopBreakMode();
+                completeFocusTask();
+                exitFocusOverlay();
+            });
+        }
+    }
+
 
     // --- Initialize Application ---
     initTheme();
     initDate();
+    initPausaHoverControls();
     renderTasks();
     updateGamificationStats();
     syncInventoryUI();

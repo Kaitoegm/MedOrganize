@@ -6438,3 +6438,138 @@ body.dark-theme .cherry-decor.dark-only {
     opacity: 1;
   }
 }
+
+
+/* ========================================== */
+/* MODO DESCANSO — BREAK MODE ADDITIONS       */
+/* ========================================== */
+
+/* 1. Suggestion pill — hidden by default, shown during pausa */
+.break-suggestion {
+    display: none;
+    text-align: center;
+    padding: 0.6rem 1.4rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    max-width: 280px;
+    margin: 0.5rem auto 0;
+}
+.fullscreen-focus.pausa-stage .break-suggestion {
+    display: block;
+}
+#break-suggestion-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+.break-suggestion.fading { opacity: 0; transition: opacity 0.4s ease; }
+
+/* 2. Mascote floats during break */
+.fullscreen-focus.pausa-stage .pausa-mascote {
+    animation: mascoteFloat 4s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+}
+@keyframes mascoteFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+}
+
+/* 3. fog-overlay — absolute inside pausa-view, behind everything */
+.fog-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(ellipse at 30% 70%, rgba(120, 60, 220, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(40, 120, 200, 0.10) 0%, transparent 55%);
+    animation: fogDrift 8s ease-in-out infinite alternate;
+}
+.fullscreen-focus.pausa-stage .fog-overlay.active { display: block; }
+@keyframes fogDrift {
+    from { opacity: 0.5; transform: translateX(-8px); }
+    to   { opacity: 1;   transform: translateX(8px); }
+}
+
+/* 4. Breathing container */
+.breathing-circle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.breathing-circle-container.visible { opacity: 1; pointer-events: all; }
+.breathing-circle-container.hidden  { opacity: 0; pointer-events: none; }
+
+.breathing-fog {
+    width: 180px;
+    height: 180px;
+    border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%;
+    background: radial-gradient(ellipse, rgba(180, 140, 255, 0.30) 0%, transparent 75%);
+    filter: blur(16px);
+    animation: fogBreathe 8s ease-in-out infinite, fogMorph 8s alternate ease-in-out infinite;
+}
+@keyframes fogBreathe {
+    0%, 100% { transform: scale(0.75); opacity: 0.5; }
+    50%       { transform: scale(1.4);  opacity: 1; }
+}
+@keyframes fogMorph {
+    from { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; }
+    to   { border-radius: 40% 60% 30% 70% / 60% 40% 60% 40%; }
+}
+.breathing-text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.88);
+    text-shadow: 0 2px 10px rgba(140, 80, 255, 0.5);
+    position: relative; z-index: 2;
+}
+
+/* 5. Fog toggle button */
+.fog-toggle-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative; z-index: 3;
+    margin-top: 0.5rem;
+}
+.fullscreen-focus.pausa-stage .fog-toggle-btn { display: inline-block; }
+.fog-toggle-btn:hover { background: rgba(255,255,255,0.18); }
+.fog-toggle-btn.active { background: rgba(120, 80, 220, 0.45); border-color: rgba(180,140,255,0.4); }
+
+/* 6. Hide normal focus controls during pausa, show pausa-hover-controls */
+.fullscreen-focus.pausa-stage .focus-controls { display: none !important; }
+
+/* 7. Pausa controls — always visible during break, simple row layout */
+.pausa-hover-controls {
+    display: none;
+    flex-direction: row;
+    gap: 0.6rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+}
+.fullscreen-focus.pausa-stage .pausa-hover-controls {
+    display: flex;
+}
+.pausa-hover-controls > button {
+    font-size: 0.72rem !important;
+    padding: 0 0.8rem !important;
+    height: 28px !important;
+}
