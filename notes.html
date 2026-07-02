@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="MedNotes — Caderno de Anotações para Medicina. Escrita à mão, organização por pastas e cadernos.">
+    <title>MedNotes — Caderno de Estudos</title>
+
+    <!-- Inter font — limpa e profissional para o MedNotes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- MedNotes CSS (será expandido no Passo 2) -->
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body class="mednotes-app" id="mednotes-body">
+
+    <!-- ===============================================================
+         OVERLAY DE ENTRADA (slide-up ao carregar, slide-down ao sair)
+    ================================================================ -->
+    <div id="notes-transition-overlay" class="notes-transition-overlay" aria-hidden="true"></div>
+
+    <!-- ===============================================================
+         APP SHELL — Layout Principal do MedNotes
+    ================================================================ -->
+    <div class="notes-shell" id="notes-shell">
+
+        <!-- ── BOTÃO TOGGLE DA SIDEBAR ── -->
+        <button
+            id="sidebar-toggle-btn"
+            class="sidebar-toggle-btn"
+            title="Recolher/Expandir barra lateral"
+            aria-label="Alternar barra lateral"
+            aria-expanded="true"
+            aria-controls="notes-sidebar"
+        >
+            <svg class="toggle-icon-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            <svg class="toggle-icon-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="15" y1="3" x2="15" y2="21"/>
+            </svg>
+        </button>
+
+        <!-- ── SIDEBAR ESQUERDA (Pastas / Cadernos / Páginas) ── -->
+        <aside class="notes-sidebar" id="notes-sidebar" role="navigation" aria-label="Navegação de cadernos">
+
+            <!-- Cabeçalho da Sidebar -->
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span class="sidebar-logo-text">MedNotes</span>
+                </div>
+
+                <!-- Busca rápida (Passo 11) -->
+                <div class="sidebar-search">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input
+                        type="search"
+                        id="sidebar-search-input"
+                        placeholder="Buscar notas..."
+                        aria-label="Buscar notas"
+                    >
+                </div>
+            </div>
+
+            <!-- Árvore de Pastas (Passos 3/4) -->
+            <div class="sidebar-tree" id="sidebar-tree" role="tree">
+                <div class="sidebar-empty-state" id="sidebar-empty-state">
+                    <svg viewBox="0 0 64 64" width="48" height="48" fill="none">
+                        <rect x="8" y="16" width="48" height="36" rx="4" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="2"/>
+                        <path d="M8 24 h48" stroke="#5c6bc0" stroke-width="1.5"/>
+                        <line x1="18" y1="34" x2="46" y2="34" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="18" y1="40" x2="38" y2="40" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <p>Nenhuma pasta ainda.</p>
+                    <p class="sidebar-empty-hint">Crie sua primeira pasta abaixo!</p>
+                </div>
+            </div>
+
+            <!-- Rodapé da Sidebar -->
+            <div class="sidebar-footer">
+                <button class="sidebar-action-btn" id="btn-new-folder" title="Nova Pasta" aria-label="Criar nova pasta">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        <line x1="12" y1="11" x2="12" y2="17"/>
+                        <line x1="9" y1="14" x2="15" y2="14"/>
+                    </svg>
+                    <span>Nova Pasta</span>
+                </button>
+
+                <button class="sidebar-action-btn sidebar-action-btn--secondary" id="btn-new-page" title="Nova Página" aria-label="Criar nova página" disabled>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="13" x2="12" y2="17"/>
+                        <line x1="10" y1="15" x2="14" y2="15"/>
+                    </svg>
+                    <span>Nova Página</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── ÁREA PRINCIPAL ── -->
+        <div class="notes-main" id="notes-main">
+
+            <!-- ── TOOLBAR SUPERIOR ── -->
+            <header class="notes-toolbar" id="notes-toolbar" role="toolbar" aria-label="Ferramentas de desenho">
+
+                <!-- Grupo Esquerdo -->
+                <div class="toolbar-group toolbar-group--left">
+                    <button
+                        class="toolbar-btn toolbar-btn--back"
+                        id="btn-back-to-medorganize"
+                        title="Voltar ao MedOrganize"
+                        aria-label="Voltar ao MedOrganize"
+                        onclick="returnToMedOrganize()"
+                    >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+
+                    <nav class="toolbar-breadcrumb" id="toolbar-breadcrumb" aria-label="Localização da página">
+                        <span class="breadcrumb-item" id="breadcrumb-folder">—</span>
+                        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+                        <span class="breadcrumb-item" id="breadcrumb-notebook">—</span>
+                        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+                        <span class="breadcrumb-item breadcrumb-page" id="breadcrumb-page">Selecione uma página</span>
+                    </nav>
+                </div>
+
+                <!-- Grupo Central: ferramentas de desenho (Passos 6–9) -->
+                <div class="toolbar-group toolbar-group--center" id="drawing-tools">
+
+                    <button class="tool-btn tool-btn--active" id="tool-hand" title="Mover canvas (H)" data-tool="hand" aria-pressed="true">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/>
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-pen" title="Caneta (P)" data-tool="pen" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-highlighter" title="Marca-texto" data-tool="highlighter" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-eraser" title="Borracha (E)" data-tool="eraser" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 20H7L3 16l10-10 7 7-2.5 2.5"/><path d="M6 15l3 3.5"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-lasso" title="Lasso (L)" data-tool="lasso" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 22a5 5 0 0 1-2-4"/><path d="M7 16.93c.96.43 1.96.74 2.99.91"/>
+                            <path d="M3.34 14A6.8 6.8 0 0 1 2 10c0-4.42 4.48-8 10-8s10 3.58 10 8a7.19 7.19 0 0 1-.33 2"/>
+                            <path d="M5 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-shapes" title="Formas (S)" data-tool="shapes" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="8" height="8" rx="1"/>
+                            <circle cx="17" cy="7" r="4"/>
+                            <path d="M12 21l4-8 4 8z"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-ruler" title="Régua (R)" data-tool="ruler" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="8" width="22" height="8" rx="1"/>
+                            <line x1="5" y1="12" x2="5" y2="16"/><line x1="9" y1="12" x2="9" y2="14"/>
+                            <line x1="13" y1="12" x2="13" y2="16"/><line x1="17" y1="12" x2="17" y2="14"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-text" title="Texto (T)" data-tool="text" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <polyline points="4 7 4 4 20 4 20 7"/>
+                            <line x1="9" y1="20" x2="15" y2="20"/>
+                            <line x1="12" y1="4" x2="12" y2="20"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-laser" title="Laser Pointer (Z)" data-tool="laser" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+                            <line x1="4.22" y1="4.22" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.78" y2="19.78"/>
+                            <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Grupo Direito -->
+                <div class="toolbar-group toolbar-group--right">
+
+                    <button class="tool-btn tool-btn--color" id="tool-color-picker" title="Cor da caneta" aria-label="Selecionar cor">
+                        <span class="color-swatch" id="current-color-swatch" style="background:#1a1b2e;"></span>
+                    </button>
+
+                    <div class="thickness-picker" id="thickness-picker" role="group" aria-label="Espessura do traço">
+                        <button class="thickness-dot" data-size="0.5" aria-label="Traço finíssimo"></button>
+                        <button class="thickness-dot" data-size="1.5" aria-label="Traço fino"></button>
+                        <button class="thickness-dot thickness-dot--active" data-size="3" aria-label="Traço médio (padrão)"></button>
+                        <button class="thickness-dot" data-size="6" aria-label="Traço grosso"></button>
+                        <button class="thickness-dot" data-size="12" aria-label="Traço extra grosso"></button>
+                    </div>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" disabled>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" id="tool-redo" title="Refazer (Ctrl+Y)" aria-label="Refazer" disabled>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="btn-page-thumbnails" title="Páginas" aria-label="Painel de páginas">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/>
+                            <rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="btn-page-settings" title="Configurações da página" aria-label="Configurações da página">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <!-- Botão de atalhos de teclado (? visível no tablet) -->
+                    <button class="tool-btn tool-btn--help" id="btn-shortcuts-help" title="Atalhos de teclado (?)" aria-label="Ver atalhos de teclado">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </button>
+
+                    <div class="save-status" id="save-status" role="status" aria-live="polite">
+                        <span class="save-status-dot" id="save-dot"></span>
+                        <span class="save-status-text" id="save-text">Pronto</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── ÁREA DO CANVAS ── -->
+            <main class="notes-canvas-area" id="notes-canvas-area" aria-label="Canvas de anotações">
+
+                <!-- Estado vazio: nenhuma página selecionada -->
+                <div class="canvas-empty-state" id="canvas-empty-state">
+                    <div class="canvas-empty-inner">
+                        <svg viewBox="0 0 120 120" width="110" height="110" fill="none">
+                            <rect x="20" y="15" width="80" height="90" rx="8" fill="#f0f2ff" stroke="#5c6bc0" stroke-width="2.5"/>
+                            <circle cx="20" cy="30" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="45" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="60" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="75" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="90" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <line x1="35" y1="40" x2="85" y2="40" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="35" y1="52" x2="85" y2="52" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                            <line x1="35" y1="64" x2="70" y2="64" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                            <rect x="68" y="68" width="8" height="26" rx="2" transform="rotate(-35 68 68)" fill="#9c27b0" opacity="0.8"/>
+                            <polygon points="63,92 69,92 66,99" fill="#5c6bc0" opacity="0.8"/>
+                        </svg>
+
+                        <h2>Bem-vindo ao MedNotes</h2>
+                        <p>Selecione uma página na barra lateral<br>ou crie sua primeira pasta para começar.</p>
+
+                        <button class="canvas-empty-btn" onclick="document.getElementById('btn-new-folder').click()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+                            </svg>
+                            Criar primeira pasta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas de desenho (Passo 5+) -->
+                <div class="canvas-wrapper" id="canvas-wrapper" style="display:none;">
+                    <canvas id="notes-canvas-bg"   class="notes-canvas notes-canvas--bg"   aria-hidden="true"></canvas>
+                    <canvas id="notes-canvas-main" class="notes-canvas notes-canvas--main" role="img" aria-label="Área de escrita"></canvas>
+                    <canvas id="notes-canvas-ui"   class="notes-canvas notes-canvas--ui"   aria-hidden="true"></canvas>
+                    <div id="text-overlays" class="text-overlays"></div>
+                </div>
+            </main>
+
+        </div><!-- /notes-main -->
+    </div><!-- /notes-shell -->
+
+    <!-- ===============================================================
+         PAINÉIS FLUTUANTES & MODAIS (Passo 2)
+    ================================================================ -->
+
+    <!-- ── COLOR PICKER PANEL ── -->
+    <div id="color-picker-panel" class="mn-panel color-picker-panel" role="dialog" aria-label="Seletor de cor" aria-hidden="true">
+        <div class="mn-panel-header">
+            <span class="mn-panel-title">Cor da Caneta</span>
+            <button class="mn-panel-close" id="color-panel-close" aria-label="Fechar">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        <!-- Swatches rápidas (8 cores curadas para medicina) -->
+        <div class="color-swatches-grid" role="group" aria-label="Cores rápidas">
+            <button class="color-swatch-btn" data-color="#1a1b2e" style="background:#1a1b2e;" title="Preto Profundo" aria-label="Preto Profundo"></button>
+            <button class="color-swatch-btn" data-color="#3949ab" style="background:#3949ab;" title="Azul Índigo" aria-label="Azul Índigo"></button>
+            <button class="color-swatch-btn" data-color="#7c4dff" style="background:#7c4dff;" title="Roxo Acento" aria-label="Roxo Acento"></button>
+            <button class="color-swatch-btn" data-color="#00897b" style="background:#00897b;" title="Verde Teal (Farmácia)" aria-label="Verde Teal"></button>
+            <button class="color-swatch-btn" data-color="#e53935" style="background:#e53935;" title="Vermelho Clínico" aria-label="Vermelho Clínico"></button>
+            <button class="color-swatch-btn" data-color="#fb8c00" style="background:#fb8c00;" title="Laranja Alerta" aria-label="Laranja Alerta"></button>
+            <button class="color-swatch-btn" data-color="#6d4c41" style="background:#6d4c41;" title="Marrom Terra" aria-label="Marrom Terra"></button>
+            <button class="color-swatch-btn" data-color="#546e7a" style="background:#546e7a;" title="Cinza Azulado" aria-label="Cinza Azulado"></button>
+        </div>
+
+        <!-- Separador -->
+        <div class="mn-panel-divider"></div>
+
+        <!-- Cores de highlighter (semitransparentes) -->
+        <p class="mn-panel-label">Marca-texto</p>
+        <div class="color-swatches-grid color-swatches-grid--highlight" role="group" aria-label="Cores de marca-texto">
+            <button class="color-swatch-btn" data-color="#ffeb3b" data-opacity="0.45" style="background:#ffeb3b;" title="Amarelo" aria-label="Amarelo"></button>
+            <button class="color-swatch-btn" data-color="#69f0ae" data-opacity="0.45" style="background:#69f0ae;" title="Verde Neon" aria-label="Verde Neon"></button>
+            <button class="color-swatch-btn" data-color="#40c4ff" data-opacity="0.45" style="background:#40c4ff;" title="Azul Céu" aria-label="Azul Céu"></button>
+            <button class="color-swatch-btn" data-color="#ff80ab" data-opacity="0.45" style="background:#ff80ab;" title="Rosa" aria-label="Rosa"></button>
+            <button class="color-swatch-btn" data-color="#ea80fc" data-opacity="0.45" style="background:#ea80fc;" title="Lilás" aria-label="Lilás"></button>
+            <button class="color-swatch-btn" data-color="#ff6d00" data-opacity="0.45" style="background:#ff6d00;" title="Laranja" aria-label="Laranja"></button>
+        </div>
+
+        <div class="mn-panel-divider"></div>
+
+        <!-- Color picker nativo (custom) -->
+        <div class="color-picker-custom">
+            <label class="mn-panel-label" for="custom-color-input">Cor personalizada</label>
+            <div class="color-picker-input-row">
+                <input type="color" id="custom-color-input" value="#5c6bc0" aria-label="Escolher cor personalizada">
+                <input type="text" id="custom-color-hex" value="#5c6bc0" placeholder="#000000" maxlength="7" aria-label="Código hex da cor">
+            </div>
+        </div>
+
+        <!-- Opacidade -->
+        <div class="color-opacity-row">
+            <label class="mn-panel-label" for="color-opacity-slider">Opacidade</label>
+            <div class="opacity-slider-wrapper">
+                <input type="range" id="color-opacity-slider" min="10" max="100" value="100" aria-label="Opacidade da cor">
+                <span class="opacity-value-display" id="opacity-value-display">100%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PAGE SETTINGS MODAL ── -->
+    <div id="page-settings-modal" class="mn-modal-backdrop" aria-hidden="true">
+        <div class="mn-modal" role="dialog" aria-labelledby="page-settings-title" aria-modal="true">
+            <div class="mn-modal-header">
+                <h3 id="page-settings-title">Configurações da Página</h3>
+                <button class="mn-modal-close" id="page-settings-close" aria-label="Fechar configurações">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="mn-modal-body">
+                <!-- Nome da página -->
+                <div class="mn-setting-group">
+                    <label class="mn-setting-label" for="page-name-input">Nome da página</label>
+                    <input type="text" id="page-name-input" class="mn-setting-input" placeholder="Ex: Aula de Cardiologia" maxlength="60">
+                </div>
+
+                <!-- Tipo de pauta -->
+                <div class="mn-setting-group">
+                    <span class="mn-setting-label">Pauta do canvas</span>
+                    <div class="bg-type-grid" role="group" aria-label="Tipo de pauta">
+                        <button class="bg-type-btn" data-bg="none" aria-pressed="false">
+                            <span class="bg-type-preview bg-preview--none"></span>
+                            <span>Limpo</span>
+                        </button>
+                        <button class="bg-type-btn" data-bg="lined" aria-pressed="false">
+                            <span class="bg-type-preview bg-preview--lined"></span>
+                            <span>Pauta</span>
+                        </button>
+                        <button class="bg-type-btn bg-type-btn--active" data-bg="dotgrid" aria-pressed="true">
+                            <span class="bg-type-preview bg-preview--dotgrid"></span>
+                            <span>Dotgrid</span>
+                        </button>
+                        <button class="bg-type-btn" data-bg="grid" aria-pressed="false">
+                            <span class="bg-type-preview bg-preview--grid"></span>
+                            <span>Quadriculado</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cor do fundo -->
+                <div class="mn-setting-group">
+                    <span class="mn-setting-label">Cor do fundo</span>
+                    <div class="bg-color-grid" role="group" aria-label="Cor de fundo do canvas">
+                        <button class="bg-color-btn bg-color-btn--active" data-bg-color="#ffffff" style="background:#ffffff;" aria-pressed="true" aria-label="Branco"></button>
+                        <button class="bg-color-btn" data-bg-color="#fef9ec" style="background:#fef9ec;" aria-pressed="false" aria-label="Creme quente"></button>
+                        <button class="bg-color-btn" data-bg-color="#f0f4ff" style="background:#f0f4ff;" aria-pressed="false" aria-label="Azul muito claro"></button>
+                        <button class="bg-color-btn" data-bg-color="#f0fdf4" style="background:#f0fdf4;" aria-pressed="false" aria-label="Verde muito claro"></button>
+                        <button class="bg-color-btn" data-bg-color="#1a1b2e" style="background:#1a1b2e;" aria-pressed="false" aria-label="Modo escuro"></button>
+                    </div>
+                </div>
+
+                <!-- Tamanho do canvas -->
+                <div class="mn-setting-group">
+                    <span class="mn-setting-label">Tamanho do canvas</span>
+                    <div class="canvas-size-grid" role="group" aria-label="Tamanho do canvas">
+                        <button class="canvas-size-btn canvas-size-btn--active" data-w="8000" data-h="6000" aria-pressed="true">Padrão<br><small>8000 × 6000</small></button>
+                        <button class="canvas-size-btn" data-w="5600" data-h="4000" aria-pressed="false">Médio<br><small>5600 × 4000</small></button>
+                        <button class="canvas-size-btn" data-w="2970" data-h="2100" aria-pressed="false">A4 Paisagem<br><small>2970 × 2100</small></button>
+                        <button class="canvas-size-btn" data-w="4000" data-h="4000" aria-pressed="false">Quadrado<br><small>4000 × 4000</small></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mn-modal-footer">
+                <button class="mn-btn mn-btn--ghost" id="page-settings-cancel">Cancelar</button>
+                <button class="mn-btn mn-btn--primary" id="page-settings-save">Salvar Página</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── LASSO CONTEXT MENU ── -->
+    <div id="lasso-context-menu" class="lasso-context-menu" role="menu" aria-label="Ações da seleção" aria-hidden="true">
+        <button class="lasso-action-btn" data-action="move" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            Mover
+        </button>
+        <button class="lasso-action-btn" data-action="copy" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+        </button>
+        <button class="lasso-action-btn" data-action="color" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            Cor
+        </button>
+        <div class="lasso-divider" role="separator"></div>
+        <button class="lasso-action-btn lasso-action-btn--danger" data-action="delete" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Deletar
+        </button>
+    </div>
+
+    <!-- ── MINIMAP ── -->
+    <div id="canvas-minimap" class="canvas-minimap" aria-hidden="true" title="Minimap — posição no canvas">
+        <canvas id="minimap-canvas" width="160" height="120"></canvas>
+        <div id="minimap-viewport" class="minimap-viewport"></div>
+    </div>
+
+    <!-- ── ZOOM BADGE ── -->
+    <span id="zoom-badge" class="zoom-badge" aria-live="polite" aria-label="Nível de zoom">100%</span>
+
+    <!-- ── KEYBOARD SHORTCUTS OVERLAY ── -->
+    <div id="shortcuts-overlay" class="mn-modal-backdrop" aria-hidden="true">
+        <div class="mn-modal mn-modal--shortcuts" role="dialog" aria-labelledby="shortcuts-title" aria-modal="true">
+            <div class="mn-modal-header">
+                <h3 id="shortcuts-title">⌨️ Atalhos de Teclado</h3>
+                <button class="mn-modal-close" id="shortcuts-close" aria-label="Fechar atalhos">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="mn-modal-body shortcuts-grid">
+                <div class="shortcut-section">
+                    <h4>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                        Ferramentas
+                    </h4>
+                    <div class="shortcut-item"><kbd>H</kbd><span>Mover (Pan)</span></div>
+                    <div class="shortcut-item"><kbd>P</kbd><span>Caneta</span></div>
+                    <div class="shortcut-item"><kbd>E</kbd><span>Borracha</span></div>
+                    <div class="shortcut-item"><kbd>L</kbd><span>Lasso</span></div>
+                    <div class="shortcut-item"><kbd>S</kbd><span>Formas</span></div>
+                    <div class="shortcut-item"><kbd>R</kbd><span>Régua</span></div>
+                    <div class="shortcut-item"><kbd>T</kbd><span>Texto</span></div>
+                    <div class="shortcut-item"><kbd>Z</kbd><span>Laser Pointer</span></div>
+                </div>
+                
+                <div class="shortcut-column">
+                    <div class="shortcut-section">
+                        <h4>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Edição
+                        </h4>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>Z</kbd><span>Desfazer</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>Y</kbd><span>Refazer</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>C</kbd><span>Copiar seleção</span></div>
+                        <div class="shortcut-item"><kbd>Del</kbd><span>Deletar seleção</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>F</kbd><span>Buscar</span></div>
+                        <div class="shortcut-item"><kbd>?</kbd><span>Este painel</span></div>
+                    </div>
+
+                    <div class="shortcut-section shortcut-section--canvas">
+                        <h4>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            Canvas
+                        </h4>
+                        <div class="shortcut-item"><kbd>Espaço</kbd> <span class="plus">+</span> <span class="shortcut-drag">arraste</span><span>Mover livre</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>Scroll</kbd><span>Zoom in/out</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>0</kbd><span>Zoom 100%</span></div>
+                        <div class="shortcut-item"><kbd>Ctrl</kbd> <span class="plus">+</span> <kbd>Shift</kbd> <span class="plus">+</span> <kbd>H</kbd><span>Ajustar tela</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container (Passo 19) -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+    <!-- MedNotes JS principal (Passos 3+) -->
+    <script src="notes.js"></script>
+
+    <script>
+        /* ── Passo 2: Lógica de UI dos painéis ── */
+
+        // Animação de ENTRADA ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('notes-transition-overlay');
+            overlay.classList.add('mn-overlay--entering');
+            setTimeout(() => overlay.classList.add('mn-overlay--done'), 500);
+
+            // Inicializar sidebar toggle
+            initSidebarToggle();
+            // Inicializar atalhos de painel
+            initPanelControls();
+        });
+
+        // ── Voltar ao MedOrganize ──
+        function returnToMedOrganize() {
+            const overlay = document.getElementById('notes-transition-overlay');
+            const shell   = document.getElementById('notes-shell');
+            shell.classList.add('notes-shell--exiting');
+            overlay.classList.remove('mn-overlay--done');
+            overlay.classList.add('mn-overlay--exiting');
+            setTimeout(() => { window.location.href = 'index.html'; }, 480);
+        }
+
+        // ── Sidebar Toggle ──
+        function initSidebarToggle() {
+            const btn      = document.getElementById('sidebar-toggle-btn');
+            const sidebar  = document.getElementById('notes-sidebar');
+            const shell    = document.getElementById('notes-shell');
+            const iconOpen = btn.querySelector('.toggle-icon-open');
+            const iconClosed = btn.querySelector('.toggle-icon-closed');
+
+            let collapsed = false;
+
+            btn.addEventListener('click', () => {
+                collapsed = !collapsed;
+                shell.classList.toggle('sidebar-collapsed', collapsed);
+                sidebar.setAttribute('aria-hidden', collapsed);
+                btn.setAttribute('aria-expanded', !collapsed);
+                iconOpen.style.display   = collapsed ? 'none' : '';
+                iconClosed.style.display = collapsed ? '' : 'none';
+            });
+        }
+
+        // ── Controles de Painéis ──
+        function initPanelControls() {
+            // Fechar color picker
+            document.getElementById('color-panel-close')?.addEventListener('click', () => {
+                document.getElementById('color-picker-panel').setAttribute('aria-hidden', 'true');
+                document.getElementById('color-picker-panel').classList.remove('mn-panel--visible');
+            });
+
+            // Abrir color picker ao clicar no botão de cor da toolbar
+            document.getElementById('tool-color-picker')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const panel = document.getElementById('color-picker-panel');
+                const isHidden = panel.getAttribute('aria-hidden') !== 'false';
+                panel.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+                panel.classList.toggle('mn-panel--visible', isHidden);
+            });
+
+            // Fechar page settings
+            const closeSettings = () => {
+                document.getElementById('page-settings-modal').setAttribute('aria-hidden', 'true');
+                document.getElementById('page-settings-modal').classList.remove('mn-modal-backdrop--visible');
+            };
+            document.getElementById('page-settings-close')?.addEventListener('click', closeSettings);
+            document.getElementById('page-settings-cancel')?.addEventListener('click', closeSettings);
+
+            // Abrir page settings
+            document.getElementById('btn-page-settings')?.addEventListener('click', () => {
+                const modal = document.getElementById('page-settings-modal');
+                modal.setAttribute('aria-hidden', 'false');
+                modal.classList.add('mn-modal-backdrop--visible');
+            });
+
+            // Fechar shortcuts
+            const closeShortcuts = () => {
+                document.getElementById('shortcuts-overlay').setAttribute('aria-hidden', 'true');
+                document.getElementById('shortcuts-overlay').classList.remove('mn-modal-backdrop--visible');
+            };
+            document.getElementById('shortcuts-close')?.addEventListener('click', closeShortcuts);
+
+            // Abrir shortcuts pelo botão visível da toolbar (tablet friendly)
+            document.getElementById('btn-shortcuts-help')?.addEventListener('click', () => {
+                const o = document.getElementById('shortcuts-overlay');
+                const isHidden = o.getAttribute('aria-hidden') !== 'false';
+                o.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+                o.classList.toggle('mn-modal-backdrop--visible', isHidden);
+            });
+
+            // Fechar ao clicar fora dos modais
+            document.querySelectorAll('.mn-modal-backdrop').forEach(backdrop => {
+                backdrop.addEventListener('click', (e) => {
+                    if (e.target === backdrop) {
+                        backdrop.setAttribute('aria-hidden', 'true');
+                        backdrop.classList.remove('mn-modal-backdrop--visible');
+                    }
+                });
+            });
+
+            // Fechar painéis ao clicar fora
+            document.addEventListener('click', (e) => {
+                const panel = document.getElementById('color-picker-panel');
+                const btn   = document.getElementById('tool-color-picker');
+                if (panel && !panel.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+                    panel.setAttribute('aria-hidden', 'true');
+                    panel.classList.remove('mn-panel--visible');
+                }
+            });
+
+            // Atalho ? → shortcuts overlay
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '?' && !e.ctrlKey && !e.metaKey) {
+                    const o = document.getElementById('shortcuts-overlay');
+                    const isHidden = o.getAttribute('aria-hidden') !== 'false';
+                    o.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
+                    o.classList.toggle('mn-modal-backdrop--visible', isHidden);
+                }
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.mn-modal-backdrop--visible').forEach(el => {
+                        el.setAttribute('aria-hidden', 'true');
+                        el.classList.remove('mn-modal-backdrop--visible');
+                    });
+                    const panel = document.getElementById('color-picker-panel');
+                    if (panel) {
+                        panel.setAttribute('aria-hidden', 'true');
+                        panel.classList.remove('mn-panel--visible');
+                    }
+                }
+            });
+
+            // Bg type buttons (page settings)
+            document.querySelectorAll('.bg-type-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.bg-type-btn').forEach(b => { b.setAttribute('aria-pressed','false'); b.classList.remove('bg-type-btn--active'); });
+                    btn.setAttribute('aria-pressed','true');
+                    btn.classList.add('bg-type-btn--active');
+                });
+            });
+
+            // Canvas size buttons
+            document.querySelectorAll('.canvas-size-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.canvas-size-btn').forEach(b => { b.setAttribute('aria-pressed','false'); b.classList.remove('canvas-size-btn--active'); });
+                    btn.setAttribute('aria-pressed','true');
+                    btn.classList.add('canvas-size-btn--active');
+                });
+            });
+
+            // Bg color buttons
+            document.querySelectorAll('.bg-color-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.bg-color-btn').forEach(b => { b.setAttribute('aria-pressed','false'); b.classList.remove('bg-color-btn--active'); });
+                    btn.setAttribute('aria-pressed','true');
+                    btn.classList.add('bg-color-btn--active');
+                });
+            });
+
+            // Opacity slider
+            const opacitySlider = document.getElementById('color-opacity-slider');
+            const opacityDisplay = document.getElementById('opacity-value-display');
+            opacitySlider?.addEventListener('input', () => {
+                opacityDisplay.textContent = opacitySlider.value + '%';
+            });
+
+            // Hex input sync
+            const hexInput    = document.getElementById('custom-color-hex');
+            const colorInput  = document.getElementById('custom-color-input');
+            hexInput?.addEventListener('input', () => {
+                if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) colorInput.value = hexInput.value;
+            });
+            colorInput?.addEventListener('input', () => {
+                hexInput.value = colorInput.value;
+            });
+
+            // Thickness dots
+            document.querySelectorAll('.thickness-dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    document.querySelectorAll('.thickness-dot').forEach(d => d.classList.remove('thickness-dot--active'));
+                    dot.classList.add('thickness-dot--active');
+                });
+            });
+
+            // Tool buttons (visual toggle only — lógica real no Passo 6)
+            document.querySelectorAll('.tool-btn[data-tool]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => {
+                        b.classList.remove('tool-btn--active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    btn.classList.add('tool-btn--active');
+                    btn.setAttribute('aria-pressed', 'true');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

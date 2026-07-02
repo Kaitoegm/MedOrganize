@@ -1175,6 +1175,81 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════
+         MEDNOTES — Botão Meia-Lua de Acesso
+    ═══════════════════════════════════════════════════════ -->
+
+    <!-- Flip Overlay: cobre a tela durante a transição -->
+    <div id="mednotes-flip-overlay" class="mednotes-flip-overlay" aria-hidden="true">
+        <div class="flip-page flip-page-front"></div>
+        <div class="flip-page flip-page-back">
+            <div class="flip-loader">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <rect x="8" y="6" width="32" height="38" rx="5" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="2"/>
+                    <line x1="14" y1="16" x2="34" y2="16" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="14" y1="22" x2="34" y2="22" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="14" y1="28" x2="26" y2="28" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Caneta -->
+                    <rect x="29" y="30" width="5" height="12" rx="1.5" transform="rotate(-35 29 30)" fill="#9c27b0"/>
+                    <polygon points="31,42 33,42 32,46" fill="#5c6bc0"/>
+                </svg>
+                <span>Abrindo MedNotes...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Meia-Lua -->
+    <button
+        id="mednotes-moon-btn"
+        class="mednotes-moon-btn"
+        title="Abrir MedNotes — Caderno de Anotações"
+        aria-label="Abrir MedNotes"
+        onclick="openMedNotes()"
+    >
+        <!-- Ícone: meia-lua com caderno -->
+        <span class="moon-btn-inner">
+            <svg class="moon-icon" viewBox="0 0 60 30" width="60" height="30" fill="none" aria-hidden="true">
+                <!-- Contorno meia-lua (decorativo no SVG, forma real é no CSS) -->
+                <path d="M10 28 Q10 4 30 4 Q50 4 50 28" stroke="#5c6bc0" stroke-width="1.5" fill="none" opacity="0.3"/>
+            </svg>
+            <span class="moon-btn-icon">
+                <!-- Ícone de caderno + caneta -->
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <!-- ponta caneta -->
+                    <circle cx="19" cy="19" r="2" fill="currentColor" stroke="none" opacity="0.6"/>
+                </svg>
+            </span>
+            <span class="moon-btn-label">MedNotes</span>
+        </span>
+    </button>
+
+    <script>
+        function openMedNotes() {
+            const overlay = document.getElementById('mednotes-flip-overlay');
+            const btn = document.getElementById('mednotes-moon-btn');
+
+            // Desabilita botão para evitar cliques duplos
+            btn.disabled = true;
+
+            // Fase 1: overlay entra pela parte inferior (slide-up)
+            overlay.classList.add('active');
+
+            // Fase 2: após a animação de entrada, mostrar o loader
+            setTimeout(() => {
+                overlay.classList.add('show-back');
+            }, 350);
+
+            // Fase 3: navegar para o MedNotes
+            setTimeout(() => {
+                window.location.href = 'notes.html';
+            }, 900);
+        }
+    </script>
+
     <!-- Anime.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="termo_validation_words.js"></script>
