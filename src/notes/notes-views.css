@@ -193,6 +193,12 @@ body[data-view="editor"] #views-container { display: none; }
     box-shadow: 0 3px 8px rgba(92, 107, 192, .35);
 }
 .rail-btn--home:hover { filter: brightness(1.08); }
+.rail-btn--search {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #fffdf5; border: 1.5px solid var(--mnv-kraft-line);
+    color: var(--mnv-ink-soft);
+}
+.rail-btn--search:hover { color: var(--mn-blue); border-color: var(--mn-blue); }
 .rail-divider { width: 26px; height: 1px; background: var(--mnv-kraft-line); flex-shrink: 0; }
 .rail-folders {
     display: flex; flex-direction: column; gap: 8px; flex: 1;
@@ -211,11 +217,72 @@ body[data-view="editor"] #views-container { display: none; }
     color: var(--mnv-ink-soft);
 }
 .rail-btn--exit:hover { color: #1a1b2e; }
+.rail-btn--settings {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #fffdf5; border: 1.5px solid var(--mnv-kraft-line);
+    color: var(--mnv-ink-soft);
+}
+.rail-btn--settings:hover { color: var(--mn-purple); border-color: var(--mn-purple); }
 
 @media (hover: none) and (pointer: coarse) {
     .mn-rail { width: 64px; }
-    .rail-btn--home, .rail-btn--folder, .rail-btn--exit { width: 44px; height: 44px; }
+    .rail-btn--home, .rail-btn--search, .rail-btn--folder, .rail-btn--exit, .rail-btn--settings { width: 44px; height: 44px; }
 }
+
+/* ── Busca Global (Passo 11) ─────────────────────────────────────── */
+.sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.search-overlay {
+    position: fixed; inset: 0; background: rgba(26, 27, 46, .38);
+    backdrop-filter: blur(3px); opacity: 0; visibility: hidden;
+    transition: var(--mn-transition); z-index: 960;
+}
+.search-overlay.open { opacity: 1; visibility: visible; }
+
+.search-modal {
+    position: fixed; top: 12%; left: 50%; transform: translate(-50%, -12px);
+    width: min(560px, 92vw); max-height: 70vh; display: flex; flex-direction: column;
+    background: var(--mn-surface); border-radius: var(--mn-radius-lg);
+    box-shadow: var(--mn-shadow-lg), 0 20px 40px rgba(26,27,46,.25);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: var(--mn-transition-spring), opacity .2s ease;
+    z-index: 961; overflow: hidden;
+}
+.search-modal.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, 0); }
+
+.search-modal-bar {
+    display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+    border-bottom: 1px solid var(--mn-border); color: var(--mn-text-muted); flex-shrink: 0;
+}
+.search-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: var(--mn-font); font-size: 15px; color: var(--mn-text-primary);
+}
+.search-input::placeholder { color: var(--mn-text-placeholder); }
+.search-close-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border: none; border-radius: var(--mn-radius-sm);
+    background: transparent; color: var(--mn-text-muted); cursor: pointer; transition: var(--mn-transition);
+}
+.search-close-btn:hover { background: var(--mn-surface-hover); color: var(--mn-text-primary); }
+
+.search-results { overflow-y: auto; padding: 8px; }
+.search-empty {
+    padding: 28px 16px; text-align: center; color: var(--mn-text-muted); font-size: 14px;
+}
+.search-result {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    padding: 10px 12px; border: none; border-radius: var(--mn-radius-md);
+    background: transparent; text-align: left; cursor: pointer;
+    font-family: var(--mn-font); font-size: 13.5px; color: var(--mn-text-primary);
+    transition: var(--mn-transition);
+}
+.search-result:hover, .search-result:focus-visible { background: var(--mn-surface-hover); }
+.search-result-icon { font-size: 16px; flex-shrink: 0; }
+.search-result-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-sep { color: var(--mn-text-muted); margin: 0 2px; }
 .mnv-nb-card .mnv-menu-btn:hover { background: rgba(255, 255, 255, .5); color: #1a1b2e; }
 
 /* ── Grades de emoji e cor ───────────────────────────────────────── */

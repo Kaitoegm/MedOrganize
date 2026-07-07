@@ -324,6 +324,344 @@ MedNotes.Dialog = {
     }
 };
 
+// ────────────────────────────────────────────────────────────────
+// SAVE STATUS — indicador visual 💾 Salvo / ⚡ Salvando / ⚠️ Erro (Passo 13)
+// ────────────────────────────────────────────────────────────────
+MedNotes.SaveStatus = {
+    _hideTimer: null,
+
+    _els: function () {
+        return {
+            box:  document.getElementById('save-status'),
+            dot:  document.getElementById('save-dot'),
+            text: document.getElementById('save-text')
+        };
+    },
+
+    showSaving: function () {
+        clearTimeout(this._hideTimer);
+        const { box, dot, text } = this._els();
+        if (!box) return;
+        box.classList.remove('error');
+        box.classList.add('saving');
+        dot.className = 'save-status-dot save-status-dot--saving';
+        text.textContent = 'Salvando…';
+    },
+
+    showSaved: function () {
+        clearTimeout(this._hideTimer);
+        const { box, dot, text } = this._els();
+        if (!box) return;
+        // Mantém "Salvando…" visível por um instante para o usuário perceber o ciclo
+        this._hideTimer = setTimeout(() => {
+            box.classList.remove('saving', 'error');
+            dot.className = 'save-status-dot';
+            text.textContent = '💾 Salvo';
+        }, 250);
+    },
+
+    showError: function () {
+        clearTimeout(this._hideTimer);
+        const { box, dot, text } = this._els();
+        if (!box) return;
+        box.classList.remove('saving');
+        box.classList.add('error');
+        dot.className = 'save-status-dot save-status-dot--error';
+        text.textContent = '⚠️ Erro ao salvar';
+    }
+};
+
+// ────────────────────────────────────────────────────────────────
+// VERSIONS — últimas 5 versões locais de cada página (Passo 13)
+// Snapshot tirado a cada 2min de edição ativa (não a cada save).
+// ────────────────────────────────────────────────────────────────
+MedNotes.Versions = {
+    KEY: 'mednotes_versions',
+    MAX_PER_PAGE: 5,
+    INTERVAL_MS: 2 * 60 * 1000,
+    _lastSnapshotAt: {}, // pageId -> timestamp do último snapshot
+
+    _loadAll: function () {
+        try {
+            const raw = localStorage.getItem(this.KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch (e) { return {}; }
+    },
+
+    _saveAll: function (all) {
+        try { localStorage.setItem(this.KEY, JSON.stringify(all)); }
+        catch (e) { console.error('Erro ao salvar versões:', e); }
+    },
+
+    // Chamado a cada _savePage(). Só tira snapshot se passou o intervalo
+    // desde o último para esta página (evita 1 versão por traço).
+    noteActivity: function (folderId, notebookId, pageId) {
+        const now = Date.now();
+        const last = this._lastSnapshotAt[pageId] || 0;
+        if (now - last < this.INTERVAL_MS) return;
+
+        const page = MedNotes.DataStore.getPage(folderId, notebookId, pageId);
+        if (!page) return;
+
+        this._lastSnapshotAt[pageId] = now;
+        this._pushSnapshot(pageId, {
+            savedAt: new Date().toISOString(),
+            canvasData: page.canvasData,
+            textData: page.textData,
+            background: page.background,
+            bgColor: page.bgColor,
+            canvasW: page.canvasW,
+            canvasH: page.canvasH
+        });
+    },
+
+    _pushSnapshot: function (pageId, snapshot) {
+        const all = this._loadAll();
+        const list = all[pageId] || [];
+        list.push(snapshot);
+        while (list.length > this.MAX_PER_PAGE) list.shift();
+        all[pageId] = list;
+        this._saveAll(all);
+    },
+
+    list: function (pageId) {
+        const all = this._loadAll();
+        return (all[pageId] || []).slice().reverse(); // mais recente primeiro
+    },
+
+    // Restaura uma versão específica (por índice no array de list(), 0 = mais recente)
+    restore: function (folderId, notebookId, pageId, index) {
+        const versions = this.list(pageId);
+        const snap = versions[index];
+        if (!snap) return false;
+
+        MedNotes.DataStore.updatePageData(folderId, notebookId, pageId, {
+            canvasData: snap.canvasData,
+            textData:   snap.textData,
+            background: snap.background,
+            bgColor:    snap.bgColor,
+            canvasW:    snap.canvasW,
+            canvasH:    snap.canvasH
+        });
+
+        if (MedNotes.Canvas && MedNotes.DataStore.active.pageId === pageId) {
+            try { MedNotes.Canvas.loadActivePage(); } catch (e) { /* sem página ativa */ }
+        }
+        return true;
+    },
+
+    clearForPage: function (pageId) {
+        const all = this._loadAll();
+        delete all[pageId];
+        this._saveAll(all);
+        delete this._lastSnapshotAt[pageId];
+    }
+};
+
+// ────────────────────────────────────────────────────────────────
+// TEMPLATES — galeria de páginas pré-preenchidas para medicina (Passo 14)
+// Cada template gera { canvasData, textData, background, bgColor } prontos
+// para virar os campos de uma página nova (mesmo esquema de createPage).
+// ────────────────────────────────────────────────────────────────
+MedNotes.Templates = {
+    CUSTOM_KEY: 'mednotes_custom_templates',
+
+    // ── Helpers de construção (mesmo formato usado pelo Canvas) ──
+    _line: function (x1, y1, x2, y2, opts = {}) {
+        return {
+            tool: 'shape', shapeType: 'line',
+            color: opts.color || '#5c6bc0', size: opts.size || 2, opacity: opts.opacity ?? 1,
+            points: [{ x: x1, y: y1 }, { x: x2, y: y2 }],
+            variableWidth: false
+        };
+    },
+    _rect: function (x1, y1, x2, y2, opts = {}) {
+        return {
+            tool: 'shape', shapeType: 'rect',
+            color: opts.color || '#5c6bc0', size: opts.size || 2, opacity: opts.opacity ?? 1,
+            points: [{ x: x1, y: y1 }, { x: x2, y: y1 }, { x: x2, y: y2 }, { x: x1, y: y2 }, { x: x1, y: y1 }],
+            variableWidth: false
+        };
+    },
+    _text: function (cx, cy, text, opts = {}) {
+        return {
+            id: 'te_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            cx, cy, text,
+            color: opts.color || '#1a1b2e',
+            size:  opts.size || 20,
+            width: opts.width || 300
+        };
+    },
+
+    // ── Templates fixos ──
+    BUILTIN: [
+        {
+            id: 'blank', name: 'Em branco', icon: '📄',
+            desc: 'Página limpa, sem estrutura.',
+            build: () => ({ strokes: [], texts: [], background: 'lined', bgColor: '#ffffff' })
+        },
+        {
+            id: 'resumo-aula', name: 'Resumo de Aula', icon: '📚',
+            desc: 'Título + seções para anotar aulas.',
+            build: () => ({
+                strokes: [
+                    MedNotes.Templates._line(200, 260, 7800, 260, { color: '#7c4dff', size: 3 }),
+                ],
+                texts: [
+                    MedNotes.Templates._text(200, 100, 'Título da Aula', { size: 34, color: '#1a1b2e', width: 2000 }),
+                    MedNotes.Templates._text(200, 180, 'Data · Disciplina', { size: 16, color: '#7986cb', width: 1200 }),
+                    MedNotes.Templates._text(200, 320, 'Tópicos principais', { size: 22, color: '#3949ab', width: 1200 }),
+                    MedNotes.Templates._text(200, 420, '• ', { size: 18, width: 1400 }),
+                ],
+                background: 'lined', bgColor: '#ffffff'
+            })
+        },
+        {
+            id: 'farmacologia', name: 'Farmacologia', icon: '💊',
+            desc: 'Tabela de medicamentos (nome, classe, dose, efeitos).',
+            build: () => {
+                const strokes = [];
+                const texts = [];
+                const left = 200, top = 300, right = 7800, rowH = 200;
+                const cols = [left, 2100, 3900, 5700, right];
+                const rows = 6;
+
+                texts.push(MedNotes.Templates._text(left, 100, 'Farmacologia — Tabela de Medicamentos', { size: 30, width: 3000 }));
+
+                strokes.push(MedNotes.Templates._rect(left, top, right, top + rowH * rows, { color: '#5c6bc0', size: 3 }));
+                for (let i = 1; i < rows; i++) {
+                    strokes.push(MedNotes.Templates._line(left, top + rowH * i, right, top + rowH * i, { color: '#c5cae9', size: 1.5 }));
+                }
+                for (let i = 1; i < cols.length - 1; i++) {
+                    strokes.push(MedNotes.Templates._line(cols[i], top, cols[i], top + rowH * rows, { color: '#c5cae9', size: 1.5 }));
+                }
+
+                const headers = ['Medicamento', 'Classe', 'Dose', 'Efeitos/Observações'];
+                headers.forEach((h, i) => {
+                    texts.push(MedNotes.Templates._text(cols[i] + 20, top + 20, h, { size: 18, color: '#3949ab', width: cols[i + 1] - cols[i] - 40 }));
+                });
+
+                return { strokes, texts, background: 'none', bgColor: '#ffffff' };
+            }
+        },
+        {
+            id: 'anatomia', name: 'Anatomia', icon: '🫀',
+            desc: 'Caixa grande para desenho + legenda ao lado.',
+            build: () => ({
+                strokes: [
+                    MedNotes.Templates._rect(200, 260, 5400, 5600, { color: '#5c6bc0', size: 3 }),
+                    MedNotes.Templates._line(5600, 260, 5600, 5600, { color: '#c5cae9', size: 1.5 }),
+                ],
+                texts: [
+                    MedNotes.Templates._text(200, 100, 'Anatomia', { size: 30, width: 2000 }),
+                    MedNotes.Templates._text(5650, 300, 'Legenda', { size: 20, color: '#3949ab', width: 2100 }),
+                    MedNotes.Templates._text(5650, 380, '1. ', { size: 16, width: 2100 }),
+                    MedNotes.Templates._text(5650, 440, '2. ', { size: 16, width: 2100 }),
+                    MedNotes.Templates._text(5650, 500, '3. ', { size: 16, width: 2100 }),
+                ],
+                background: 'none', bgColor: '#ffffff'
+            })
+        },
+        {
+            id: 'caso-clinico', name: 'Caso Clínico', icon: '🩺',
+            desc: 'Formato SOAP: Subjetivo, Objetivo, Avaliação, Plano.',
+            build: () => {
+                const strokes = [];
+                const texts = [];
+                const sections = [
+                    ['S — Subjetivo', '#e53935'],
+                    ['O — Objetivo', '#fb8c00'],
+                    ['A — Avaliação', '#00897b'],
+                    ['P — Plano', '#3949ab'],
+                ];
+                let y = 280;
+                const sectionH = 1300;
+                texts.push(MedNotes.Templates._text(200, 100, 'Caso Clínico', { size: 30, width: 2000 }));
+                sections.forEach(([label, color]) => {
+                    strokes.push(MedNotes.Templates._line(200, y, 7800, y, { color, size: 2.5 }));
+                    texts.push(MedNotes.Templates._text(200, y + 20, label, { size: 20, color, width: 2000 }));
+                    y += sectionH;
+                });
+                return { strokes, texts, background: 'lined', bgColor: '#ffffff' };
+            }
+        },
+        {
+            id: 'mapa-mental', name: 'Mapa Mental', icon: '🧠',
+            desc: 'Hub central com ramos para conectar ideias.',
+            build: () => {
+                const strokes = [];
+                const texts = [];
+                const cx = 4000, cy = 3000, r = 500;
+
+                strokes.push(MedNotes.Templates._line(cx - r, cy, cx + r, cy, { color: '#7c4dff', size: 3 }));
+                strokes.push(MedNotes.Templates._line(cx, cy - r * 0.6, cx, cy + r * 0.6, { color: '#7c4dff', size: 3 }));
+                texts.push(MedNotes.Templates._text(cx - 180, cy - 20, 'Tema Central', { size: 22, color: '#7c4dff', width: 400 }));
+
+                const branches = 6;
+                for (let i = 0; i < branches; i++) {
+                    const a = (i / branches) * Math.PI * 2;
+                    const bx = cx + Math.cos(a) * 2400;
+                    const by = cy + Math.sin(a) * 2000;
+                    strokes.push(MedNotes.Templates._line(cx, cy, bx, by, { color: '#9c27b0', size: 2 }));
+                    texts.push(MedNotes.Templates._text(bx - 100, by - 10, '·', { size: 18, color: '#9c27b0', width: 250 }));
+                }
+
+                return { strokes, texts, background: 'none', bgColor: '#ffffff' };
+            }
+        }
+    ],
+
+    // ── Templates pessoais (salvos pelo usuário) ──
+    listCustom: function () {
+        try {
+            const raw = localStorage.getItem(this.CUSTOM_KEY);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+    },
+
+    saveCustom: function (name, page) {
+        const list = this.listCustom();
+        list.push({
+            id: 'custom_' + Date.now().toString(36),
+            name, icon: '⭐',
+            desc: 'Template pessoal',
+            savedAt: new Date().toISOString(),
+            canvasData: page.canvasData || '[]',
+            textData:   page.textData   || '[]',
+            background: page.background || 'lined',
+            bgColor:    page.bgColor    || '#ffffff'
+        });
+        localStorage.setItem(this.CUSTOM_KEY, JSON.stringify(list));
+    },
+
+    deleteCustom: function (id) {
+        const list = this.listCustom().filter(t => t.id !== id);
+        localStorage.setItem(this.CUSTOM_KEY, JSON.stringify(list));
+    },
+
+    // Retorna os campos prontos para updatePageData(), dado um template
+    // (fixo, identificado por id) ou um objeto de template custom.
+    applyBuiltin: function (templateId) {
+        const tpl = this.BUILTIN.find(t => t.id === templateId);
+        if (!tpl) return null;
+        const { strokes, texts, background, bgColor } = tpl.build();
+        return {
+            canvasData: JSON.stringify(strokes),
+            textData:   JSON.stringify(texts),
+            background, bgColor
+        };
+    },
+
+    applyCustom: function (customTemplate) {
+        return {
+            canvasData: customTemplate.canvasData,
+            textData:   customTemplate.textData,
+            background: customTemplate.background,
+            bgColor:    customTemplate.bgColor
+        };
+    }
+};
+
 // ── CANVAS ENGINE (Passo 5) ──────────────────────────────────────────
 MedNotes.Canvas = {
 
@@ -465,6 +803,19 @@ MedNotes.Canvas = {
         return {
             x: cx * this.view.zoom + this.view.x,
             y: cy * this.view.zoom + this.view.y
+        };
+    },
+
+    // _isInsidePage — true se o ponto (coords lógicas) está dentro da página
+    _isInsidePage: function (x, y) {
+        return x >= 0 && x <= this.CANVAS_W && y >= 0 && y <= this.CANVAS_H;
+    },
+
+    // _clampToPage — recorta um ponto (coords lógicas) para dentro da página
+    _clampToPage: function (x, y) {
+        return {
+            x: Math.min(Math.max(x, 0), this.CANVAS_W),
+            y: Math.min(Math.max(y, 0), this.CANVAS_H)
         };
     },
 
@@ -1013,6 +1364,7 @@ MedNotes.Canvas = {
             if (e.pointerType === 'touch' && e.width > 30) return;
 
             let { x, y } = this.screenToCanvas(sx, sy);
+            if (!this._isInsidePage(x, y)) return; // não inicia traço fora da página
             const ts = this.toolSettings[this.activeTool];
 
             // ── Fase C: snap na régua se o traço começa perto dela ─────
@@ -1072,6 +1424,7 @@ MedNotes.Canvas = {
         // ── Passo 8: Formas ───────────────────────────────────────────
         if (this.activeTool === 'shapes') {
             const { x, y } = this.screenToCanvas(sx, sy);
+            if (!this._isInsidePage(x, y)) return; // não inicia forma fora da página
             this._shapeStart   = { x, y };
             this._shapeCurrent = { x, y };
             this.uiCanvas.setPointerCapture(e.pointerId);
@@ -1119,6 +1472,7 @@ MedNotes.Canvas = {
             const editing = document.querySelector('.canvas-text-element.editing');
             if (editing) { editing.blur(); return; }
             const { x, y } = this.screenToCanvas(sx, sy);
+            if (!this._isInsidePage(x, y)) return; // não cria texto fora da página
             this._createTextElement(x, y);
         }
 
@@ -1159,6 +1513,7 @@ MedNotes.Canvas = {
                 const csx = ce.clientX - cRect.left;
                 const csy = ce.clientY - cRect.top;
                 let { x, y } = this.screenToCanvas(csx, csy);
+                ({ x, y } = this._clampToPage(x, y)); // recorta o traço na borda da página
 
                 // Fase C: traço iniciado na régua gruda nela até o fim
                 if (this._currentStroke._snapRuler && this._ruler.active) {
@@ -1245,7 +1600,7 @@ MedNotes.Canvas = {
         // ── Passo 8: Formas preview ────────────────────────────────────
         if (this.activeTool === 'shapes' && this._shapeStart && e.buttons > 0) {
             const { x, y } = this.screenToCanvas(sx, sy);
-            this._shapeCurrent = { x, y };
+            this._shapeCurrent = this._clampToPage(x, y); // recorta a forma na borda da página
             this._dirty = true;
         }
 
@@ -2001,6 +2356,9 @@ MedNotes.Canvas = {
     _drawStroke: function (ctx, stroke) {
         const bt = stroke.brushType;
 
+        // ── Formas geométricas: segmentos retos, sem suavização Catmull-Rom
+        if (stroke.tool === 'shape') { this._drawShapeStroke(ctx, stroke); return; }
+
         // ── Marca-texto ───────────────────────────────────────────────
         if (stroke.tool === 'highlighter') {
             if (bt === 'chisel') { this._drawChiselStroke(ctx, stroke); return; }
@@ -2112,6 +2470,28 @@ MedNotes.Canvas = {
         }
         ctx.closePath();
         ctx.fill();
+        ctx.restore();
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _drawShapeStroke — formas geométricas: segmentos retos (sem Catmull-
+    // Rom), cantos vivos (miter). Círculo já vem poligonal (60 pontos).
+    // ─────────────────────────────────────────────────────────────────
+    _drawShapeStroke: function (ctx, stroke) {
+        const pts = stroke.points;
+        if (pts.length < 2) return;
+
+        ctx.save();
+        ctx.globalAlpha = stroke.opacity ?? 1;
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth   = stroke.size;
+        ctx.lineJoin    = stroke.shapeType === 'circle' || stroke.shapeType === 'ellipse' ? 'round' : 'miter';
+        ctx.lineCap     = stroke.shapeType === 'line' || stroke.shapeType === 'arrow' ? 'round' : 'butt';
+
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.stroke();
         ctx.restore();
     },
 
@@ -2822,10 +3202,19 @@ MedNotes.Canvas = {
     _savePage: function () {
         const { folderId, notebookId, pageId } = MedNotes.DataStore.active;
         if (!pageId) return;
-        MedNotes.DataStore.updatePageData(folderId, notebookId, pageId, {
-            canvasData: JSON.stringify(this.strokes),
-            textData:   JSON.stringify(this.textElements)
-        });
+
+        MedNotes.SaveStatus?.showSaving();
+        try {
+            MedNotes.DataStore.updatePageData(folderId, notebookId, pageId, {
+                canvasData: JSON.stringify(this.strokes),
+                textData:   JSON.stringify(this.textElements)
+            });
+            MedNotes.SaveStatus?.showSaved();
+            MedNotes.Versions?.noteActivity(folderId, notebookId, pageId);
+        } catch (e) {
+            console.error('Erro ao salvar página:', e);
+            MedNotes.SaveStatus?.showError();
+        }
     },
 
     // Helper
@@ -3111,6 +3500,12 @@ document.addEventListener('DOMContentLoaded', () => {
     MedNotes.PageManager.init();
     MedNotes.Views.init();
     MedNotes.Rail.init();
+    MedNotes.Search.init();
+    MedNotes.PageSettings.init();
+    MedNotes.AppSettings.init();
+    MedNotes.AppSettings._applyFavColorsToPenPopover();
+    MedNotes.TemplateGallery.init();
+    MedNotes.DriveAuth?.init();
 
     MedNotes.initialized = true;
     console.log('%c✅ MedNotes pronto (Passos 1-10 + redesign de navegação)', 'color:#9c27b0;font-weight:700;font-size:13px;');

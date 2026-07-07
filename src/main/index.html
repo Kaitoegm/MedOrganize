@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedOrganize Cozy — Seu Dia Aconchegante</title>
+    <!-- Google Fonts: Fredoka (Rounded, Friendly, Cute) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=1.0.3">
+</head>
+<body>
+    <!-- Floating background clouds for Studio Ghibli vibe -->
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+
+    <!-- Light/Dark Theme Toggle Button -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn" title="Alternar Tema Claro/Escuro" aria-label="Alternar Tema Claro/Escuro">☀️</button>
+
+    <!-- Sidebar Buttons Container (Top Left) -->
+    <div class="sidebar-controls" role="navigation" aria-label="Menu Principal">
+        <!-- 1. Cozy Shop & Gacha Button -->
+        <button id="shop-toggle-btn" class="sidebar-btn shop-btn" title="Loja Cozy & Gacha" aria-label="Loja Cozy e Máquina Gacha" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"/>
+                <circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+        </button>
+
+        <!-- 2. Aesthetics / Customização Button -->
+        <button id="aesthetics-toggle-btn" class="sidebar-btn aesthetics-btn" title="Aparência & Bichinhos" aria-label="Aparência, Plano de Fundo e Bichinhos" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 11.5 21.5 11 21 11H18.5C18.2239 11 18 10.7761 18 10.5C18 9.11929 16.8807 8 15.5 8C15.2239 8 15 7.77614 15 7.5V5C15 2.23858 12.7614 0 10 0C4.47715 0 0 4.47715 0 10C0 16.6274 5.37258 22 12 22Z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="6.5" cy="9.5" r="1.5" fill="currentColor"/>
+                <circle cx="7.5" cy="15.5" r="1.5" fill="currentColor"/>
+                <circle cx="12.5" cy="17.5" r="1.5" fill="currentColor"/>
+                <circle cx="13.5" cy="12.5" r="1.5" fill="currentColor"/>
+            </svg>
+        </button>
+
+        <!-- 3. Instruções / Termo Button -->
+        <button id="minigames-toggle-btn" class="sidebar-btn minigames-btn" title="Instruções" aria-label="Instruções e Termo Cozy" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <rect x="8" y="5" width="8" height="6" rx="1.5"/>
+                <line x1="9" y1="15" x2="13" y2="15"/>
+                <line x1="11" y1="13" x2="11" y2="17"/>
+                <circle cx="15.5" cy="14.5" r="1" fill="currentColor"/>
+                <circle cx="16.5" cy="16.5" r="1" fill="currentColor"/>
+            </svg>
+        </button>
+
+        <!-- 4. Quests Button (Daily Quests) -->
+        <button id="quests-toggle-btn" class="sidebar-btn quests-btn" title="Missões Diárias" aria-label="Missões Diárias e Conquistas" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <span id="quests-badge" class="quests-badge" style="display: none;">!</span>
+        </button>
+
+        <!-- 5. Settings Button -->
+        <button id="settings-toggle-btn" class="sidebar-btn settings-btn" title="Configurações" aria-label="Configurações do Foco e Pomodoro" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+
+        <!-- 6. Stats Button (Estatísticas) -->
+        <button id="stats-toggle-btn" class="sidebar-btn stats-btn" title="Estatísticas de Estudo" aria-label="Estatísticas de Estudo" aria-haspopup="dialog" aria-expanded="false">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="main-screen">
+        <!-- Cherry Blossoms Decoration (Light/Dark Switchable) -->
+        <img class="cherry-decor light-only cherry-left" src="../assets/aesthetic/flowers-cherryblossom-pink-gif-png-cute.gif" onerror="this.style.display='none'" alt="Cherry Blossoms">
+        <img class="cherry-decor light-only cherry-right" src="../assets/aesthetic/flowers-cherryblossom-pink-gif-png-cute.gif" onerror="this.style.display='none'" alt="Cherry Blossoms">
+        
+        <img class="cherry-decor dark-only cherry-left" src="../assets/aesthetic/versão-noite.gif" onerror="this.style.display='none'" alt="Night Blossoms">
+        <img class="cherry-decor dark-only cherry-right" src="../assets/aesthetic/versão-noite.gif" onerror="this.style.display='none'" alt="Night Blossoms">
+        
+        <div class="app-container">
+            <!-- Header -->
+            <header class="app-header">
+                <!-- Gamification Stats Dashboard -->
+                <div class="gamification-bar">
+                    <div class="stat-item" title="Pomodoros concluídos">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#e07a5f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" fill="#f4f1de"/>
+                                <polyline points="12 7 12 12 15 14"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Pomodoros:</span>
+                        <span id="stat-pomodoros" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item" title="Tempo total de estudo">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#a29bfe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Estudado:</span>
+                        <span id="stat-study-time" class="stat-val">0h 00m</span>
+                    </div>
+                    <div class="stat-item" title="Tarefas concluídas">
+                        <span class="stat-icon">
+                            <svg class="stat-icon-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#81b29a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </span>
+                        <span class="stat-label">Tarefas:</span>
+                        <span id="stat-tasks" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item highlight-tokens" title="Seus MedTokens">
+                        <span class="stat-icon">
+                            <img src="../assets/aesthetic/moedinha.png" alt="Tokens" class="stat-token-img">
+                        </span>
+                        <span class="stat-label">Tokens:</span>
+                        <span id="stat-tokens" class="stat-val">0</span>
+                    </div>
+                    <div class="stat-item highlight-gacha" title="Suas Moedas Gacha">
+                        <span class="stat-icon">
+                            <img src="../assets/aesthetic/moeda-gacha.png" alt="Moedas Gacha" class="stat-gacha-img">
+                        </span>
+                        <span class="stat-label">Moedas Gacha:</span>
+                        <span id="stat-gacha-coins" class="stat-val">0</span>
+                    </div>
+                </div>
+
+                <div class="logo-area">
+                    <span class="logo-leaf">🌱</span>
+                    <h1>Med<span class="highlight">Organize</span></h1>
+                </div>
+                <p class="subtitle">Estude no seu próprio ritmo, com carinho 🌸</p>
+                <div id="current-date" class="date-display">Carregando data...</div>
+            </header>
+ 
+            <!-- Daily Schedule Section -->
+            <main class="checklist-section">
+                <!-- Task Entry Input Bar -->
+                <div class="task-input-container" style="position: relative;">
+                    <!-- Decor popcat -->
+                    <img src="../assets/aesthetic/popcat.gif" onerror="this.style.display='none'" alt="Popcat" class="popcat-decor">
+                    <span class="input-emoji">✨</span>
+                    <input type="text" id="task-input" placeholder="O que vamos fazer hoje?" autofocus autocomplete="off">
+                </div>
+
+                <!-- Incomplete Tasks List -->
+                <div class="tasks-container">
+                    <ul id="task-list" class="task-list">
+                        <!-- Tasks dynamically injected here -->
+                    </ul>
+                    
+                    <div id="empty-state" class="empty-state">
+                        <div class="empty-icon">🌱</div>
+                        <h3>Seu dia está limpinho!</h3>
+                        <p>Escreva uma tarefa acima e aperte Enter para começar.</p>
+                    </div>
+                </div>
+
+                <!-- Completed Tasks Section -->
+                <div id="completed-section" class="completed-section" style="display: none;">
+                    <div class="completed-header">
+                        <h4>Tarefas Concluídas ✨</h4>
+                        <span id="completed-count" class="badge">0 concluídas</span>
+                    </div>
+                    <ul id="completed-task-list" class="task-list completed-list">
+                        <!-- Completed tasks dynamically injected here -->
+                    </ul>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- FULLSCREEN POMODORO SCREEN -->
+    <div id="fullscreen-focus" class="fullscreen-focus">
+        
+        <!-- Interactive Lofi/Ghibli Background GIF -->
+        <img id="focus-bg-img" class="focus-bg-img" src="" alt="Lofi Background">
+        
+        <!-- Rain overlay effect (Foco stage) -->
+        <div id="rain-container" class="rain-container"></div>
+        
+        <!-- Big countdown overlay for the last 3-2-1 seconds of Preparo -->
+        <div id="countdown-overlay" class="countdown-overlay">
+            <span id="countdown-number">3</span>
+        </div>
+
+        <div class="focus-content-wrapper">
+            
+            <!-- LEFT PANEL: Active Stage content (Illustration, Header, Balloons, Skip) -->
+            <div class="focus-left-panel">
+                
+                <!-- STAGE 1: PREPARO -->
+                <div id="preparo-view" class="stage-view active">
+                    <div class="stage-header">
+                        <h2>Hora de se preparar... ☕</h2>
+                        <p class="stage-subtitle">Limpe sua mente e estoure os balões:</p>
+                    </div>
+                    
+                    <!-- Floating preparation task balloons (dynamic bubbles) -->
+                    <div id="prep-balloons-container" class="prep-balloons-container">
+                        <!-- Balloons will be injected here -->
+                    </div>
+                    
+                    <!-- Cute transparent animal sticker -->
+                    <div class="illustration-container">
+                        <img id="preparo-animal-img" class="focus-animal-gif" src="" alt="Preparo Animal">
+                    </div>
+                    <div class="phase-badge badge-preparo">Preparo</div>
+                </div>
+
+                <!-- STAGE 2: FOCO -->
+                <div id="foco-view" class="stage-view">
+                    <div class="stage-header">
+                        <h2>Foco total... 📖</h2>
+                        <p id="focus-task-title" class="stage-subtitle">Estudando: Tópico</p>
+                    </div>
+                    <!-- Cute transparent animal sticker -->
+                    <div class="illustration-container">
+                        <img id="foco-animal-img" class="focus-animal-gif" src="" alt="Foco Animal">
+                    </div>
+                    
+                    <!-- Toggle button to open Caderno de Erros -->
+                    <button id="error-notebook-toggle-btn" class="error-notebook-circle-btn" title="Caderno de Erros" aria-label="Abrir Caderno de Erros" aria-haspopup="dialog" aria-expanded="false">
+                        <img src="../assets/aesthetic/livro-de-erros.png" alt="Caderno de Erros">
+                    </button>
+                    
+                    <div class="phase-badge badge-foco">Foco</div>
+                </div>
+
+                <!-- STAGE 3: PAUSA — Redesigned relaxing break screen -->
+                <div id="pausa-view" class="stage-view">
+                    <!-- fog-overlay behind everything (z-index: 0) -->
+                    <div id="fog-overlay" class="fog-overlay" aria-hidden="true"></div>
+
+                    <!-- Mascote descansando (z-index: 2, floats above fog) -->
+                    <div class="illustration-container">
+                        <img id="pausa-animal-img" class="focus-animal-gif pausa-mascote" src="" alt="Pausa Animal">
+                    </div>
+                    
+                    <!-- breathing animation (z-index: 1) -->
+                    <div id="breathing-container" class="breathing-circle-container hidden">
+                        <div class="breathing-fog"></div>
+                        <span id="breathing-text" class="breathing-text">Inspire...</span>
+                    </div>
+
+                    <!-- Rotating suggestions — appear BELOW the mascote in flex-column flow -->
+                    <div id="break-suggestion" class="break-suggestion">
+                        <span id="break-suggestion-text">💧 Tome uma água...</span>
+                    </div>
+
+                    <!-- Fog toggle button -->
+                    <button id="fog-toggle-btn" class="fog-toggle-btn" title="Ativar respiração guiada">
+                        🌫️ Respirar
+                    </button>
+
+                    <div class="phase-badge badge-pausa">Pausa</div>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL: Circular Peach Timer Card -->
+            <div class="focus-timer-section">
+                <span class="timer-label">Focus Session</span>
+                <div id="focus-timer-display" class="focus-timer-display" aria-live="polite">30:00</div>
+                
+                <div id="focus-controls" class="focus-controls">
+                    <!-- Standard pause/resume -->
+                    <button id="focus-pause-btn" class="btn btn-timer-control">
+                        <span>⏸️</span> Pausar
+                    </button>
+                    <!-- Close / Exit Session button -->
+                    <button id="focus-cancel-btn" class="btn btn-timer-danger">
+                        Desistir
+                    </button>
+                    <!-- Skip Preparation button (shown in preparo stage) -->
+                    <button id="skip-preparo-btn" class="btn btn-primary">
+                        Pular Preparação ➔
+                    </button>
+                    <!-- Finish task early button (shown in focus stage) -->
+                    <button id="focus-finish-btn" class="btn btn-success" style="display: none;">
+                        Finalizar ✅
+                    </button>
+                </div>
+
+                <!-- Post-Foco choices (shown when timer finishes) -->
+                <div id="focus-completed-actions" class="focus-completed-actions" style="display: none;">
+                    <button id="focus-btn-voltar" class="btn btn-secondary">Voltar</button>
+                    <button id="focus-btn-prosseguir" class="btn btn-primary">Pausa ➔</button>
+                    <button id="focus-btn-concluir" class="btn btn-success">Concluir 🎉</button>
+                </div>
+
+                <!-- Break-only controls: appear on hover during pausa-stage -->
+                <div id="pausa-hover-controls" class="pausa-hover-controls">
+                    <button id="pausa-skip-btn" class="btn btn-secondary">⏭ Pular Descanso</button>
+                    <button id="pausa-next-btn" class="btn btn-primary">▶ Próximo Pomodoro</button>
+                    <button id="pausa-finish-btn" class="btn btn-success">Finalizar 🎉</button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Lofi study player (Always visible on desktop) -->
+            <div id="music-player-panel" class="music-player-panel persistent-player">
+                <div class="music-panel-header">
+                    <h3>LOFI STUDY RADIO 🎧</h3>
+                    <div class="music-source-selectors">
+                        <button id="src-spotify-btn" class="music-src-btn active">Spotify</button>
+                        <button id="src-youtube-btn" class="music-src-btn">YouTube</button>
+                        <button id="src-rain-btn" class="music-src-btn">Sons</button>
+                    </div>
+                </div>
+                <!-- Spotify Embed frame -->
+                <div id="spotify-container" class="music-container active">
+                    <iframe id="spotify-iframe" src="about:blank" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <!-- YouTube Embed frame -->
+                <div id="youtube-container" class="music-container">
+                    <iframe id="youtube-iframe" src="about:blank" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+                </div>
+                <!-- Ambiance Synthesizer -->
+                <div id="ambiance-container" class="music-container">
+                    <div class="ambiance-selector" style="margin-bottom: 0.8rem;">
+                        <label for="ambiance-sound-select" style="font-size: 0.85rem; font-weight: 600; color: var(--text-dark); display: block; margin-bottom: 0.3rem;">Som Ambiente:</label>
+                        <select id="ambiance-sound-select" class="form-control select-cozy" style="width: 100%; padding: 0.4rem; border: var(--border-soft); border-radius: 8px; font-family: inherit; font-size: 0.85rem; outline: none; background: var(--color-cream-white);">
+                            <option value="rain">🌧️ Chuva Aconchegante</option>
+                            <option value="fireplace">🔥 Lareira Estalando</option>
+                            <option value="chimes">🎐 Sinos de Vento Ghibli</option>
+                            <option value="waves">🌊 Ondas do Mar Lofi</option>
+                        </select>
+                    </div>
+                    <button id="ambiance-play-btn" class="btn btn-secondary btn-full">
+                        🔈 Ligar Som Ambiente
+                    </button>
+                    <div class="volume-control" style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">🔈</span>
+                        <input type="range" id="ambiance-volume" min="0" max="1" step="0.05" value="0.5" style="flex: 1; accent-color: var(--color-orange); cursor: pointer;">
+                        <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">🔊</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toggle button for mobile screens -->
+            <button id="music-toggle-btn" class="music-toggle-btn" title="Abrir reprodutor de música" aria-label="Abrir reprodutor de música" aria-expanded="false" style="display: none;">
+                🎵 Player Lofi
+            </button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h3 id="settings-title">Configurações de Foco ⚙️</h3>
+                <button class="modal-close-btn" aria-label="Fechar Configurações">&times;</button>
+            </div>
+            
+            <div class="settings-body-scrollable">
+                <!-- Standard Timers -->
+                <div class="settings-section">
+                    <h4>Tempos do Pomodoro ⏱️</h4>
+                    <div class="form-group">
+                        <label for="set-preparo">Preparo (minutos):</label>
+                        <input type="number" id="set-preparo" min="1" max="60" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-foco">Foco (minutos):</label>
+                        <input type="number" id="set-foco" min="1" max="180" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-pausa">Pausa (minutos):</label>
+                        <input type="number" id="set-pausa" min="1" max="60" value="5">
+                    </div>
+                </div>
+
+                <!-- Music link -->
+                <div class="settings-section">
+                    <h4>Música Personalizada 🎵</h4>
+                    <div class="form-group">
+                        <label for="set-spotify-url">Link da sua Playlist do Spotify:</label>
+                        <input type="text" id="set-spotify-url" placeholder="Cole o link da playlist (Compartilhar)...">
+                    </div>
+                    <div class="form-group">
+                        <label for="set-youtube-url">Link da sua Playlist do YouTube:</label>
+                        <input type="text" id="set-youtube-url" placeholder="Cole o link da playlist do YouTube...">
+                    </div>
+                </div>
+
+                <!-- Preparo Checklist configuration button -->
+                <div class="settings-section">
+                    <h4>Rotina de Preparação 📝</h4>
+                    <button id="btn-config-prep" class="btn btn-secondary btn-full">
+                        Editar Checklist de Preparo
+                    </button>
+                    
+                    <!-- Expanded Checklist Editor -->
+                    <div id="prep-checklist-editor" class="prep-checklist-editor">
+                        <div class="prep-editor-input-row">
+                            <input type="text" id="prep-new-item-input" placeholder="Nova tarefa (ex: Pegar lanche)">
+                            <button id="prep-add-item-btn" class="btn btn-primary">+</button>
+                        </div>
+                        <ul id="prep-editor-list" class="prep-editor-list">
+                            <!-- Injected dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-footer">
+                <button id="settings-reset-btn" class="btn btn-ghost">Resetar</button>
+                <button id="settings-save-btn" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AESTHETICS MODAL PANEL (🎨) -->
+    <div id="aesthetics-modal" class="aesthetics-modal" role="dialog" aria-modal="true" aria-labelledby="aesthetics-title">
+        <div class="aesthetics-modal-content">
+            <div class="aesthetics-header">
+                <h3 id="aesthetics-title">Aparência & Aconchego 🎨</h3>
+                <button class="modal-close-btn" aria-label="Fechar Aparência">&times;</button>
+            </div>
+            
+            <div class="aesthetics-body">
+                <!-- Mode select -->
+                <div class="aesthetics-section">
+                    <h4>Modo de Estética</h4>
+                    <div class="aesthetic-mode-toggle">
+                        <button id="mode-manual-btn" class="btn-toggle active">Manual 🎨</button>
+                        <button id="mode-random-btn" class="btn-toggle">Aleatório 🎲</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Selection Area (hidden if Random mode is selected) -->
+                <div id="aesthetics-selection-group">
+                    <!-- Backgrounds -->
+                    <div class="aesthetics-section">
+                        <div class="aesthetics-section-header">
+                            <h4>Planos de Fundo Aconchegantes</h4>
+                            <button id="add-more-bgs-btn" class="btn btn-expand-collection" title="Aumentar coleção de fundos">+ Loja 🛒</button>
+                        </div>
+                        <div class="aesthetic-grid grid-backgrounds" id="grid-backgrounds">
+                            <!-- Background items dynamically injected -->
+                        </div>
+                    </div>
+
+                    <!-- Animals -->
+                    <div class="aesthetics-section">
+                        <div class="aesthetics-section-header">
+                            <h4>Apanhado de Bichinhos Fofos</h4>
+                            <button id="add-more-animals-btn" class="btn btn-expand-collection" title="Aumentar coleção de bichinhos">+ Loja 🛒</button>
+                        </div>
+                        <div class="aesthetic-grid grid-animals" id="grid-animals">
+                            <!-- Animal items dynamically injected -->
+                        </div>
+                    </div>
+            </div>
+
+            <!-- PET CARE SECTION inside Aesthetics -->
+            <div class="aesthetics-section pet-care-section" id="pet-care-section" style="display:none;">
+                <h4>🐾 Cuidar do Bichinho Ativo</h4>
+                <div class="pet-care-card">
+                    <div class="pet-care-header">
+                        <div class="pet-care-img-wrap">
+                            <img id="pet-care-img" src="" alt="Bichinho Ativo" class="pet-care-preview">
+                        </div>
+                        <div class="pet-care-info">
+                            <div class="pet-care-name" id="pet-care-name">—</div>
+                            <div class="pet-rarity-badge" id="pet-rarity-badge">Comum</div>
+                            <div class="pet-care-pts-label">Pontos para próxima evolução:</div>
+                            <div class="pet-care-progress-wrap">
+                                <div class="pet-care-progress-bar">
+                                    <div class="pet-care-progress-fill" id="pet-care-progress-fill" style="width:0%"></div>
+                                </div>
+                                <span class="pet-care-pts-text" id="pet-care-pts-text">0 / 100</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pet-care-actions">
+                        <button id="pet-feed-btn" class="btn btn-secondary pet-action-btn" title="Alimentar o bichinho">
+                            🍞 Pãozinho <span class="item-count" id="count-paozinho">0</span>
+                        </button>
+                        <button id="pet-tea-btn" class="btn btn-secondary pet-action-btn" title="Dar chá">
+                            🍵 Chá <span class="item-count" id="count-cha">0</span>
+                        </button>
+                        <button id="pet-toy-btn" class="btn btn-secondary pet-action-btn" title="Brincar com o novelo">
+                            🧶 Novelo <span class="item-count" id="count-novelo">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="aesthetics-footer">
+                <button id="aesthetics-save-btn" class="btn btn-primary btn-full">Salvar Aparência</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COZY SHOP & GACHA MODAL -->
+    <div id="shop-modal" class="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+        <div class="shop-modal-content">
+            <div class="shop-header">
+                <h3 id="shop-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                    Loja Cozy & Gacha
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                </h3>
+                <button id="shop-close-btn" class="modal-close-btn" aria-label="Fechar Loja e Gacha">&times;</button>
+            </div>
+            
+            <div class="shop-currency-display">
+                <span class="currency-stat">
+                    <img src="../assets/aesthetic/moedinha.png" alt="Tokens" class="shop-token-img">
+                    Tokens: <strong id="shop-tokens-val">0</strong>
+                </span>
+                <span class="currency-stat">
+                    <img src="../assets/aesthetic/moeda-gacha.png" alt="Moedas Gacha" class="shop-gacha-img">
+                    Moedas Gacha: <strong id="shop-gacha-val">0</strong>
+                </span>
+            </div>
+
+            <div class="shop-tabs">
+                <button id="tab-shop-bgs" class="shop-tab-btn active">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    Fundos
+                </button>
+                <button id="tab-shop-animals" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                        <circle cx="12" cy="14" r="4"/>
+                        <circle cx="6.5" cy="8.5" r="2"/>
+                        <circle cx="10" cy="5.5" r="2"/>
+                        <circle cx="14" cy="5.5" r="2"/>
+                        <circle cx="17.5" cy="8.5" r="2"/>
+                    </svg>
+                    Bichinhos
+                </button>
+                <button id="tab-shop-care" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    Pet Care
+                </button>
+                <button id="tab-shop-gacha" class="shop-tab-btn">
+                    <svg class="tab-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/>
+                        <line x1="9" y1="8" x2="9" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
+                        <line x1="15" y1="8" x2="15" y2="16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,2"/>
+                    </svg>
+                    Gacha
+                </button>
+            </div>
+
+            <div class="shop-body-scrollable">
+                <!-- Shop Backgrounds Panel -->
+                <div id="shop-bgs-panel" class="shop-panel active">
+                    <div class="shop-grid" id="grid-shop-backgrounds">
+                        <!-- Background items populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Shop Animals Panel -->
+                <div id="shop-animals-panel" class="shop-panel">
+                    <div class="shop-grid" id="grid-shop-animals">
+                        <!-- Animal items populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Pet Care Items Panel -->
+                <div id="shop-care-panel" class="shop-panel">
+                    <p class="shop-care-desc">Compre itens para cuidar dos seus bichinhos e ganhar pontos de evolução! 🐾</p>
+                    <div class="shop-care-grid">
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🍞</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Pãozinho de Mel</span>
+                                <span class="shop-care-effect">+15 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-paozinho">0</strong></div>
+                                <button id="buy-paozinho-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="../assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 10
+                                </button>
+                            </div>
+                        </div>
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🍵</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Chá de Camomila</span>
+                                <span class="shop-care-effect">+25 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-cha">0</strong></div>
+                                <button id="buy-cha-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="../assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 20
+                                </button>
+                            </div>
+                        </div>
+                        <div class="shop-care-item">
+                            <div class="shop-care-emoji">🧶</div>
+                            <div class="shop-care-info">
+                                <span class="shop-care-name">Novelo de Lã</span>
+                                <span class="shop-care-effect">+40 pontos de evolução</span>
+                            </div>
+                            <div class="shop-care-right">
+                                <div class="shop-care-stock">Estoque: <strong id="stock-novelo">0</strong></div>
+                                <button id="buy-novelo-btn" class="btn btn-primary shop-care-buy-btn">
+                                    <img src="../assets/aesthetic/moedinha.png" alt="T" class="gacha-inline-img"> 30
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gacha Machine Panel -->
+                <div id="shop-gacha-panel" class="shop-panel">
+                    <div class="gacha-machine-container">
+                        <div class="gacha-visual-area">
+                            <div class="gacha-machine-box">
+                                <div class="gacha-display-glass" id="gacha-glass-bowl">
+                                    <!-- Dynamic capsules loaded from app.js -->
+                                </div>
+                                <div class="gacha-glass-overlay"></div>
+                                <div class="gacha-lever-wrapper">
+                                    <img src="../assets/aesthetic/girinho-gacha.png" class="gacha-dispenser-lever" id="gacha-lever-handle" alt="Gacha Lever">
+                                </div>
+                                <div class="gacha-lever-click-zone" id="gacha-lever-click-zone"></div>
+                                <div class="gacha-exit-slot" id="gacha-exit-slot">
+                                    <!-- A capsule will slide out here when rolling -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gacha-controls">
+                            <div class="gacha-card">
+                                <h5>Comprar Moeda Gacha</h5>
+                                <p>Custo: <img src="../assets/aesthetic/moedinha.png" alt="Tokens" class="gacha-inline-img"> 30 tokens</p>
+                                <button id="gacha-buy-ticket-btn" class="btn btn-secondary btn-full">Comprar 1 <img src="../assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></button>
+                            </div>
+                            <div class="gacha-card highlight">
+                                <h5>Girar Máquina Gacha</h5>
+                                <p>Custo: 1 Moeda <img src="../assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></p>
+                                <button id="gacha-roll-btn" class="btn btn-primary btn-full btn-gacha-action">Girar Gacha! <img src="../assets/aesthetic/moeda-gacha.png" alt="Moeda Gacha" class="gacha-inline-img"></button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cinematic Gacha Reveal Overlay -->
+    <div id="gacha-reveal-overlay" class="gacha-reveal-overlay">
+        <!-- Dramatic theater curtains -->
+        <div class="curtain-left"></div>
+        <div class="curtain-right"></div>
+        
+        <!-- Lights & burst effects behind the card -->
+        <div class="reveal-spotlight"></div>
+        <div class="reveal-burst"></div>
+        
+        <!-- Central Card revealing the pet -->
+        <div class="reveal-container">
+            <h4 class="reveal-subtitle">Novo Companheiro Desbloqueado! ✨</h4>
+            <div class="reveal-img-wrapper">
+                <img id="reveal-animal-img" src="" alt="Bichinho obtido">
+            </div>
+            <h2 id="reveal-animal-species" class="reveal-title">Nome da Espécie</h2>
+            <div class="reveal-naming-box">
+                <label for="reveal-pet-name-input" class="reveal-naming-label">Dê um nome para seu novo amigo: 🌸</label>
+                <input type="text" id="reveal-pet-name-input" placeholder="Como ele vai se chamar?..." maxlength="15" autocomplete="off">
+            </div>
+            <button id="reveal-close-btn" class="btn btn-success reveal-close-btn">Que fofo! ❤️</button>
+        </div>
+    </div>
+
+    <!-- STATISTICS MODAL PANEL -->
+    <div id="stats-modal" class="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+        <div class="stats-modal-content">
+            <div class="stats-header">
+                <h3 id="stats-title">Estatísticas de Foco Semanal 📊</h3>
+                <button id="stats-close-btn" class="modal-close-btn" aria-label="Fechar Estatísticas">&times;</button>
+            </div>
+            
+            <div class="stats-body" style="overflow-y: auto;">
+                <section class="study-history-section" style="border: none; background: transparent; padding: 0; box-shadow: none;">
+                    <div class="history-header">
+                        <h4>Seu Progresso Semanal</h4>
+                        <span id="history-total-week" class="badge">0h 00m esta semana</span>
+                    </div>
+                    <div class="history-chart-container">
+                        <div class="chart-y-axis">
+                            <span>60m</span>
+                            <span>30m</span>
+                            <span>0m</span>
+                        </div>
+                        <div class="chart-bars" id="weekly-chart-bars">
+                            <!-- Bars dynamically loaded from JS -->
+                        </div>
+                    </div>
+                    <div class="chart-labels" id="weekly-chart-labels">
+                        <!-- Day labels from JS -->
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAILY QUESTS PANEL (Sliding Drawer) -->
+    <div id="quests-panel" class="quests-panel" role="dialog" aria-modal="true" aria-labelledby="quests-title">
+        <div class="quests-panel-content">
+            <div class="quests-header">
+                <h3 id="quests-title">Missões Diárias 📜</h3>
+                <button id="quests-close-btn" class="quests-close-btn" aria-label="Fechar Missões Diárias">&times;</button>
+            </div>
+            <p class="quests-subtitle">Complete missões para ganhar recompensas! As missões resetam diariamente. 🌟</p>
+            
+            <div class="quests-list" id="quests-list-container">
+                <!-- Quests dynamically injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="error-notebook-modal" class="error-notebook-modal" role="dialog" aria-modal="true" aria-label="Caderno de Erros">
+        <div class="error-notebook-wrapper">
+            <!-- Title banner added above the book -->
+            <img id="error-notebook-banner" src="../assets/aesthetic/faixa.png" alt="Caderno de Erros">
+            
+            <div class="error-notebook-content">
+                <!-- Close button positioned absolutely in the corner of the book -->
+                <button id="error-notebook-close-btn" class="modal-close-btn" title="Fechar Caderno" aria-label="Fechar Caderno de Erros">&times;</button>
+                
+                <div class="error-notebook-body">
+                    <!-- Coluna Esquerda: Digitação e Lista de Erros alinhados com as linhas -->
+                    <div class="error-column-left">
+                        <div class="error-input-wrapper">
+                            <input type="text" id="error-notebook-input" placeholder="Escreva seu erro e dê Enter! ✍️" autocomplete="off" maxlength="45">
+                        </div>
+                        <ul id="error-notebook-list" class="error-notebook-list">
+                            <!-- Erros injetados dinamicamente via JS nas linhas 2 a 10 -->
+                        </ul>
+                    </div>
+                    
+                    <!-- Coluna Direita: Fluxograma interativo ou Explicação -->
+                    <div class="error-column-right">
+                        <!-- Flowchart View with clickable regions -->
+                        <div id="flowchart-view" class="flowchart-view">
+                            <img id="error-notebook-flowchart" src="../assets/aesthetic/Fluxograma.png" alt="Fluxograma de Anotações">
+                            <div class="flowchart-hotspot" id="hotspot-step-1" title="Princípio 1"></div>
+                            <div class="flowchart-hotspot" id="hotspot-step-2" title="Princípio 2"></div>
+                            <div class="flowchart-hotspot" id="hotspot-step-3" title="Princípio 3"></div>
+                        </div>
+                        <!-- Explanation View (originally hidden) -->
+                        <div id="explanation-view" class="explanation-view" style="display: none;">
+                            <h4 id="explanation-title">Princípio</h4>
+                            <p id="explanation-text">Explicação...</p>
+                            <button id="explanation-back-btn" class="explanation-back-btn">Voltar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MINIGAMES MODAL (Termo Cozy) -->
+    <div id="minigames-modal" class="minigames-modal" role="dialog" aria-modal="true" aria-labelledby="minigames-title">
+        <div class="minigames-modal-content">
+            <div class="minigames-header">
+                <h3 id="minigames-title">ℹ️ Instruções & Jogo</h3>
+                <button id="minigames-close-btn" class="modal-close-btn" aria-label="Fechar">&times;</button>
+            </div>
+            <!-- Minigame Tabs -->
+            <div class="minigames-tabs">
+                <button id="tab-instrucoes" class="minigame-tab-btn active">ℹ️ Instruções</button>
+                <button id="tab-termo" class="minigame-tab-btn">🎮 Jogar Termo</button>
+          <button id="tab-pesca" class="minigame-tab-btn" style="display: none">
+            🎣 Pesca Cozy
+          </button>
+            </div>
+
+            <!-- TERMO GAME PANEL -->
+            <div id="termo-panel" class="minigame-panel">
+                <div class="termo-header">
+                    <p class="termo-subtitle">Adivinhe a palavra de 5 letras em até 6 tentativas! 🌸</p>
+                    <div class="termo-meta">
+                        <span id="termo-daily-status" class="termo-daily-tag">🌟 Gratuito hoje!</span>
+                        <span id="termo-reward-info" class="termo-reward-tag">🎁 Prêmio: 20 Tokens</span>
+                    </div>
+                </div>
+
+                <!-- Game Board: 6 rows × 5 cols -->
+                <div class="termo-board" id="termo-board">
+                    <!-- Rows injected by JS -->
+                </div>
+
+                <!-- Message area -->
+                <div id="termo-message" class="termo-message"></div>
+
+                <!-- Virtual Keyboard -->
+                <div class="termo-keyboard" id="termo-keyboard">
+                    <div class="termo-key-row" data-row="0">
+                        <button class="termo-key" data-key="Q">Q</button>
+                        <button class="termo-key" data-key="W">W</button>
+                        <button class="termo-key" data-key="E">E</button>
+                        <button class="termo-key" data-key="R">R</button>
+                        <button class="termo-key" data-key="T">T</button>
+                        <button class="termo-key" data-key="Y">Y</button>
+                        <button class="termo-key" data-key="U">U</button>
+                        <button class="termo-key" data-key="I">I</button>
+                        <button class="termo-key" data-key="O">O</button>
+                        <button class="termo-key" data-key="P">P</button>
+                    </div>
+                    <div class="termo-key-row" data-row="1">
+                        <button class="termo-key" data-key="A">A</button>
+                        <button class="termo-key" data-key="S">S</button>
+                        <button class="termo-key" data-key="D">D</button>
+                        <button class="termo-key" data-key="F">F</button>
+                        <button class="termo-key" data-key="G">G</button>
+                        <button class="termo-key" data-key="H">H</button>
+                        <button class="termo-key" data-key="J">J</button>
+                        <button class="termo-key" data-key="K">K</button>
+                        <button class="termo-key" data-key="L">L</button>
+                    </div>
+                    <div class="termo-key-row" data-row="2">
+                        <button class="termo-key termo-key-enter" data-key="ENTER">↵ OK</button>
+                        <button class="termo-key" data-key="Z">Z</button>
+                        <button class="termo-key" data-key="X">X</button>
+                        <button class="termo-key" data-key="C">C</button>
+                        <button class="termo-key" data-key="V">V</button>
+                        <button class="termo-key" data-key="B">B</button>
+                        <button class="termo-key" data-key="N">N</button>
+                        <button class="termo-key" data-key="M">M</button>
+                        <button class="termo-key termo-key-del" data-key="BACKSPACE">⌫</button>
+                    </div>
+                </div>
+
+                <div class="termo-footer">
+                    <button id="termo-new-game-btn" class="btn btn-secondary" style="display:none;">Nova Partida (10 🪙)</button>
+                    <button id="termo-share-btn" class="btn btn-primary" style="display:none;">Compartilhar 🌸</button>
+                </div>
+            </div>
+
+                    <!-- FISHING MINIGAME PANEL -->
+        <div id="pesca-panel" class="minigame-panel">
+          <!-- Fishing Sub-Tabs -->
+          <div class="fishing-subtabs">
+            <button id="ftab-jogar" class="fishing-subtab-btn active">
+              🎣 Pescar
+            </button>
+            <button id="ftab-catalogo" class="fishing-subtab-btn">
+              📖 Catálogo
+            </button>
+            <button id="ftab-varinhas" class="fishing-subtab-btn">
+              🪄 Varinhas
+            </button>
+            <button id="ftab-missoes" class="fishing-subtab-btn">
+              📜 Missões
+            </button>
+          </div>
+
+          <!-- SUB-PANEL: PESCAR -->
+          <div id="fpanel-jogar" class="fishing-subpanel active">
+            <!-- TELA: LOBBY (estado inicial) -->
+            <div id="fishing-screen-lobby" class="fishing-screen active">
+              <div class="fishing-lobby-visual">
+                <div class="fishing-water-preview" id="fishing-water-preview">
+                  <div class="fishing-ripple r1"></div>
+                  <div class="fishing-ripple r2"></div>
+                  <div class="fishing-ripple r3"></div>
+                  <span class="fishing-lobby-fish-emoji">🐟</span>
+                  <!-- Partículas de chuva (visíveis conforme clima) -->
+                  <div class="fishing-rain-drops" id="fishing-rain-drops"></div>
+                </div>
+                <!-- Badge de Clima -->
+                <div id="fishing-weather-badge" class="fishing-weather-badge">
+                  ☀️ Sol
+                </div>
+              </div>
+              <div class="fishing-lobby-info">
+                <h4 class="fishing-lobby-title">Lagoa Cozy 🌿</h4>
+                <p class="fishing-lobby-desc" id="fishing-weather-desc">
+                  Lance sua linha e veja o que a lagoa guarda...
+                </p>
+                <div class="fishing-lobby-meta-row">
+                  <div class="fishing-attempts-info">
+                    <span
+                      id="fishing-attempts-display"
+                      class="fishing-attempts-badge"
+                      >3 lançamentos grátis hoje</span
+                    >
+                  </div>
+                  <!-- Streak display -->
+                  <div
+                    id="fishing-streak-wrap"
+                    class="fishing-streak-wrap"
+                    style="display: none"
+                  >
+                    <span class="fishing-streak-fire">🔥</span>
+                    <span id="fishing-streak-count" class="fishing-streak-count"
+                      >x1</span
+                    >
+                  </div>
+                </div>
+                <div class="fishing-rod-display">
+                  <span class="fishing-rod-label">Varinha ativa:</span>
+                  <span id="fishing-active-rod-name" class="fishing-rod-name"
+                    >🎣 Vareta de Bambu</span
+                  >
+                </div>
+              </div>
+              <button
+                id="fishing-cast-btn"
+                class="btn btn-primary fishing-cast-btn"
+              >
+                Lançar Linha 🎣
+              </button>
+              <div id="fishing-lobby-msg" class="fishing-lobby-msg"></div>
+              <!-- Recentes -->
+              <div
+                id="fishing-recent-section"
+                class="fishing-recent-section"
+                style="display: none"
+              >
+                <p class="fishing-recent-label">Últimas capturas:</p>
+                <div id="fishing-recent-list" class="fishing-recent-list"></div>
+              </div>
+            </div>
+
+            <!-- TELA: ESPERA (boia flutuando) -->
+            <div id="fishing-screen-waiting" class="fishing-screen">
+              <div class="fishing-waiting-scene">
+                <div class="fishing-water-waiting">
+                  <div class="fishing-bobber-float">
+                    <div class="fishing-bobber-ball"></div>
+                    <div class="fishing-bobber-stick"></div>
+                  </div>
+                  <div class="fishing-bubble b1"></div>
+                  <div class="fishing-bubble b2"></div>
+                  <div class="fishing-bubble b3"></div>
+                </div>
+              </div>
+              <p class="fishing-wait-text">Aguardando fisgada... 🌊</p>
+              <p class="fishing-wait-hint">Fique de olho!</p>
+            </div>
+
+            <!-- TELA: ALERTA DE FISGADA -->
+            <div id="fishing-screen-bite" class="fishing-screen">
+              <div class="fishing-bite-alert">
+                <div class="fishing-bite-exclaim">!</div>
+                <p class="fishing-bite-text">Fisga! Pressione agora!</p>
+              </div>
+              <button
+                id="fishing-react-btn"
+                class="btn btn-primary fishing-react-btn"
+              >
+                🎣 Fisgar!
+              </button>
+            </div>
+
+            <!-- TELA: MINIJOGO (barra estilo Stardew) -->
+            <div id="fishing-screen-minigame" class="fishing-screen">
+              <div class="fishing-minigame-layout">
+                <!-- Canvas do minijogo -->
+                <div class="fishing-gauge-wrapper">
+                  <canvas
+                    id="fishing-canvas"
+                    class="fishing-canvas"
+                    width="94"
+                    height="300"
+                  ></canvas>
+                </div>
+                <!-- Info e controle -->
+                <div class="fishing-minigame-controls">
+                  <div class="fishing-progress-section">
+                    <p class="fishing-progress-label">Captura</p>
+                    <div class="fishing-progress-track">
+                      <div
+                        id="fishing-catch-bar"
+                        class="fishing-catch-bar"
+                      ></div>
+                    </div>
+                  </div>
+                  <p class="fishing-control-hint">
+                    Segure para subir a barra verde!
+                  </p>
+                  <button id="fishing-hold-btn" class="fishing-hold-btn">
+                    Segurar 🎣
+                  </button>
+                  <p class="fishing-kbd-hint">ou tecle <kbd>Espaço</kbd></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- TELA: SUCESSO -->
+            <div id="fishing-screen-success" class="fishing-screen">
+              <div class="fishing-result-card fishing-result-win">
+                <!-- Container de confete (injetado via JS para épicos/lendários) -->
+                <div
+                  id="fishing-confetti-container"
+                  class="fishing-confetti-container"
+                ></div>
+                <div
+                  class="fishing-result-fish-emoji"
+                  id="fishing-caught-emoji"
+                >
+                  🐟
+                </div>
+                <h4 class="fishing-result-name" id="fishing-caught-name">
+                  Tilápia
+                </h4>
+                <div
+                  class="fishing-result-rarity-badge"
+                  id="fishing-caught-rarity"
+                >
+                  Comum
+                </div>
+                <!-- Badge de novo recorde (visível só quando bate tamanho máximo) -->
+                <div
+                  id="fishing-new-record-badge"
+                  class="fishing-new-record-badge"
+                >
+                  🏆 Novo Recorde!
+                </div>
+                <div class="fishing-result-stats">
+                  <span id="fishing-caught-size">📏 Tamanho: 18 cm</span>
+                  <span id="fishing-caught-reward">🪙 +10 tokens</span>
+                </div>
+                <p class="fishing-result-desc" id="fishing-caught-desc">
+                  Uma peixinha simpática!
+                </p>
+              </div>
+              <button
+                id="fishing-keep-btn"
+                class="btn btn-success fishing-result-btn"
+              >
+                Guardar na Sacola 🐟
+              </button>
+            </div>
+
+            <!-- TELA: FALHA -->
+            <div id="fishing-screen-fail" class="fishing-screen">
+              <div class="fishing-result-card fishing-result-fail">
+                <div class="fishing-result-fish-emoji">💦</div>
+                <h4 class="fishing-result-name">O peixe escapou...</h4>
+                <p class="fishing-result-desc">
+                  Quase! Tente novamente, pescadore!
+                </p>
+              </div>
+              <button
+                id="fishing-retry-btn"
+                class="btn btn-secondary fishing-result-btn"
+              >
+                Tentar de novo 🎣
+              </button>
+            </div>
+          </div>
+          <!-- /fpanel-jogar -->
+
+          <!-- SUB-PANEL: CATÁLOGO -->
+          <div id="fpanel-catalogo" class="fishing-subpanel">
+            <div class="fishing-catalog-header">
+              <h4 class="fishing-catalog-title">📖 Catálogo de Peixes</h4>
+              <span id="fishing-catalog-count" class="fishing-catalog-count"
+                >0/12 descobertos</span
+              >
+            </div>
+            <div id="fishing-catalog-grid" class="fishing-catalog-grid">
+              <!-- Cards injetados via JS -->
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: VARINHAS -->
+          <div id="fpanel-varinhas" class="fishing-subpanel">
+            <div class="fishing-rod-shop-header">
+              <h4 class="fishing-rod-shop-title">🪄 Varinhas de Pesca</h4>
+              <p class="fishing-rod-shop-desc">
+                Varinhas melhores atraem peixes mais raros!
+              </p>
+            </div>
+            <div id="fishing-rods-list" class="fishing-rods-list">
+              <!-- Itens injetados via JS -->
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: MISSÕES -->
+          <div id="fpanel-missoes" class="fishing-subpanel">
+            <div class="fishing-missions-header">
+              <h4 class="fishing-missions-title">📜 Missões de Pesca</h4>
+              <p class="fishing-missions-desc">
+                Complete missões para ganhar recompensas especiais!
+              </p>
+            </div>
+            <div id="fishing-missions-list" class="fishing-missions-list">
+              <!-- Missões injetadas via JS -->
+            </div>
+          </div>
+        </div>
+        <!-- /pesca-panel -->
+
+        <!-- INSTRUCTIONS PANEL -->
+            <div id="instrucoes-panel" class="minigame-panel active">
+                <div class="termo-header" style="margin-bottom: 0.6rem;">
+                    <h4 style="font-weight: 800; font-size: 1.15rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; gap: 0.4rem; margin-bottom: 0.2rem;">
+                        Como Jogar 🌸
+                    </h4>
+                    <p class="termo-subtitle">Descubra a palavra secreta de 5 letras em até 6 tentativas!</p>
+                </div>
+                <div class="instructions-content" style="display: flex; flex-direction: column; gap: 0.7rem; color: var(--text-muted); font-size: 0.85rem; line-height: 1.4;">
+                    <p style="margin: 0; text-align: center;">A cada tentativa, a cor das peças mudará para mostrar o progresso:</p>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile correct" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">T</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">M</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: #2e7d32;">T</strong> está na palavra e na posição correta! 🟩
+                        </p>
+                    </div>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">C</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                            <span class="termo-tile present" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">P</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">O</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: #b7860d;">R</strong> está na palavra, mas em outra posição. 🟨
+                        </p>
+                    </div>
+                    
+                    <div class="inst-example" style="background: rgba(74,58,42,0.04); padding: 0.6rem; border-radius: 12px; border: 2.5px dashed rgba(74,58,42,0.15);">
+                        <div class="termo-row" style="margin-bottom: 0.3rem; justify-content: center; gap: 5px;">
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">V</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">R</span>
+                            <span class="termo-tile" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">D</span>
+                            <span class="termo-tile absent" style="width: 38px; height: 38px; font-size: 1.1rem; box-shadow: 0 2px 0 #5C4A38;">E</span>
+                        </div>
+                        <p style="margin: 0; text-align: center; font-size: 0.78rem; font-weight: 700;">
+                            A letra <strong style="color: var(--text-light);">E</strong> não faz parte da palavra. ⬜
+                        </p>
+                    </div>
+                    
+                    <p style="font-size: 0.78rem; text-align: center; font-weight: 800; color: var(--text-dark); margin: 0.1rem 0 0; line-height: 1.35;">
+                        💡 O jogo aceita vogais sem acento! O acento correto é inserido automaticamente na revelação.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         MEDNOTES — Botão Meia-Lua de Acesso
+    ═══════════════════════════════════════════════════════ -->
+
+    <!-- Flip Overlay: cobre a tela durante a transição -->
+    <div id="mednotes-flip-overlay" class="mednotes-flip-overlay" aria-hidden="true">
+        <div class="flip-page flip-page-front"></div>
+        <div class="flip-page flip-page-back">
+            <div class="flip-loader">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <rect x="8" y="6" width="32" height="38" rx="5" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="2"/>
+                    <line x1="14" y1="16" x2="34" y2="16" stroke="#9c27b0" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="14" y1="22" x2="34" y2="22" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="14" y1="28" x2="26" y2="28" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Caneta -->
+                    <rect x="29" y="30" width="5" height="12" rx="1.5" transform="rotate(-35 29 30)" fill="#9c27b0"/>
+                    <polygon points="31,42 33,42 32,46" fill="#5c6bc0"/>
+                </svg>
+                <span>Abrindo MedNotes...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Meia-Lua -->
+    <button
+        id="mednotes-moon-btn"
+        class="mednotes-moon-btn"
+        title="Abrir MedNotes — Caderno de Anotações"
+        aria-label="Abrir MedNotes"
+        onclick="openMedNotes()"
+    >
+        <!-- Ícone: meia-lua com caderno -->
+        <span class="moon-btn-inner">
+            <svg class="moon-icon" viewBox="0 0 60 30" width="60" height="30" fill="none" aria-hidden="true">
+                <!-- Contorno meia-lua (decorativo no SVG, forma real é no CSS) -->
+                <path d="M10 28 Q10 4 30 4 Q50 4 50 28" stroke="#5c6bc0" stroke-width="1.5" fill="none" opacity="0.3"/>
+            </svg>
+            <span class="moon-btn-icon">
+                <!-- Ícone de caderno + caneta -->
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <!-- ponta caneta -->
+                    <circle cx="19" cy="19" r="2" fill="currentColor" stroke="none" opacity="0.6"/>
+                </svg>
+            </span>
+            <span class="moon-btn-label">MedNotes</span>
+        </span>
+    </button>
+
+    <script>
+        function openMedNotes() {
+            const overlay = document.getElementById('mednotes-flip-overlay');
+            const btn = document.getElementById('mednotes-moon-btn');
+
+            // Desabilita botão para evitar cliques duplos
+            btn.disabled = true;
+
+            // Fase 1: overlay entra pela parte inferior (slide-up)
+            overlay.classList.add('active');
+
+            // Fase 2: após a animação de entrada, mostrar o loader
+            setTimeout(() => {
+                overlay.classList.add('show-back');
+            }, 350);
+
+            // Fase 3: navegar para o MedNotes
+            setTimeout(() => {
+                window.location.href = '../notes/notes.html';
+            }, 900);
+        }
+    </script>
+
+    <!-- Anime.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="../../data/termo_validation_words.js"></script>
+    <script src="app.js?v=1.0.4"></script>
+</body>
+</html>

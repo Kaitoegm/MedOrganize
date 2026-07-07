@@ -58,6 +58,24 @@
     --mn-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+/* ── Tema Escuro (Passo 12) ──────────────────────────────────────── */
+body.mn-theme-dark {
+    --mn-bg:            #14152a;
+    --mn-bg-toolbar:    #1a1b2e;
+    --mn-bg-canvas:     #101124;
+    --mn-surface:       #1e2038;
+    --mn-surface-hover: #262a4a;
+    --mn-surface-active:#2e3358;
+
+    --mn-text-primary:  #e8eaf6;
+    --mn-text-secondary:#b0b8e6;
+    --mn-text-muted:    #8288b0;
+    --mn-text-placeholder: #565c88;
+
+    --mn-border:        rgba(124, 77, 255, 0.2);
+    --mn-border-strong: rgba(124, 77, 255, 0.38);
+}
+
 /* â”€â”€ Reset & Base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -1563,5 +1581,140 @@ input, textarea {
     .pm-card-actions { opacity: 1; }
     .pm-card-action { width: 34px; height: 34px; }
     .pm-close-btn { width: 44px; height: 44px; }
+}
+
+/* ── Painéis de Configurações (Passo 12) ─────────────────────────── */
+.settings-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+.settings-field { display: flex; flex-direction: column; gap: 8px; }
+.settings-field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--mn-text-secondary);
+}
+.settings-text-input {
+    padding: 9px 12px;
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-sm);
+    background: var(--mn-bg);
+    color: var(--mn-text-primary);
+    font-family: var(--mn-font);
+    font-size: 13.5px;
+}
+.settings-text-input:focus { outline: none; border-color: var(--mn-blue); }
+
+.settings-option-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.settings-option {
+    padding: 8px 13px;
+    border: 1.5px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+    background: var(--mn-surface);
+    color: var(--mn-text-secondary);
+    font-family: var(--mn-font);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--mn-transition);
+}
+.settings-option:hover { background: var(--mn-surface-hover); }
+.settings-option.active {
+    border-color: var(--mn-blue);
+    background: var(--mn-surface-active);
+    color: var(--mn-blue-dark);
+    font-weight: 700;
+}
+
+.settings-swatch-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.settings-swatch {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid var(--mn-border); cursor: pointer;
+    transition: var(--mn-transition); padding: 0;
+}
+.settings-swatch:hover { transform: scale(1.08); }
+.settings-swatch.active { border-color: var(--mn-blue); box-shadow: 0 0 0 3px rgba(92,107,192,0.25); }
+.settings-swatch--input { border-radius: var(--mn-radius-sm); cursor: pointer; }
+
+.settings-about p { font-size: 12.5px; color: var(--mn-text-muted); line-height: 1.5; }
+
+#as-cursor-slider { width: 100%; accent-color: var(--mn-blue); }
+
+.settings-versions-list { display: flex; flex-direction: column; gap: 6px; }
+.settings-versions-empty { font-size: 12.5px; color: var(--mn-text-muted); }
+.settings-version-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; border: 1px solid var(--mn-border); border-radius: var(--mn-radius-md);
+    background: var(--mn-surface); color: var(--mn-text-primary);
+    font-family: var(--mn-font); font-size: 12.5px; cursor: pointer;
+    transition: var(--mn-transition);
+}
+.settings-version-item:hover { background: var(--mn-surface-hover); border-color: var(--mn-blue); }
+.settings-version-restore { color: var(--mn-blue); font-weight: 600; }
+
+/* ── Galeria de Templates (Passo 14) ─────────────────────────────── */
+.template-modal {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -48%);
+    width: min(760px, 92vw); max-height: 80vh; display: flex; flex-direction: column;
+    background: var(--mn-surface); border-radius: var(--mn-radius-lg);
+    box-shadow: var(--mn-shadow-lg), 0 20px 40px rgba(26,27,46,.25);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: var(--mn-transition-spring), opacity .2s ease;
+    z-index: 961; overflow: hidden;
+}
+.template-modal.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, -50%); }
+
+.template-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px; border-bottom: 1px solid var(--mn-border); flex-shrink: 0;
+}
+.template-modal-header h2 { font-size: 17px; font-weight: 700; color: var(--mn-text-primary); margin: 0; }
+
+.template-grid {
+    flex: 1; overflow-y: auto; padding: 18px 20px 22px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px;
+}
+.template-card {
+    display: flex; flex-direction: column; gap: 6px; padding: 16px 14px;
+    border: 1.5px solid var(--mn-border); border-radius: var(--mn-radius-md);
+    background: var(--mn-surface); cursor: pointer; text-align: left;
+    font-family: var(--mn-font); transition: var(--mn-transition);
+}
+.template-card:hover { border-color: var(--mn-blue); background: var(--mn-surface-hover); box-shadow: var(--mn-shadow-sm); }
+.template-card-icon { font-size: 28px; }
+.template-card-name { font-size: 13.5px; font-weight: 700; color: var(--mn-text-primary); }
+.template-card-desc { font-size: 11.5px; color: var(--mn-text-muted); line-height: 1.4; }
+.template-card--custom { position: relative; }
+.template-card-delete {
+    position: absolute; top: 8px; right: 8px; width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; border-radius: var(--mn-radius-sm); background: transparent;
+    color: var(--mn-text-muted); cursor: pointer; opacity: 0; transition: var(--mn-transition);
+}
+.template-card--custom:hover .template-card-delete { opacity: 1; }
+.template-card-delete:hover { background: rgba(229,57,53,0.12); color: #e53935; }
+
+/* ── Google Drive (Passo 15) ─────────────────────────────────────── */
+.drive-section { display: flex; flex-direction: column; gap: 10px; }
+.drive-section-hint { font-size: 12px; color: var(--mn-text-muted); line-height: 1.45; margin: 0; }
+.drive-connect-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 14px; border: none; border-radius: var(--mn-radius-md);
+    background: linear-gradient(135deg, var(--mn-blue), var(--mn-accent));
+    color: #fff; font-family: var(--mn-font); font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: var(--mn-transition); box-shadow: var(--mn-shadow-sm);
+}
+.drive-connect-btn:hover { filter: brightness(1.06); box-shadow: var(--mn-shadow-md); }
+.drive-user-row { display: flex; align-items: center; gap: 10px; }
+.drive-avatar { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; }
+.drive-user-info { display: flex; flex-direction: column; min-width: 0; }
+.drive-user-name { font-size: 13px; font-weight: 600; color: var(--mn-text-primary); }
+.drive-user-email {
+    font-size: 11.5px; color: var(--mn-text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 

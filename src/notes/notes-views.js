@@ -37,6 +37,7 @@ MedNotes.Actions = {
 
     promptCreate: async function (type, folderId, notebookId) {
         // Páginas não pedem nome — recebem "Página N" automático (renomeável depois no menu ⋯)
+        // Galeria de templates (Passo 14) temporariamente desativada — ver MedNotes.TemplateGallery.
         if (type === 'page') {
             const id = MedNotes.DataStore.createPage(folderId, notebookId);
             if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
@@ -105,6 +106,7 @@ MedNotes.Actions = {
                 nb.pages = nb.pages.filter(p => p.id !== pageId);
                 if (DS.active.pageId === pageId) DS.clearActiveSelection();
                 DS.save();
+                MedNotes.Versions?.clearForPage(pageId);
             }
         }
         this.refreshUI();
@@ -124,6 +126,21 @@ MedNotes.Actions = {
             });
         }
         this.refreshUI();
+    },
+
+    saveAsTemplate: async function (folderId, notebookId, pageId) {
+        const DS = MedNotes.DataStore;
+        if (DS.active.pageId === pageId && MedNotes.Canvas) {
+            try { MedNotes.Canvas._savePage(); } catch (e) { /* sem página ativa */ }
+        }
+        const page = DS.getPage(folderId, notebookId, pageId);
+        if (!page) return;
+
+        const name = await MedNotes.Dialog.prompt('Salvar como Template', 'Nome do template:', page.name);
+        if (!name || !name.trim()) return;
+
+        MedNotes.Templates.saveCustom(name.trim(), page);
+        this.showToast('⭐ Template salvo!', 'success');
     },
 
     // Reordena páginas dentro de um caderno e persiste
@@ -394,6 +411,7 @@ MedNotes.Views = {
                 <button class="pm-card-action" data-act="duplicate" title="Duplicar página" aria-label="Duplicar página">
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 </button>
+                <!-- "Salvar como template" oculto até a galeria (Passo 14) ser refeita — ver MedNotes.TemplateGallery -->
                 <button class="pm-card-action pm-card-action--danger" data-act="delete" title="Excluir página" aria-label="Excluir página">
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                 </button>
@@ -452,6 +470,11 @@ MedNotes.Views = {
                 e.stopPropagation();
                 MedNotes.Actions.duplicatePage(f.id, nb.id, pageId);
                 MedNotes.Actions.showToast('📄 Página duplicada!', 'success');
+            });
+            // "Salvar como template": botão oculto por ora (ver comentário no HTML acima)
+            card.querySelector('[data-act="save-template"]')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                MedNotes.Actions.saveAsTemplate(f.id, nb.id, pageId);
             });
             card.querySelector('[data-act="delete"]').addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -587,15 +610,544 @@ MedNotes.Rail = {
             <button class="rail-btn rail-btn--home" id="rail-home" title="Início" aria-label="Ir para o início">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
             </button>
+            <button class="rail-btn rail-btn--search" id="rail-search" title="Buscar (Ctrl+F)" aria-label="Buscar pastas, cadernos e páginas">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
             <div class="rail-divider"></div>
             <div class="rail-folders">${shortcuts}</div>
+            <button class="rail-btn rail-btn--settings" id="rail-settings" title="Configurações do app" aria-label="Configurações do app">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
             <button class="rail-btn rail-btn--exit" id="rail-exit" title="Voltar ao MedOrganize" aria-label="Voltar ao MedOrganize">
                 <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>`;
 
         this.el.querySelector('#rail-home').addEventListener('click', () => MedNotes.Views.show('home'));
+        this.el.querySelector('#rail-search').addEventListener('click', () => MedNotes.Search.open());
+        this.el.querySelector('#rail-settings').addEventListener('click', () => MedNotes.AppSettings.open());
         this.el.querySelector('#rail-exit').addEventListener('click', () => returnToMedOrganize());
         this.el.querySelectorAll('.rail-btn--folder').forEach(b =>
             b.addEventListener('click', () => MedNotes.Views.show('folder', b.dataset.id)));
+    }
+};
+
+// ── SEARCH — busca global de pastas/cadernos/páginas (Passo 11) ─────
+MedNotes.Search = {
+    isOpen: false,
+
+    init: function () {
+        this.overlay = document.getElementById('search-overlay');
+        this.modal   = document.getElementById('search-modal');
+        this.input   = document.getElementById('search-input');
+        this.results = document.getElementById('search-results');
+
+        this.overlay.addEventListener('click', () => this.close());
+        document.getElementById('search-close-btn').addEventListener('click', () => this.close());
+        this.input.addEventListener('input', () => this._render(this.input.value));
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'k')) {
+                e.preventDefault();
+                this.open();
+                return;
+            }
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    },
+
+    open: function () {
+        this.isOpen = true;
+        this.overlay.classList.add('open');
+        this.modal.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        this.modal.setAttribute('aria-hidden', 'false');
+        this.input.value = '';
+        this._render('');
+        setTimeout(() => this.input.focus(), 50);
+    },
+
+    close: function () {
+        this.isOpen = false;
+        this.overlay.classList.remove('open');
+        this.modal.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        this.modal.setAttribute('aria-hidden', 'true');
+    },
+
+    // Retorna [{ folder, notebook, page, kind }] — page/notebook podem ser null
+    _index: function () {
+        const items = [];
+        for (const f of MedNotes.DataStore.state.folders) {
+            items.push({ kind: 'folder', folder: f, notebook: null, page: null });
+            for (const nb of f.notebooks) {
+                items.push({ kind: 'notebook', folder: f, notebook: nb, page: null });
+                for (const p of nb.pages) {
+                    items.push({ kind: 'page', folder: f, notebook: nb, page: p });
+                }
+            }
+        }
+        return items;
+    },
+
+    _label: function (item) {
+        if (item.kind === 'folder')   return item.folder.name;
+        if (item.kind === 'notebook') return item.notebook.name;
+        return item.page.name;
+    },
+
+    _pathHTML: function (item) {
+        const esc = MedNotes.Views._esc;
+        const parts = [`${item.folder.icon} ${esc(item.folder.name)}`];
+        if (item.notebook) parts.push(`${item.notebook.icon} ${esc(item.notebook.name)}`);
+        if (item.page)     parts.push(`📄 ${esc(item.page.name)}`);
+        return parts.join(' <span class="search-sep">›</span> ');
+    },
+
+    _render: function (query) {
+        const q = query.trim().toLowerCase();
+        const esc = MedNotes.Views._esc;
+
+        if (!q) {
+            this.results.innerHTML = `<div class="search-empty">Digite para buscar em pastas, cadernos e páginas…</div>`;
+            return;
+        }
+
+        const matches = this._index().filter(item => this._label(item).toLowerCase().includes(q));
+
+        if (matches.length === 0) {
+            this.results.innerHTML = `<div class="search-empty">Nenhum resultado para "${esc(query)}"</div>`;
+            return;
+        }
+
+        this.results.innerHTML = matches.map((item, i) => `
+            <button class="search-result" data-idx="${i}">
+                <span class="search-result-icon">${item.kind === 'folder' ? '📁' : item.kind === 'notebook' ? '📓' : '📄'}</span>
+                <span class="search-result-path">${this._pathHTML(item)}</span>
+            </button>`).join('');
+
+        this.results.querySelectorAll('.search-result').forEach((btn, i) => {
+            btn.addEventListener('click', () => this._go(matches[i]));
+        });
+    },
+
+    _go: function (item) {
+        this.close();
+        const DS = MedNotes.DataStore;
+        if (item.kind === 'folder')        MedNotes.Views.show('folder', item.folder.id);
+        else if (item.kind === 'notebook') MedNotes.Views.show('notebook', item.folder.id, item.notebook.id);
+        else                                DS.setActiveSelection(item.folder.id, item.notebook.id, item.page.id);
+    }
+};
+
+// ── PAGE SETTINGS — configurações da página ativa (Passo 12) ────────
+MedNotes.PageSettings = {
+    isOpen: false,
+
+    init: function () {
+        this.overlay = document.getElementById('page-settings-overlay');
+        this.panel   = document.getElementById('page-settings-panel');
+        this.nameInput = document.getElementById('ps-name-input');
+
+        document.getElementById('btn-page-settings')?.addEventListener('click', () => this.open());
+        document.getElementById('ps-close-btn').addEventListener('click', () => this.close());
+        this.overlay.addEventListener('click', () => this.close());
+
+        this.nameInput.addEventListener('change', () => this._rename());
+
+        this.panel.querySelectorAll('#ps-bg-type .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => this._update({ background: btn.dataset.value }));
+        });
+        this.panel.querySelectorAll('#ps-bg-color .settings-swatch').forEach(btn => {
+            btn.addEventListener('click', () => this._update({ bgColor: btn.dataset.value }));
+        });
+        this.panel.querySelectorAll('#ps-canvas-size .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => this._changeCanvasSize(
+                parseInt(btn.dataset.w, 10), parseInt(btn.dataset.h, 10)
+            ));
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    },
+
+    _activePage: function () {
+        const DS = MedNotes.DataStore;
+        if (!DS.active.pageId) return null;
+        return DS.getPage(DS.active.folderId, DS.active.notebookId, DS.active.pageId);
+    },
+
+    open: function () {
+        const page = this._activePage();
+        if (!page) { MedNotes.Actions.showToast('⚠️ Abra uma página primeiro.', 'warn'); return; }
+
+        this.isOpen = true;
+        this.overlay.classList.add('open');
+        this.panel.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        this.panel.setAttribute('aria-hidden', 'false');
+        this._syncUI(page);
+    },
+
+    close: function () {
+        this.isOpen = false;
+        this.overlay.classList.remove('open');
+        this.panel.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        this.panel.setAttribute('aria-hidden', 'true');
+    },
+
+    _syncUI: function (page) {
+        document.getElementById('ps-page-name').textContent = page.name;
+        this.nameInput.value = page.name;
+
+        const bgType = page.background || 'lined';
+        this.panel.querySelectorAll('#ps-bg-type .settings-option').forEach(btn => {
+            const active = btn.dataset.value === bgType;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+
+        const bgColor = page.bgColor || '#ffffff';
+        this.panel.querySelectorAll('#ps-bg-color .settings-swatch').forEach(btn => {
+            const active = btn.dataset.value.toLowerCase() === bgColor.toLowerCase();
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+
+        const cw = page.canvasW || 8000, ch = page.canvasH || 6000;
+        this.panel.querySelectorAll('#ps-canvas-size .settings-option').forEach(btn => {
+            const active = parseInt(btn.dataset.w, 10) === cw && parseInt(btn.dataset.h, 10) === ch;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+
+        this._renderVersions();
+    },
+
+    _renderVersions: function () {
+        const wrap = document.getElementById('ps-versions-list');
+        const DS = MedNotes.DataStore;
+        const versions = MedNotes.Versions.list(DS.active.pageId);
+
+        if (versions.length === 0) {
+            wrap.innerHTML = `<p class="settings-versions-empty">Nenhuma versão anterior ainda.</p>`;
+            return;
+        }
+
+        wrap.innerHTML = versions.map((v, i) => `
+            <button class="settings-version-item" data-idx="${i}">
+                <span>${Utils.timeAgo(v.savedAt)}</span>
+                <span class="settings-version-restore">Restaurar</span>
+            </button>`).join('');
+
+        wrap.querySelectorAll('.settings-version-item').forEach(btn => {
+            btn.addEventListener('click', () => this._restoreVersion(parseInt(btn.dataset.idx, 10)));
+        });
+    },
+
+    _restoreVersion: async function (idx) {
+        const DS = MedNotes.DataStore;
+        const { folderId, notebookId, pageId } = DS.active;
+        const confirmed = await MedNotes.Dialog.confirm(
+            'Restaurar Versão',
+            'O conteúdo atual da página será substituído por esta versão anterior. Deseja continuar?',
+            true
+        );
+        if (!confirmed) return;
+
+        MedNotes.Versions.restore(folderId, notebookId, pageId, idx);
+        const page = this._activePage();
+        this._syncUI(page);
+        MedNotes.Actions.showToast('✅ Versão restaurada!', 'success');
+    },
+
+    _rename: function () {
+        const DS = MedNotes.DataStore;
+        const name = this.nameInput.value.trim();
+        if (!name || !DS.active.pageId) return;
+        DS.updatePageData(DS.active.folderId, DS.active.notebookId, DS.active.pageId, { name });
+        DS.updateBreadcrumb();
+        document.getElementById('ps-page-name').textContent = name;
+    },
+
+    _update: function (fields) {
+        const DS = MedNotes.DataStore;
+        if (!DS.active.pageId) return;
+        DS.updatePageData(DS.active.folderId, DS.active.notebookId, DS.active.pageId, fields);
+        const page = this._activePage();
+        this._syncUI(page);
+        if (MedNotes.Canvas) {
+            try { MedNotes.Canvas.loadActivePage(); } catch (e) { /* sem página ativa */ }
+        }
+    },
+
+    // Verdadeiro se algum stroke/texto da página ultrapassa os novos limites
+    _contentOverflows: function (page, newW, newH) {
+        try {
+            const strokes = page.canvasData ? JSON.parse(page.canvasData) : [];
+            for (const s of strokes) {
+                for (const pt of (s.points || [])) {
+                    const pad = s.size || 0;
+                    if (pt.x - pad < 0 || pt.x + pad > newW || pt.y - pad < 0 || pt.y + pad > newH) return true;
+                }
+            }
+        } catch (e) { /* dados corrompidos: não bloqueia por causa disso */ }
+
+        try {
+            const texts = page.textData ? JSON.parse(page.textData) : [];
+            for (const t of texts) {
+                const halfW = (t.width || 0) / 2;
+                if (t.cx - halfW < 0 || t.cx + halfW > newW || t.cy < 0 || t.cy > newH) return true;
+            }
+        } catch (e) { /* idem */ }
+
+        return false;
+    },
+
+    _changeCanvasSize: async function (newW, newH) {
+        const DS = MedNotes.DataStore;
+        const page = this._activePage();
+        if (!page) return;
+
+        const curW = page.canvasW || 8000, curH = page.canvasH || 6000;
+        const shrinking = newW < curW || newH < curH;
+
+        if (shrinking && this._contentOverflows(page, newW, newH)) {
+            MedNotes.Actions.showToast('⚠️ Esse tamanho cortaria conteúdo existente. Apague ou mova o que está fora da nova área antes de reduzir.', 'warn');
+            return;
+        }
+
+        this._update({ canvasW: newW, canvasH: newH });
+    }
+};
+
+// ── APP SETTINGS — tema, cursor, cores favoritas, sobre (Passo 12) ──
+MedNotes.AppSettings = {
+    isOpen: false,
+    THEME_KEY:  'mednotes_theme',
+    CURSOR_KEY: 'mednotes_cursor_scale',
+    FAVCOLORS_KEY: 'mednotes_fav_colors',
+    DEFAULT_FAV_COLORS: ['#1a1b2e', '#3949ab', '#7c4dff', '#00897b', '#e53935', '#fb8c00', '#6d4c41', '#5c6bc0'],
+
+    init: function () {
+        this.overlay = document.getElementById('app-settings-overlay');
+        this.panel   = document.getElementById('app-settings-panel');
+
+        document.getElementById('as-close-btn').addEventListener('click', () => this.close());
+        this.overlay.addEventListener('click', () => this.close());
+
+        this.panel.querySelectorAll('#as-theme .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => { this.setTheme(btn.dataset.value); this._syncTheme(); });
+        });
+
+        const cursorSlider = document.getElementById('as-cursor-slider');
+        cursorSlider.addEventListener('input', () => {
+            this.setCursorScale(parseFloat(cursorSlider.value));
+            document.getElementById('as-cursor-value').textContent = cursorSlider.value + 'x';
+        });
+
+        document.getElementById('as-version').textContent = MedNotes.version;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+
+        // Aplica tema salvo já na carga do app (antes mesmo de abrir o painel)
+        this.applyTheme();
+        matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (this.getTheme() === 'auto') this.applyTheme();
+        });
+    },
+
+    open: function () {
+        this.isOpen = true;
+        this.overlay.classList.add('open');
+        this.panel.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        this.panel.setAttribute('aria-hidden', 'false');
+        this._syncTheme();
+        this._syncCursor();
+        this._renderFavColors();
+    },
+
+    close: function () {
+        this.isOpen = false;
+        this.overlay.classList.remove('open');
+        this.panel.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        this.panel.setAttribute('aria-hidden', 'true');
+    },
+
+    // ── Tema ──
+    getTheme: function () { return localStorage.getItem(this.THEME_KEY) || 'light'; },
+    setTheme: function (theme) { localStorage.setItem(this.THEME_KEY, theme); this.applyTheme(); },
+
+    applyTheme: function () {
+        const theme = this.getTheme();
+        const isDark = theme === 'dark' || (theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.body.classList.toggle('mn-theme-dark', isDark);
+    },
+
+    _syncTheme: function () {
+        const theme = this.getTheme();
+        this.panel.querySelectorAll('#as-theme .settings-option').forEach(btn => {
+            const active = btn.dataset.value === theme;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+    },
+
+    // ── Cursor ──
+    getCursorScale: function () { return parseFloat(localStorage.getItem(this.CURSOR_KEY)) || 1; },
+    setCursorScale: function (scale) { localStorage.setItem(this.CURSOR_KEY, String(scale)); },
+
+    _syncCursor: function () {
+        const scale = this.getCursorScale();
+        document.getElementById('as-cursor-slider').value = scale;
+        document.getElementById('as-cursor-value').textContent = scale + 'x';
+    },
+
+    // ── Cores favoritas ──
+    getFavColors: function () {
+        try {
+            const raw = localStorage.getItem(this.FAVCOLORS_KEY);
+            const arr = raw ? JSON.parse(raw) : null;
+            return Array.isArray(arr) && arr.length === 8 ? arr : this.DEFAULT_FAV_COLORS.slice();
+        } catch (e) { return this.DEFAULT_FAV_COLORS.slice(); }
+    },
+
+    setFavColors: function (colors) {
+        localStorage.setItem(this.FAVCOLORS_KEY, JSON.stringify(colors));
+        this._applyFavColorsToPenPopover();
+    },
+
+    _renderFavColors: function () {
+        const wrap = document.getElementById('as-fav-colors');
+        const colors = this.getFavColors();
+        wrap.innerHTML = colors.map((c, i) => `
+            <input type="color" class="settings-swatch settings-swatch--input" data-idx="${i}" value="${c}" title="Cor favorita ${i + 1}">`).join('');
+        wrap.querySelectorAll('input[type="color"]').forEach(inp => {
+            inp.addEventListener('input', () => {
+                const updated = this.getFavColors();
+                updated[parseInt(inp.dataset.idx, 10)] = inp.value;
+                this.setFavColors(updated);
+            });
+        });
+    },
+
+    // Regenera os swatches do popover da caneta a partir da paleta favorita
+    _applyFavColorsToPenPopover: function () {
+        const grid = document.querySelector('#popover-pen .popover-color-grid');
+        if (!grid) return;
+        const colors = this.getFavColors();
+        const customInput = grid.querySelector('.popover-color-custom');
+
+        grid.querySelectorAll('.popover-color-swatch').forEach(sw => sw.remove());
+        colors.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'popover-color-swatch';
+            btn.dataset.color = c;
+            btn.style.background = c;
+            btn.title = c;
+            btn.addEventListener('click', () => {
+                MedNotes.Canvas.toolSettings.pen.color = c;
+                MedNotes.Canvas._syncPopoverUI(document.getElementById('popover-pen'), 'pen');
+            });
+            grid.insertBefore(btn, customInput);
+        });
+        MedNotes.Canvas._syncPopoverUI?.(document.getElementById('popover-pen'), 'pen');
+    }
+};
+
+// ── TEMPLATE GALLERY — escolha de template ao criar página (Passo 14) ──
+MedNotes.TemplateGallery = {
+    isOpen: false,
+    _folderId: null,
+    _notebookId: null,
+
+    init: function () {
+        this.overlay = document.getElementById('template-overlay');
+        this.modal   = document.getElementById('template-modal');
+        this.grid    = document.getElementById('template-grid');
+
+        document.getElementById('template-close-btn').addEventListener('click', () => this.close());
+        this.overlay.addEventListener('click', () => this.close());
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    },
+
+    open: function (folderId, notebookId) {
+        this._folderId = folderId;
+        this._notebookId = notebookId;
+        this.isOpen = true;
+        this.overlay.classList.add('open');
+        this.modal.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        this.modal.setAttribute('aria-hidden', 'false');
+        this._render();
+    },
+
+    close: function () {
+        this.isOpen = false;
+        this.overlay.classList.remove('open');
+        this.modal.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        this.modal.setAttribute('aria-hidden', 'true');
+    },
+
+    _render: function () {
+        const T = MedNotes.Templates;
+        const esc = MedNotes.Views._esc;
+        const custom = T.listCustom();
+
+        const builtinHTML = T.BUILTIN.map(t => `
+            <button class="template-card" data-kind="builtin" data-id="${t.id}">
+                <span class="template-card-icon">${t.icon}</span>
+                <span class="template-card-name">${esc(t.name)}</span>
+                <span class="template-card-desc">${esc(t.desc)}</span>
+            </button>`).join('');
+
+        const customHTML = custom.map(t => `
+            <div class="template-card template-card--custom" data-kind="custom" data-id="${t.id}">
+                <button class="template-card-delete" data-del="${t.id}" title="Excluir template" aria-label="Excluir template pessoal">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+                <span class="template-card-icon">${t.icon}</span>
+                <span class="template-card-name">${esc(t.name)}</span>
+                <span class="template-card-desc">${esc(t.desc)}</span>
+            </div>`).join('');
+
+        this.grid.innerHTML = builtinHTML + customHTML;
+
+        this.grid.querySelectorAll('.template-card[data-kind="builtin"]').forEach(card => {
+            card.addEventListener('click', () => this._create(T.applyBuiltin(card.dataset.id)));
+        });
+        this.grid.querySelectorAll('.template-card[data-kind="custom"]').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('[data-del]')) return;
+                const tpl = custom.find(t => t.id === card.dataset.id);
+                if (tpl) this._create(T.applyCustom(tpl));
+            });
+        });
+        this.grid.querySelectorAll('[data-del]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                T.deleteCustom(btn.dataset.del);
+                this._render();
+            });
+        });
+    },
+
+    _create: function (fields) {
+        if (!fields) return;
+        const DS = MedNotes.DataStore;
+        const id = DS.createPage(this._folderId, this._notebookId);
+        if (id) {
+            DS.updatePageData(this._folderId, this._notebookId, id, fields);
+            DS.setActiveSelection(this._folderId, this._notebookId, id);
+        }
+        this.close();
     }
 };

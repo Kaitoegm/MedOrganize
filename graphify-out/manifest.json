@@ -1,0 +1,332 @@
+{
+  "config/capacitor.config.json": {
+    "mtime": 1782679043.2981236,
+    "ast_hash": "ce0caa2c97ee6ad340e52c505ac48d48",
+    "semantic_hash": "ce0caa2c97ee6ad340e52c505ac48d48"
+  },
+  "config/package.json": {
+    "mtime": 1783369296.725327,
+    "ast_hash": "6d7f27ac80c99008bc179798b0174f1c",
+    "semantic_hash": "6d7f27ac80c99008bc179798b0174f1c"
+  },
+  "data/termo_validation_words.js": {
+    "mtime": 1782684955.6391106,
+    "ast_hash": "151c928fea081068f0db45ffc0e37566",
+    "semantic_hash": "151c928fea081068f0db45ffc0e37566"
+  },
+  "scripts/server.py": {
+    "mtime": 1783369310.2447083,
+    "ast_hash": "f8f3800bf3c09be271cab7d601128bb0",
+    "semantic_hash": "f8f3800bf3c09be271cab7d601128bb0"
+  },
+  "skills-lock.json": {
+    "mtime": 1783369097.9379299,
+    "ast_hash": "64d6552a244c9044ffad6eeb52300408",
+    "semantic_hash": "64d6552a244c9044ffad6eeb52300408"
+  },
+  "src/assets/anime.min.js": {
+    "mtime": 1782678846.3926158,
+    "ast_hash": "572d66e85091711b6ee76609573a8364",
+    "semantic_hash": "572d66e85091711b6ee76609573a8364"
+  },
+  "src/main/app.js": {
+    "mtime": 1783369260.802895,
+    "ast_hash": "b2ff6c9ee2110f133831cdb178a2db6e",
+    "semantic_hash": "b2ff6c9ee2110f133831cdb178a2db6e"
+  },
+  "src/notes/notes.js": {
+    "mtime": 1783384502.4479313,
+    "ast_hash": "9b425d106ac29f8fd5d6170357ccf9d4",
+    "semantic_hash": "9b425d106ac29f8fd5d6170357ccf9d4"
+  },
+  ".agents/skills/file-organizer/SKILL.md": {
+    "mtime": 1783369097.4844143,
+    "ast_hash": "2879a00d0144bd8cd013e3ffb2a785db",
+    "semantic_hash": "2879a00d0144bd8cd013e3ffb2a785db"
+  },
+  ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html": {
+    "mtime": 1783394568.9539418,
+    "ast_hash": "5ca684d4406ce4ed2248f70b20d705dd",
+    "semantic_hash": "5ca684d4406ce4ed2248f70b20d705dd"
+  },
+  ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos.html": {
+    "mtime": 1783394333.211839,
+    "ast_hash": "1ff215cffb6aaba051a7045b8298e2b1",
+    "semantic_hash": "1ff215cffb6aaba051a7045b8298e2b1"
+  },
+  ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html": {
+    "mtime": 1783394242.3277297,
+    "ast_hash": "1143502ec91abd1af40483a1248a4f29",
+    "semantic_hash": "1143502ec91abd1af40483a1248a4f29"
+  },
+  ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas.html": {
+    "mtime": 1783394142.409608,
+    "ast_hash": "7f6cbd1384c18e14804b4e63de82aa67",
+    "semantic_hash": "7f6cbd1384c18e14804b4e63de82aa67"
+  },
+  ".superpowers/brainstorm/1273-1783394098/content/home-completa.html": {
+    "mtime": 1783394716.166349,
+    "ast_hash": "f6fab626f91f6b12f56301a6dbd59535",
+    "semantic_hash": "f6fab626f91f6b12f56301a6dbd59535"
+  },
+  "docs/CLAUDE.md": {
+    "mtime": 1783368476.6787827,
+    "ast_hash": "e2bc4aa3d584ea3c6121404607b2fac1",
+    "semantic_hash": "e2bc4aa3d584ea3c6121404607b2fac1"
+  },
+  "docs/novas_instrucoes_gamificacao.md": {
+    "mtime": 1782684955.6371107,
+    "ast_hash": "a86a498c447d2ec22b6455e03fa72f55",
+    "semantic_hash": "a86a498c447d2ec22b6455e03fa72f55"
+  },
+  "docs/plano_ferramentas.md": {
+    "mtime": 1783345453.0478015,
+    "ast_hash": "86962104b48f0b3f2c1a9554174930a4",
+    "semantic_hash": "86962104b48f0b3f2c1a9554174930a4"
+  },
+  "src/assets/aesthetic/README.md": {
+    "mtime": 1779581634.3950102,
+    "ast_hash": "f8153538cca1b2506ab5fcf8aa0940ee",
+    "semantic_hash": "f8153538cca1b2506ab5fcf8aa0940ee"
+  },
+  "src/assets/animals/README.md": {
+    "mtime": 1779581631.0181954,
+    "ast_hash": "e98a9be7c28e80e5dc26847b330ad417",
+    "semantic_hash": "e98a9be7c28e80e5dc26847b330ad417"
+  },
+  "src/assets/backgrounds/README.md": {
+    "mtime": 1779581628.0820806,
+    "ast_hash": "57fb05287cdd4adb741d791524d91217",
+    "semantic_hash": "57fb05287cdd4adb741d791524d91217"
+  },
+  "src/main/index.html": {
+    "mtime": 1783369275.2972438,
+    "ast_hash": "0edd3719aeffe4094cff3d0c00081335",
+    "semantic_hash": "0edd3719aeffe4094cff3d0c00081335"
+  },
+  "src/notes/notes.html": {
+    "mtime": 1783384312.114824,
+    "ast_hash": "1385924d8412f1b2a985924aab398af6",
+    "semantic_hash": "1385924d8412f1b2a985924aab398af6"
+  },
+  "src/assets/sounds/ao criar nova tarefa.mp3": {
+    "mtime": 1782684950.6343348,
+    "ast_hash": "3c28d6b943bdcba2012f953170cf79fe",
+    "semantic_hash": "3c28d6b943bdcba2012f953170cf79fe"
+  },
+  "src/assets/sounds/ao desistir de um pomodoro (2).mp3": {
+    "mtime": 1782684950.6348643,
+    "ast_hash": "614886495bd556492b3160edaf53e2da",
+    "semantic_hash": "614886495bd556492b3160edaf53e2da"
+  },
+  "src/assets/sounds/ao desistir de um pomodoro.mp3": {
+    "mtime": 1782684950.635394,
+    "ast_hash": "7b76e89bade788dfc1c82844cbe86b0b",
+    "semantic_hash": "7b76e89bade788dfc1c82844cbe86b0b"
+  },
+  "src/assets/sounds/ao desmarcar tarefa na pagina inicial.mp3": {
+    "mtime": 1782684950.6364486,
+    "ast_hash": "0a3cf97819efe4baf102abf789b8d7a3",
+    "semantic_hash": "0a3cf97819efe4baf102abf789b8d7a3"
+  },
+  "src/assets/sounds/ao despausar o timer.mp3": {
+    "mtime": 1782684950.6364486,
+    "ast_hash": "5531b582060d24f406e65e94021d37f6",
+    "semantic_hash": "5531b582060d24f406e65e94021d37f6"
+  },
+  "src/assets/sounds/ao marcar check em uma tarefa, na p\u00e1gina inicial.mp3": {
+    "mtime": 1782684950.6369777,
+    "ast_hash": "a333e5f9687c4b55506e03e6bd5ed22f",
+    "semantic_hash": "a333e5f9687c4b55506e03e6bd5ed22f"
+  },
+  "src/assets/sounds/break_end/cat-alarm.mp3": {
+    "mtime": 1779623786.5854847,
+    "ast_hash": "1ae8571c5a66b94f716cf3a332723c5c",
+    "semantic_hash": "1ae8571c5a66b94f716cf3a332723c5c"
+  },
+  "src/assets/sounds/colocar quando usu\u00e1rio pausar o timer.mp3": {
+    "mtime": 1782684950.6375017,
+    "ast_hash": "fecaf42c53beafb786e38e239967458a",
+    "semantic_hash": "fecaf42c53beafb786e38e239967458a"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/03-amerie-1-thing-audiotrimmer.mp3": {
+    "mtime": 1782684950.6395817,
+    "ast_hash": "742da9266f122602163e7a50fea707e7",
+    "semantic_hash": "742da9266f122602163e7a50fea707e7"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/conclu.mp3": {
+    "mtime": 1782684950.6405885,
+    "ast_hash": "588add3b2557966eb91e2bc643077b17",
+    "semantic_hash": "588add3b2557966eb91e2bc643077b17"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/cuteyhoney.mp3": {
+    "mtime": 1782684950.6435876,
+    "ast_hash": "e56039788c4f604cccd2587be5467f36",
+    "semantic_hash": "e56039788c4f604cccd2587be5467f36"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/daddys-home.mp3": {
+    "mtime": 1782684950.6455877,
+    "ast_hash": "9c09c9481188efce75987fa70b4cd862",
+    "semantic_hash": "9c09c9481188efce75987fa70b4cd862"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/not-cute-anymore.mp3": {
+    "mtime": 1782684950.6465888,
+    "ast_hash": "0363b78893cde425d726bbc55e2328a5",
+    "semantic_hash": "0363b78893cde425d726bbc55e2328a5"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/pac-man-x-ms-pac-man-sugar-crush.mp3": {
+    "mtime": 1782684950.6485877,
+    "ast_hash": "3f4f2b911cea81689ec8c322d0a29865",
+    "semantic_hash": "3f4f2b911cea81689ec8c322d0a29865"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/quando conclui a tarefa.mp3": {
+    "mtime": 1782684950.6505878,
+    "ast_hash": "d2df96f1e2bab731ea258fb4ee599752",
+    "semantic_hash": "d2df96f1e2bab731ea258fb4ee599752"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/romanceeeeeeeeeeeeee.mp3": {
+    "mtime": 1782684950.651588,
+    "ast_hash": "9bfedb615b7f748d758d915076ba0e4a",
+    "semantic_hash": "9bfedb615b7f748d758d915076ba0e4a"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/tmpdbnm_5a3_Sn8alVQ.mp3": {
+    "mtime": 1782684950.6525888,
+    "ast_hash": "9b1e463840d7a0979be6666a2ff5c615",
+    "semantic_hash": "9b1e463840d7a0979be6666a2ff5c615"
+  },
+  "src/assets/sounds/conclus\u00e3o de tarefa/yeah-boiii-i-i-i.mp3": {
+    "mtime": 1782684950.6535888,
+    "ast_hash": "88ed2580d396325ee588583debe28121",
+    "semantic_hash": "88ed2580d396325ee588583debe28121"
+  },
+  "src/assets/sounds/countdown_tick.mp3": {
+    "mtime": 1779623991.216657,
+    "ast_hash": "8abd21487d5e4431c608227829364553",
+    "semantic_hash": "8abd21487d5e4431c608227829364553"
+  },
+  "src/assets/sounds/fim do pomodoro.mp3": {
+    "mtime": 1782684950.6545877,
+    "ast_hash": "fffd5db5d74d63117eb1d115c604b4ab",
+    "semantic_hash": "fffd5db5d74d63117eb1d115c604b4ab"
+  },
+  "src/assets/sounds/focus_start/undertale-battle-start.mp3": {
+    "mtime": 1779624425.4464357,
+    "ast_hash": "5e3a35effeb97c998573f2b8acccc2e9",
+    "semantic_hash": "5e3a35effeb97c998573f2b8acccc2e9"
+  },
+  "src/assets/sounds/gacha_ball_drop.mp3": {
+    "mtime": 1780248897.7245288,
+    "ast_hash": "52670910b4814e4dc418e797920ca2f9",
+    "semantic_hash": "52670910b4814e4dc418e797920ca2f9"
+  },
+  "src/assets/sounds/gacha_spin.mp3": {
+    "mtime": 1780249034.6123464,
+    "ast_hash": "ab76a85ecde29ad08b1e6e652d3da4fc",
+    "semantic_hash": "ab76a85ecde29ad08b1e6e652d3da4fc"
+  },
+  "src/assets/sounds/in\u00edcio da sess\u00e3o de foco/undertale-battle-start.mp3": {
+    "mtime": 1782684950.6545877,
+    "ast_hash": "5e3a35effeb97c998573f2b8acccc2e9",
+    "semantic_hash": "5e3a35effeb97c998573f2b8acccc2e9"
+  },
+  "src/assets/sounds/na anima\u00e7\u00e3o de 3,2,1, reproduzir esse audio no 3, no 2 e no 1.mp3": {
+    "mtime": 1782684950.6565883,
+    "ast_hash": "8abd21487d5e4431c608227829364553",
+    "semantic_hash": "8abd21487d5e4431c608227829364553"
+  },
+  "src/assets/sounds/pomodoro_end.mp3": {
+    "mtime": 1780009212.8225253,
+    "ast_hash": "fffd5db5d74d63117eb1d115c604b4ab",
+    "semantic_hash": "fffd5db5d74d63117eb1d115c604b4ab"
+  },
+  "src/assets/sounds/pomodoro_quit.mp3": {
+    "mtime": 1779623854.9530258,
+    "ast_hash": "7b76e89bade788dfc1c82844cbe86b0b",
+    "semantic_hash": "7b76e89bade788dfc1c82844cbe86b0b"
+  },
+  "src/assets/sounds/pomodoro_quit2.mp3": {
+    "mtime": 1779625200.5949302,
+    "ast_hash": "614886495bd556492b3160edaf53e2da",
+    "semantic_hash": "614886495bd556492b3160edaf53e2da"
+  },
+  "src/assets/sounds/quando termina tempo de descanso/cat-alarm.mp3": {
+    "mtime": 1782684950.6585884,
+    "ast_hash": "1ae8571c5a66b94f716cf3a332723c5c",
+    "semantic_hash": "1ae8571c5a66b94f716cf3a332723c5c"
+  },
+  "src/assets/sounds/task_check.mp3": {
+    "mtime": 1779801337.229527,
+    "ast_hash": "a333e5f9687c4b55506e03e6bd5ed22f",
+    "semantic_hash": "a333e5f9687c4b55506e03e6bd5ed22f"
+  },
+  "src/assets/sounds/task_complete/03-amerie-1-thing-audiotrimmer.mp3": {
+    "mtime": 1779625054.6965556,
+    "ast_hash": "742da9266f122602163e7a50fea707e7",
+    "semantic_hash": "742da9266f122602163e7a50fea707e7"
+  },
+  "src/assets/sounds/task_complete/conclu.mp3": {
+    "mtime": 1779623496.2337363,
+    "ast_hash": "588add3b2557966eb91e2bc643077b17",
+    "semantic_hash": "588add3b2557966eb91e2bc643077b17"
+  },
+  "src/assets/sounds/task_complete/cuteyhoney.mp3": {
+    "mtime": 1779623762.120081,
+    "ast_hash": "e56039788c4f604cccd2587be5467f36",
+    "semantic_hash": "e56039788c4f604cccd2587be5467f36"
+  },
+  "src/assets/sounds/task_complete/daddys-home.mp3": {
+    "mtime": 1779625276.8684905,
+    "ast_hash": "9c09c9481188efce75987fa70b4cd862",
+    "semantic_hash": "9c09c9481188efce75987fa70b4cd862"
+  },
+  "src/assets/sounds/task_complete/not-cute-anymore.mp3": {
+    "mtime": 1779623594.8662486,
+    "ast_hash": "0363b78893cde425d726bbc55e2328a5",
+    "semantic_hash": "0363b78893cde425d726bbc55e2328a5"
+  },
+  "src/assets/sounds/task_complete/pac-man-x-ms-pac-man-sugar-crush.mp3": {
+    "mtime": 1779623891.6861613,
+    "ast_hash": "3f4f2b911cea81689ec8c322d0a29865",
+    "semantic_hash": "3f4f2b911cea81689ec8c322d0a29865"
+  },
+  "src/assets/sounds/task_complete/romanceeeeeeeeeeeeee.mp3": {
+    "mtime": 1779625186.1748912,
+    "ast_hash": "9bfedb615b7f748d758d915076ba0e4a",
+    "semantic_hash": "9bfedb615b7f748d758d915076ba0e4a"
+  },
+  "src/assets/sounds/task_complete/task_done.mp3": {
+    "mtime": 1779623373.1620564,
+    "ast_hash": "d2df96f1e2bab731ea258fb4ee599752",
+    "semantic_hash": "d2df96f1e2bab731ea258fb4ee599752"
+  },
+  "src/assets/sounds/task_complete/tmpdbnm_5a3_Sn8alVQ.mp3": {
+    "mtime": 1779623680.2087052,
+    "ast_hash": "9b1e463840d7a0979be6666a2ff5c615",
+    "semantic_hash": "9b1e463840d7a0979be6666a2ff5c615"
+  },
+  "src/assets/sounds/task_complete/yeah-boiii-i-i-i.mp3": {
+    "mtime": 1779625402.5320218,
+    "ast_hash": "88ed2580d396325ee588583debe28121",
+    "semantic_hash": "88ed2580d396325ee588583debe28121"
+  },
+  "src/assets/sounds/task_create.mp3": {
+    "mtime": 1779623699.18749,
+    "ast_hash": "3c28d6b943bdcba2012f953170cf79fe",
+    "semantic_hash": "3c28d6b943bdcba2012f953170cf79fe"
+  },
+  "src/assets/sounds/task_uncheck.mp3": {
+    "mtime": 1779625415.9598503,
+    "ast_hash": "0a3cf97819efe4baf102abf789b8d7a3",
+    "semantic_hash": "0a3cf97819efe4baf102abf789b8d7a3"
+  },
+  "src/assets/sounds/timer_pause.mp3": {
+    "mtime": 1779624517.0727684,
+    "ast_hash": "fecaf42c53beafb786e38e239967458a",
+    "semantic_hash": "fecaf42c53beafb786e38e239967458a"
+  },
+  "src/assets/sounds/timer_resume.mp3": {
+    "mtime": 1779625300.2899008,
+    "ast_hash": "5531b582060d24f406e65e94021d37f6",
+    "semantic_hash": "5531b582060d24f406e65e94021d37f6"
+  }
+}

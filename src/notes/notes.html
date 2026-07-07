@@ -154,6 +154,13 @@
                         </svg>
                     </button>
 
+                    <button class="tool-btn" id="btn-page-settings" title="Configurações da página" aria-label="Configurações da página" aria-haspopup="dialog" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+
                     <div class="tool-divider" aria-hidden="true"></div>
 
                     <button class="tool-btn" id="tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" disabled>
@@ -259,6 +266,9 @@
     <script src="notes.js"></script>
     <!-- Redesign de navegação: Views, Rail, Actions -->
     <script src="notes-views.js"></script>
+    <!-- Google Drive: OAuth + sincronização (Passos 15-17) -->
+    <script src="notes-drive.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
         /* ── Passo 2: Lógica de UI dos painéis ── */
@@ -535,6 +545,159 @@
             </button>
         </footer>
     </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         BUSCA GLOBAL (Passo 11) — overlay + modal
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="search-overlay" class="search-overlay" aria-hidden="true"></div>
+
+    <div id="search-modal" class="search-modal" role="dialog" aria-modal="true"
+         aria-labelledby="search-modal-title" aria-hidden="true">
+        <div class="search-modal-bar">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <label for="search-input" id="search-modal-title" class="sr-only">Buscar pastas, cadernos e páginas</label>
+            <input type="text" id="search-input" class="search-input" placeholder="Buscar pastas, cadernos e páginas…" autocomplete="off">
+            <button class="search-close-btn" id="search-close-btn" title="Fechar (Esc)" aria-label="Fechar busca">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CONFIGURAÇÕES DA PÁGINA (Passo 12)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="page-settings-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+
+    <aside id="page-settings-panel" class="page-manager-panel" role="dialog" aria-modal="false"
+           aria-labelledby="page-settings-title" aria-hidden="true">
+        <header class="pm-header">
+            <div class="pm-header-titles">
+                <h2 class="pm-title" id="page-settings-title">Configurações da Página</h2>
+                <span class="pm-subtitle" id="ps-page-name">—</span>
+            </div>
+            <button class="pm-close-btn" id="ps-close-btn" title="Fechar (Esc)" aria-label="Fechar configurações da página">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+
+        <div class="settings-body">
+            <div class="settings-field">
+                <label for="ps-name-input">Nome da página</label>
+                <input type="text" id="ps-name-input" class="settings-text-input" autocomplete="off">
+            </div>
+
+            <div class="settings-field">
+                <label>Tipo de fundo</label>
+                <div class="settings-option-grid" id="ps-bg-type" role="radiogroup" aria-label="Tipo de fundo">
+                    <button class="settings-option" data-value="none"    role="radio" aria-checked="false">Limpo</button>
+                    <button class="settings-option" data-value="lined"   role="radio" aria-checked="false">Pauta</button>
+                    <button class="settings-option" data-value="dotgrid" role="radio" aria-checked="false">Pontos</button>
+                    <button class="settings-option" data-value="grid"    role="radio" aria-checked="false">Quadriculado</button>
+                </div>
+            </div>
+
+            <div class="settings-field">
+                <label>Cor do fundo</label>
+                <div class="settings-swatch-row" id="ps-bg-color" role="radiogroup" aria-label="Cor do fundo">
+                    <button class="settings-swatch" data-value="#ffffff" style="background:#ffffff" title="Branco" role="radio" aria-checked="false"></button>
+                    <button class="settings-swatch" data-value="#fdf6e3" style="background:#fdf6e3" title="Creme" role="radio" aria-checked="false"></button>
+                    <button class="settings-swatch" data-value="#e8f0ff" style="background:#e8f0ff" title="Azul claro" role="radio" aria-checked="false"></button>
+                    <button class="settings-swatch" data-value="#1a1b2e" style="background:#1a1b2e" title="Escuro" role="radio" aria-checked="false"></button>
+                </div>
+            </div>
+
+            <div class="settings-field">
+                <label>Tamanho do canvas</label>
+                <div class="settings-option-grid" id="ps-canvas-size" role="radiogroup" aria-label="Tamanho do canvas">
+                    <button class="settings-option" data-w="8000" data-h="6000" role="radio" aria-checked="false">Padrão (8000×6000)</button>
+                    <button class="settings-option" data-w="3508" data-h="2480" role="radio" aria-checked="false">A4 paisagem</button>
+                    <button class="settings-option" data-w="6000" data-h="6000" role="radio" aria-checked="false">Quadrado</button>
+                </div>
+            </div>
+
+            <div class="settings-field">
+                <label>Versões anteriores</label>
+                <div class="settings-versions-list" id="ps-versions-list"></div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         CONFIGURAÇÕES DO APP (Passo 12)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="app-settings-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+
+    <aside id="app-settings-panel" class="page-manager-panel" role="dialog" aria-modal="false"
+           aria-labelledby="app-settings-title" aria-hidden="true">
+        <header class="pm-header">
+            <div class="pm-header-titles">
+                <h2 class="pm-title" id="app-settings-title">Configurações do MedNotes</h2>
+            </div>
+            <button class="pm-close-btn" id="as-close-btn" title="Fechar (Esc)" aria-label="Fechar configurações do app">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+
+        <div class="settings-body">
+            <div class="settings-field">
+                <label>Tema</label>
+                <div class="settings-option-grid" id="as-theme" role="radiogroup" aria-label="Tema">
+                    <button class="settings-option" data-value="light" role="radio" aria-checked="false">Claro</button>
+                    <button class="settings-option" data-value="dark"  role="radio" aria-checked="false">Escuro</button>
+                    <button class="settings-option" data-value="auto"  role="radio" aria-checked="false">Automático</button>
+                </div>
+            </div>
+
+            <div class="settings-field">
+                <label for="as-cursor-slider">Tamanho do cursor: <span id="as-cursor-value">1x</span></label>
+                <input type="range" id="as-cursor-slider" min="0.5" max="2" step="0.1" value="1">
+            </div>
+
+            <div class="settings-field">
+                <label>Paleta de cores favoritas (caneta)</label>
+                <div class="settings-swatch-row settings-swatch-row--edit" id="as-fav-colors"></div>
+            </div>
+
+            <div class="settings-field">
+                <label>Google Drive</label>
+                <div id="as-drive-section" class="drive-section">
+                    <p class="drive-section-hint">Carregando…</p>
+                </div>
+            </div>
+
+            <div class="settings-field settings-about">
+                <label>Sobre</label>
+                <p>MedNotes v<span id="as-version">—</span> — caderno de anotações para medicina, com escrita à mão via S-Pen.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         GALERIA DE TEMPLATES (Passo 14)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="template-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+
+    <div id="template-modal" class="template-modal" role="dialog" aria-modal="true"
+         aria-labelledby="template-modal-title" aria-hidden="true">
+        <header class="template-modal-header">
+            <h2 id="template-modal-title">Escolha um template</h2>
+            <button class="pm-close-btn" id="template-close-btn" title="Fechar (Esc)" aria-label="Fechar galeria de templates">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+        <div class="template-grid" id="template-grid"></div>
+    </div>
 
 </body>
 </html>
