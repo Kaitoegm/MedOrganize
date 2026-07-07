@@ -11,6 +11,20 @@ const Utils = {
     formatDate: (dateString) => {
         const d = new Date(dateString);
         return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    },
+    timeAgo: (iso) => {
+        if (!iso) return '';
+        const diff = Date.now() - new Date(iso).getTime();
+        const min = Math.floor(diff / 60000);
+        if (min < 1)  return 'agora mesmo';
+        if (min < 60) return `há ${min} min`;
+        const h = Math.floor(min / 60);
+        if (h < 24) return `há ${h} h`;
+        const d = Math.floor(h / 24);
+        if (d === 1)  return 'há 1 dia';
+        if (d < 30)   return `há ${d} dias`;
+        const m = Math.floor(d / 30);
+        return m === 1 ? 'há 1 mês' : `há ${m} meses`;
     }
 };
 
@@ -52,12 +66,26 @@ MedNotes.DataStore = {
                 console.error("Erro ao fazer parse do DataStore:", e);
             }
         }
+        this.migrate();
     },
 
     save: function() {
         localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this.state));
         // Disparar evento para a UI reagir (opcional, ou chamar render direto)
         if (MedNotes.Sidebar) MedNotes.Sidebar.render();
+    },
+
+    // Migração aditiva: preenche campos novos em dados antigos.
+    migrate: function () {
+        let changed = false;
+        for (const f of this.state.folders) {
+            if (f.label === undefined) { f.label = null; changed = true; }
+            for (const nb of f.notebooks) {
+                if (!nb.color) { nb.color = f.color || '#5c6bc0'; changed = true; }
+                if (!nb.icon)  { nb.icon = '📓'; changed = true; }
+            }
+        }
+        if (changed) localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this.state));
     },
 
     createSampleData: function() {
@@ -69,7 +97,7 @@ MedNotes.DataStore = {
     // ── CRUD Pastas ──
     createFolder: function(name, color = '#5c6bc0', icon = '📁') {
         const id = Utils.generateId();
-        this.state.folders.push({ id, name, icon, color, notebooks: [] });
+        this.state.folders.push({ id, name, icon, color, label: null, notebooks: [] });
         this.save();
         return id;
     },
@@ -81,12 +109,12 @@ MedNotes.DataStore = {
     },
 
     // ── CRUD Cadernos ──
-    createNotebook: function(folderId, name) {
+    createNotebook: function(folderId, name, color = null, icon = '📓') {
         const folder = this.state.folders.find(f => f.id === folderId);
         if (!folder) return null;
-        
+
         const id = Utils.generateId();
-        folder.notebooks.push({ id, name, pages: [] });
+        folder.notebooks.push({ id, name, color: color || folder.color || '#5c6bc0', icon, pages: [] });
         this.save();
         return id;
     },
@@ -163,14 +191,14 @@ MedNotes.DataStore = {
         const fEl = document.getElementById('breadcrumb-folder');
         const nbEl = document.getElementById('breadcrumb-notebook');
         const pEl = document.getElementById('breadcrumb-page');
-        
+
         if (!fEl || !nbEl || !pEl) return;
 
         if (this.active.pageId) {
             const f = this.state.folders.find(f => f.id === this.active.folderId);
             const nb = f?.notebooks.find(nb => nb.id === this.active.notebookId);
             const p = nb?.pages.find(p => p.id === this.active.pageId);
-            
+
             fEl.textContent = f ? f.icon + ' ' + f.name : '—';
             nbEl.textContent = nb ? nb.name : '—';
             pEl.textContent = p ? p.name : 'Selecione uma página';
@@ -191,7 +219,12 @@ MedNotes.DataStore = {
             pEl.textContent = 'Selecione uma página';
             document.getElementById('canvas-empty-state').style.display = 'flex';
         }
-    }
+    },
+
+    USERNAME_KEY: 'mednotes_username',
+
+    getUsername: function () { return localStorage.getItem(this.USERNAME_KEY) || null; },
+    setUsername: function (name) { localStorage.setItem(this.USERNAME_KEY, name); }
 };
 
 // ────────────────────────────────────────────────────────────────
