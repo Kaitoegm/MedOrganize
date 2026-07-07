@@ -1,0 +1,102 @@
+/* ====================================================================
+   MEDNOTES — notes-views.css
+   Redesign: telas Home/Pasta/Caderno, mini-rail, identidade papelaria+cozy
+==================================================================== */
+
+:root {
+    --mnv-paper:       #f6f3ec;
+    --mnv-kraft:       #efe7d8;
+    --mnv-kraft-line:  #e2d6c0;
+    --mnv-ink:         #4a3f2e;
+    --mnv-ink-soft:    #8a7a5e;
+    --mnv-shadow-warm: 0 8px 18px rgba(120, 100, 60, .22);
+}
+
+/* ── Visibilidade por tela (body[data-view]) ─────────────────────── */
+body:not([data-view="editor"]) .notes-toolbar,
+body:not([data-view="editor"]) .notes-canvas-area,
+body:not([data-view="editor"]) .canvas-minimap,
+body:not([data-view="editor"]) .zoom-badge,
+body:not([data-view="editor"]) .page-manager-overlay,
+body:not([data-view="editor"]) .page-manager-panel { display: none !important; }
+
+body[data-view="editor"] #views-container { display: none; }
+
+#views-container {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background: var(--mnv-paper);
+}
+
+/* ── Base das telas ──────────────────────────────────────────────── */
+.mnv-screen { max-width: 1080px; margin: 0 auto; padding: 28px 32px 56px; font-family: var(--mn-font); }
+
+.mnv-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.mnv-head-left { display: flex; align-items: center; gap: 12px; }
+.mnv-greeting { font-size: 24px; font-weight: 700; color: #1a1b2e; margin: 0; }
+.mnv-title    { font-size: 22px; font-weight: 700; color: #1a1b2e; margin: 0; }
+.mnv-sub      { font-size: 12.5px; color: var(--mnv-ink-soft); margin: 4px 0 0; }
+
+.mnv-back-btn {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border: 1.5px solid var(--mnv-kraft-line); background: #fffdf5;
+    border-radius: 12px; font-size: 17px; color: var(--mnv-ink-soft);
+    cursor: pointer; transition: var(--mn-transition);
+}
+.mnv-back-btn:hover { color: #1a1b2e; box-shadow: var(--mn-shadow-sm); }
+
+.mnv-pill-btn {
+    background: var(--mn-blue); color: #fff; border: none;
+    font-family: var(--mn-font); font-size: 12.5px; font-weight: 600;
+    padding: 9px 16px; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 3px 8px rgba(92, 107, 192, .3); transition: var(--mn-transition);
+}
+.mnv-pill-btn:hover { filter: brightness(1.07); }
+
+.mnv-grid { display: grid; gap: 26px; margin-top: 30px; }
+.mnv-grid--folders   { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.mnv-grid--notebooks { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.mnv-grid--pages     { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px; }
+
+.mnv-add-card {
+    border: 2px dashed #d5c9b2; background: transparent; border-radius: 14px;
+    min-height: 120px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 6px; color: #b0a488;
+    font-family: var(--mn-font); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: var(--mn-transition);
+}
+.mnv-add-card span { font-size: 24px; line-height: 1; }
+.mnv-add-card:hover { border-color: var(--mn-blue-light); color: var(--mn-blue); }
+
+/* Botão ⋯ dos cards */
+.mnv-menu-btn {
+    position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+    border: none; background: rgba(255, 255, 255, .55); border-radius: 8px;
+    font-size: 15px; line-height: 1; color: var(--mnv-ink-soft); cursor: pointer;
+    transition: var(--mn-transition);
+}
+.mnv-menu-btn:hover { background: #fff; color: #1a1b2e; }
+
+/* ── Popover base (menus ⋯, emoji, cores) ────────────────────────── */
+.mnv-pop {
+    position: fixed; z-index: 950;
+    background: #fffdf5; border: 1px solid var(--mnv-kraft-line);
+    border-radius: 12px; box-shadow: var(--mn-shadow-lg);
+    padding: 6px; font-family: var(--mn-font);
+}
+.mnv-pop-item {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    padding: 9px 12px; border: none; background: transparent; border-radius: 8px;
+    font-family: inherit; font-size: 12.5px; color: #1a1b2e;
+    cursor: pointer; text-align: left; white-space: nowrap;
+}
+.mnv-pop-item:hover { background: var(--mn-surface-hover); }
+.mnv-pop-item--danger { color: #e53935; }
+
+/* Toque: alvos ≥44px */
+@media (hover: none) and (pointer: coarse) {
+    .mnv-menu-btn { width: 34px; height: 34px; }
+    .mnv-back-btn, .mnv-pill-btn { min-height: 44px; }
+    .mnv-pop-item { padding: 12px 14px; }
+}

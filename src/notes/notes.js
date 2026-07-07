@@ -71,8 +71,7 @@ MedNotes.DataStore = {
 
     save: function() {
         localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this.state));
-        // Disparar evento para a UI reagir (opcional, ou chamar render direto)
-        if (MedNotes.Sidebar) MedNotes.Sidebar.render();
+        if (MedNotes.Actions) MedNotes.Actions.refreshUI();
     },
 
     // Migração aditiva: preenche campos novos em dados antigos.
@@ -172,11 +171,11 @@ MedNotes.DataStore = {
         this.active.folderId = folderId;
         this.active.notebookId = notebookId;
         this.active.pageId = pageId;
-        
-        // Atualizar UI
-        if (MedNotes.Sidebar) MedNotes.Sidebar.updateSelectionUI();
-        if (MedNotes.Canvas) MedNotes.Canvas.loadActivePage();
-        
+
+        if (MedNotes.Views)   MedNotes.Views.enterEditor();
+        if (MedNotes.Sidebar) MedNotes.Sidebar.updateSelectionUI();   // sai na Task 8
+        if (MedNotes.Canvas)  MedNotes.Canvas.loadActivePage();
+
         this.updateBreadcrumb();
     },
     
@@ -3045,6 +3044,7 @@ MedNotes.PageManager = {
     toggle: function () { this.isOpen ? this.close() : this.open(); },
 
     open: function () {
+        if (MedNotes.Views && MedNotes.Views.route.view !== 'editor') return;
         // Persiste o estado atual do canvas para o thumbnail da página ativa
         // refletir o desenho mais recente.
         if (MedNotes.Canvas && MedNotes.DataStore.active.pageId) {
@@ -3245,12 +3245,8 @@ document.addEventListener('DOMContentLoaded', () => {
     MedNotes.Sidebar.init();
     MedNotes.Canvas.init();
     MedNotes.PageManager.init();
-
-    // Abrir a página de exemplo criada automaticamente
-    const firstFolder = MedNotes.DataStore.state.folders[0];
-    if (firstFolder && firstFolder.notebooks.length > 0 && firstFolder.notebooks[0].pages.length > 0) {
-        MedNotes.DataStore.setActiveSelection(firstFolder.id, firstFolder.notebooks[0].id, firstFolder.notebooks[0].pages[0].id);
-    }
+    MedNotes.Views.init();
+    MedNotes.Rail?.init?.();   // Rail só existe a partir da Task 7
 
     MedNotes.initialized = true;
     console.log('%c✅ MedNotes pronto (Passos 1-10)', 'color:#9c27b0;font-weight:700;font-size:13px;');

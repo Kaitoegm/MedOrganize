@@ -124,3 +124,103 @@ MedNotes.Actions = {
         this.refreshUI();
     }
 };
+
+// ── POPOVER — flutuante genérico (menus ⋯, emoji, cores) ────────────
+MedNotes.Popover = {
+    _current: null,
+
+    open: function (anchor, contentEl) {
+        this.close();
+        const pop = document.createElement('div');
+        pop.className = 'mnv-pop';
+        pop.appendChild(contentEl);
+        document.body.appendChild(pop);
+
+        const r = anchor.getBoundingClientRect();
+        pop.style.top  = Math.min(r.bottom + 6, window.innerHeight - pop.offsetHeight - 10) + 'px';
+        pop.style.left = Math.min(r.left,      window.innerWidth  - pop.offsetWidth  - 10) + 'px';
+
+        this._current = pop;
+        setTimeout(() => document.addEventListener('click', this._onDocClick), 0);
+        return pop;
+    },
+
+    _onDocClick: (e) => {
+        const P = MedNotes.Popover;
+        if (P._current && !P._current.contains(e.target)) P.close();
+    },
+
+    close: function () {
+        if (!this._current) return;
+        this._current.remove();
+        this._current = null;
+        document.removeEventListener('click', this._onDocClick);
+    }
+};
+
+// ── VIEWS — roteador das telas Home / Pasta / Caderno / Editor ──────
+MedNotes.Views = {
+    route: { view: 'home', folderId: null, notebookId: null },
+    _nameAsked: false,
+
+    init: function () {
+        this.container = document.getElementById('views-container');
+
+        // Breadcrumb do editor salta para as telas
+        document.getElementById('breadcrumb-folder')?.addEventListener('click', () => {
+            const { folderId } = MedNotes.DataStore.active;
+            if (folderId) this.show('folder', folderId);
+        });
+        document.getElementById('breadcrumb-notebook')?.addEventListener('click', () => {
+            const { folderId, notebookId } = MedNotes.DataStore.active;
+            if (folderId && notebookId) this.show('notebook', folderId, notebookId);
+        });
+
+        // Botão ← do editor: agora volta para a Tela Caderno (rail cuida do MedOrganize)
+        const backBtn = document.getElementById('btn-back-to-medorganize');
+        if (backBtn) {
+            backBtn.removeAttribute('onclick');
+            backBtn.title = 'Voltar ao caderno';
+            backBtn.setAttribute('aria-label', 'Voltar ao caderno');
+            backBtn.addEventListener('click', () => {
+                const { folderId, notebookId } = MedNotes.DataStore.active;
+                try { MedNotes.Canvas._savePage(); } catch (e) { /* sem página ativa */ }
+                if (folderId && notebookId) this.show('notebook', folderId, notebookId);
+                else this.show('home');
+            });
+        }
+
+        this.show('home');
+    },
+
+    show: function (view, folderId = null, notebookId = null) {
+        MedNotes.Popover.close();
+        this.route = { view, folderId, notebookId };
+        document.body.dataset.view = view;
+        if (view === 'editor') { this.container.innerHTML = ''; return; }
+        this.refresh();
+    },
+
+    // Chamado pelo DataStore.setActiveSelection ao abrir uma página
+    enterEditor: function () {
+        const { folderId, notebookId } = MedNotes.DataStore.active;
+        this.show('editor', folderId, notebookId);
+    },
+
+    refresh: function () {
+        if (!this.container || this.route.view === 'editor') return;
+        if (this.route.view === 'home')     this._renderHome();
+        if (this.route.view === 'folder')   this._renderFolder();
+        if (this.route.view === 'notebook') this._renderNotebook();
+        MedNotes.Rail?.render?.();
+    },
+
+    // Stubs — substituídos nas Tasks 4, 5 e 6
+    _renderHome:     function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Home (em construção)</h1></div>'; },
+    _renderFolder:   function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Pasta (em construção)</h1></div>'; },
+    _renderNotebook: function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Caderno (em construção)</h1></div>'; },
+
+    _esc: (str) => String(str == null ? '' : str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
+};
