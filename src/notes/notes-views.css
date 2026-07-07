@@ -57,7 +57,7 @@ body[data-view="editor"] #views-container { display: none; }
 .mnv-grid { display: grid; gap: 26px; margin-top: 30px; }
 .mnv-grid--folders   { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
 .mnv-grid--notebooks { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-.mnv-grid--pages     { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 16px; }
+.mnv-grid--pages     { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 16px; }
 
 .mnv-add-card {
     border: 2px dashed #d5c9b2; background: transparent; border-radius: 14px;

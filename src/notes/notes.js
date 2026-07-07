@@ -127,7 +127,7 @@ MedNotes.DataStore = {
     },
 
     // ── CRUD Páginas ──
-    createPage: function(folderId, notebookId, name = 'Nova Página') {
+    createPage: function(folderId, notebookId, name = null) {
         const folder = this.state.folders.find(f => f.id === folderId);
         if (!folder) return null;
         const notebook = folder.notebooks.find(nb => nb.id === notebookId);
@@ -135,7 +135,8 @@ MedNotes.DataStore = {
 
         const id = Utils.generateId();
         const now = new Date().toISOString();
-        
+        if (!name) name = `Página ${notebook.pages.length + 1}`;
+
         notebook.pages.push({
             id,
             name,

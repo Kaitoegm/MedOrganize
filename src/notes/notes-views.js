@@ -36,7 +36,15 @@ MedNotes.Actions = {
     },
 
     promptCreate: async function (type, folderId, notebookId) {
-        const labels = { folder: 'Nova Pasta', notebook: 'Novo Caderno', page: 'Nova Página' };
+        // Páginas não pedem nome — recebem "Página N" automático (renomeável depois no menu ⋯)
+        if (type === 'page') {
+            const id = MedNotes.DataStore.createPage(folderId, notebookId);
+            if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
+            this.refreshUI();
+            return id;
+        }
+
+        const labels = { folder: 'Nova Pasta', notebook: 'Novo Caderno' };
         const name = await MedNotes.Dialog.prompt(`Criar ${labels[type]}`, `Informe o nome d${type === 'folder' ? 'a' : 'o'} ${labels[type]}:`, '');
         if (!name || !name.trim()) return null;
 
@@ -45,9 +53,6 @@ MedNotes.Actions = {
             id = MedNotes.DataStore.createFolder(name.trim());
         } else if (type === 'notebook') {
             id = MedNotes.DataStore.createNotebook(folderId, name.trim());
-        } else if (type === 'page') {
-            id = MedNotes.DataStore.createPage(folderId, notebookId, name.trim());
-            if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
         }
         this.refreshUI();
         return id;
