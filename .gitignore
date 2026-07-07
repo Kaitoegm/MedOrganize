@@ -11,4 +11,5 @@ browser_recordings/
 /*.png
 /*.jpg
 /*.gif
-!/assets/
+!/src/assets/
+.superpowers/
