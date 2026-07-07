@@ -372,6 +372,19 @@ MedNotes.Canvas = {
     // ── Estado de pan ──────────────────────────────────────────────────
     _pan: { active: false, startX: 0, startY: 0, startViewX: 0, startViewY: 0 },
 
+    // ── Estado da espiada (peek) entre páginas ─────────────────────────
+    _peek: {
+        active: false,        // true enquanto há overscroll além do limite normal
+        direction: null,      // 'next' | 'prev'
+        amount: 0,            // px de overscroll amortecido (tela) atualmente visível
+        neighbor: null,       // { folderId, notebookId, pageId, page } — page pode ser null (próxima ainda não existe)
+        neighborStrokes: [],  // strokes já parseados da página vizinha (cache — evita JSON.parse por frame)
+        neighborBg: null,     // { background, bgColor } da página vizinha
+        snapping: false       // true durante animação de confirmação/retorno (Task 5)
+    },
+    PEEK_MAX: 220,             // overscroll máximo (px de tela) — resistência elástica se aproxima disso
+    PAGE_GAP: 24,              // espaço lógico (px) entre o fim de uma página e o início da próxima
+
     // ── Estado de pinch-zoom touch ─────────────────────────────────────
     _pinch: { active: false, startDist: 0, startZoom: 1, midX: 0, midY: 0 },
 
@@ -468,6 +481,103 @@ MedNotes.Canvas = {
     },
 
     // ─────────────────────────────────────────────────────────────────
+    // _dampPeek — resistência elástica (rubber-band): converte overscroll
+    // bruto em overscroll amortecido, que se aproxima assintoticamente de
+    // PEEK_MAX conforme o usuário continua arrastando/rolando.
+    // ─────────────────────────────────────────────────────────────────
+    _dampPeek: function (raw) {
+        const max = this.PEEK_MAX;
+        return max * (1 - Math.exp(-raw / max));
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _beginOrUpdatePeek — inicia (ou atualiza) o estado de espiada numa
+    // direção. Busca a página vizinha (sem criar) na primeira vez.
+    // ─────────────────────────────────────────────────────────────────
+    _beginOrUpdatePeek: function (direction, overshoot) {
+        if (this._peek.snapping) return; // não interfere durante animação (Task 5)
+
+        if (!this._peek.active || this._peek.direction !== direction) {
+            const neighbor = this._getNeighborPage(direction);
+            if (!neighbor) {
+                this._cancelPeek();
+                return;
+            }
+            this._peek.active = true;
+            this._peek.direction = direction;
+            this._peek.neighbor = neighbor;
+            this._peek.neighborStrokes = neighbor.page && neighbor.page.canvasData
+                ? JSON.parse(neighbor.page.canvasData)
+                : [];
+            this._peek.neighborBg = {
+                background: neighbor.page?.background || 'lined',
+                bgColor:    neighbor.page?.bgColor    || '#ffffff'
+            };
+        }
+
+        this._peek.amount = this._dampPeek(overshoot);
+        this._dirty = true;
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _cancelPeek — volta ao estado normal (sem espiada). Chamado quando
+    // o usuário recua para dentro dos limites normais, ou quando não há
+    // página vizinha na direção tentada.
+    // ─────────────────────────────────────────────────────────────────
+    _cancelPeek: function () {
+        this._peek.active = false;
+        this._peek.direction = null;
+        this._peek.amount = 0;
+        this._peek.neighbor = null;
+        this._peek.neighborStrokes = [];
+        this._peek.neighborBg = null;
+        this._dirty = true;
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _clampPanWithPeek — como _clampPan, mas permite overscroll vertical
+    // elástico além do limite normal quando existe página vizinha na
+    // direção tentada. Eixo X sempre trava normalmente (espiada é só
+    // vertical). Substitui _clampPan() nos pontos de pan por gesto
+    // (wheel e drag) — _clampPan() em si permanece intacta, usada pelo
+    // zoomAt (zoom não interage com a espiada).
+    // ─────────────────────────────────────────────────────────────────
+    _clampPanWithPeek: function () {
+        const vw = this.bgCanvas.clientWidth;
+        const vh = this.bgCanvas.clientHeight;
+        const cw = this.CANVAS_W * this.view.zoom;
+        const ch = this.CANVAS_H * this.view.zoom;
+        const margin = 120;
+
+        // Eixo X: trava normal, sem espiada.
+        this.view.x = Math.min(vw - margin, Math.max(-(cw - margin), this.view.x));
+
+        const clampMinY = -(ch - margin);
+        const clampMaxY = vh - margin;
+        const rawY = this.view.y;
+
+        if (rawY < clampMinY) {
+            // Tentando ir além do FIM da página atual → direção 'next'
+            const overshoot = clampMinY - rawY;
+            this._beginOrUpdatePeek('next', overshoot);
+            this.view.y = this._peek.active ? (clampMinY - this._peek.amount) : clampMinY;
+            return;
+        }
+
+        if (rawY > clampMaxY) {
+            // Tentando ir além do INÍCIO da página atual → direção 'prev'
+            const overshoot = rawY - clampMaxY;
+            this._beginOrUpdatePeek('prev', overshoot);
+            this.view.y = this._peek.active ? (clampMaxY + this._peek.amount) : clampMaxY;
+            return;
+        }
+
+        // Dentro dos limites normais: sem espiada.
+        this.view.y = Math.min(clampMaxY, Math.max(clampMinY, rawY));
+        if (this._peek.active && !this._peek.snapping) this._cancelPeek();
+    },
+
+    // ─────────────────────────────────────────────────────────────────
     // zoom — altera zoom mantendo o ponto focal fixo na tela
     // ─────────────────────────────────────────────────────────────────
     zoomAt: function (screenX, screenY, delta) {
@@ -517,7 +627,7 @@ MedNotes.Canvas = {
                 // Scroll normal → pan
                 this.view.x -= e.deltaX;
                 this.view.y -= e.deltaY;
-                this._clampPan();
+                this._clampPanWithPeek();
                 this._dirty = true;
             }
         }, { passive: false });
@@ -957,7 +1067,7 @@ MedNotes.Canvas = {
         if (this._pan.active) {
             this.view.x = this._pan.startViewX + (sx - this._pan.startX);
             this.view.y = this._pan.startViewY + (sy - this._pan.startY);
-            this._clampPan();
+            this._clampPanWithPeek();
             this._dirty = true;
             return;
         }
@@ -1645,6 +1755,23 @@ MedNotes.Canvas = {
 
         // 2. Layer principal (strokes persistidos) da página atual
         this._renderStrokes(this.mainCtx, vx, vy, zoom, { strokes: this.strokes }, 0, this._currentStroke);
+
+        // 2b. Página vizinha (espiada), se ativa
+        if (this._peek.active) {
+            const offsetY = this._peek.direction === 'next'
+                ? this.CANVAS_H + this.PAGE_GAP
+                : -(this.CANVAS_H + this.PAGE_GAP);
+
+            const neighborPageData = {
+                background: this._peek.neighborBg.background,
+                bgColor:    this._peek.neighborBg.bgColor,
+                canvasW: this.CANVAS_W,
+                canvasH: this.CANVAS_H
+            };
+
+            this._renderBackground(this.bgCtx, vx, vy, zoom, neighborPageData, offsetY);
+            this._renderStrokes(this.mainCtx, vx, vy, zoom, { strokes: this._peek.neighborStrokes }, offsetY, null);
+        }
 
         // 3. Layer UI (stroke em andamento + cursor borracha)
         this._renderUI(this.uiCtx, vw, vh, vx, vy, zoom);
