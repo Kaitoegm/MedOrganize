@@ -246,6 +246,24 @@ MedNotes.Views = {
         </div>`;
     },
 
+    _notebookCardHTML: function (nb) {
+        const nPg = nb.pages.length;
+        const last = nb.pages.reduce((m, p) => ((p.updatedAt || '') > m ? p.updatedAt : m), '');
+        return `
+        <div class="mnv-nb-card" data-id="${nb.id}" role="button" tabindex="0"
+             style="--nb-color:${nb.color}" aria-label="Abrir caderno ${this._esc(nb.name)}">
+            <span class="mnv-nb-stitch"></span>
+            <span class="mnv-nb-elastic"></span>
+            <span class="mnv-nb-ribbon"></span>
+            <button class="mnv-menu-btn" title="Opções" aria-label="Opções do caderno">⋯</button>
+            <button class="mnv-nb-emoji" title="Mudar emoji" aria-label="Mudar emoji do caderno">${nb.icon}</button>
+            <span class="mnv-nb-tag">
+                <span class="mnv-nb-name">${this._esc(nb.name)}</span>
+                <span class="mnv-nb-meta">${nPg} página${nPg !== 1 ? 's' : ''}${last ? ' · ' + Utils.timeAgo(last) : ''}</span>
+            </span>
+        </div>`;
+    },
+
     _renderHome: function () {
         const DS = MedNotes.DataStore;
         const [saud, emoji] = this._greeting();
@@ -288,13 +306,61 @@ MedNotes.Views = {
         this._maybeAskName();
     },
 
-    // Stubs — substituídos nas Tasks 5 e 6
-    _renderFolder:   function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Pasta (em construção)</h1></div>'; },
+    _renderFolder: function () {
+        const DS = MedNotes.DataStore;
+        const f = DS.state.folders.find(x => x.id === this.route.folderId);
+        if (!f) { this.show('home'); return; }
+
+        this.container.innerHTML = `
+        <div class="mnv-screen mnv-folder-view">
+            <header class="mnv-head">
+                <div class="mnv-head-left">
+                    <button class="mnv-back-btn" id="mnv-back" aria-label="Voltar para o início">←</button>
+                    <div>
+                        <h1 class="mnv-title">${f.icon} ${this._esc(f.name)}</h1>
+                        <p class="mnv-sub">${f.notebooks.length} caderno${f.notebooks.length !== 1 ? 's' : ''}</p>
+                    </div>
+                </div>
+                <button class="mnv-pill-btn" id="mnv-new-nb">+ Novo Caderno</button>
+            </header>
+            <div class="mnv-grid mnv-grid--notebooks">
+                ${f.notebooks.map(nb => this._notebookCardHTML(nb)).join('')}
+                <button class="mnv-add-card" id="mnv-add-nb"><span>+</span>Novo Caderno</button>
+            </div>
+        </div>`;
+
+        this.container.querySelector('#mnv-back').addEventListener('click', () => this.show('home'));
+        const create = () => MedNotes.Actions.promptCreate('notebook', f.id, null);
+        this.container.querySelector('#mnv-new-nb').addEventListener('click', create);
+        this.container.querySelector('#mnv-add-nb').addEventListener('click', create);
+
+        this.container.querySelectorAll('.mnv-nb-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.mnv-menu-btn') || e.target.closest('.mnv-nb-emoji')) return;
+                this.show('notebook', f.id, card.dataset.id);
+            });
+            card.querySelector('.mnv-menu-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this._openCardMenu(e.currentTarget, 'notebook', { folderId: f.id, notebookId: card.dataset.id });
+            });
+            card.querySelector('.mnv-nb-emoji').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this._openEmojiFor(e.currentTarget, 'notebook', { folderId: f.id, notebookId: card.dataset.id });
+            });
+        });
+    },
+
+    // Stub — substituído na Task 6
     _renderNotebook: function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Caderno (em construção)</h1></div>'; },
 
     // Menu ⋯ dos cards — implementação completa na Task 8 (emoji/cor/etiqueta)
     _openCardMenu: function (anchor, kind, ids) {
         MedNotes.Actions.showToast('Menu em breve (Task 8)', 'info');
+    },
+
+    // Seletor de emoji — implementação completa na Task 8
+    _openEmojiFor: function (anchor, kind, ids) {
+        MedNotes.Actions.showToast('Seletor de emoji em breve (Task 8)', 'info');
     },
 
     _esc: (str) => String(str == null ? '' : str)
