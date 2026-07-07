@@ -384,6 +384,8 @@ MedNotes.Canvas = {
     },
     PEEK_MAX: 220,             // overscroll máximo (px de tela) — resistência elástica se aproxima disso
     PAGE_GAP: 24,              // espaço lógico (px) entre o fim de uma página e o início da próxima
+    PEEK_COMMIT_RATIO: 0.4,    // fração de PEEK_MAX que confirma a troca ao SOLTAR o ponteiro
+    PEEK_WHEEL_TRIGGER: 140,   // px de overscroll amortecido que já dispara a troca via WHEEL (sem esperar soltar)
 
     // ── Estado de pinch-zoom touch ─────────────────────────────────────
     _pinch: { active: false, startDist: 0, startZoom: 1, midX: 0, midY: 0 },
@@ -517,6 +519,12 @@ MedNotes.Canvas = {
 
         this._peek.amount = this._dampPeek(overshoot);
         this._dirty = true;
+
+        // Wheel/trackpad não tem gesto de "soltar" — dispara a troca direto
+        // ao ultrapassar o limiar (diferente do arrasto, que espera o pointerup).
+        if (!this._pan.active && this._peek.amount >= this.PEEK_WHEEL_TRIGGER) {
+            this._confirmPeek();
+        }
     },
 
     // ─────────────────────────────────────────────────────────────────
@@ -532,6 +540,25 @@ MedNotes.Canvas = {
         this._peek.neighborStrokes = [];
         this._peek.neighborBg = null;
         this._dirty = true;
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _confirmPeek — efetiva a troca de página vista na espiada. Cria a
+    // página se ainda não existir (rolando além da última página do
+    // caderno). Nesta versão a troca é instantânea; a Task 5 substitui
+    // esta função por uma versão animada, mesma assinatura.
+    // ─────────────────────────────────────────────────────────────────
+    _confirmPeek: function () {
+        const { folderId, notebookId, neighbor } = { ...this._peek, folderId: this._peek.neighbor.folderId, notebookId: this._peek.neighbor.notebookId };
+        let targetPageId = neighbor.pageId;
+
+        if (!targetPageId) {
+            // Não havia próxima página — cria uma nova, em branco.
+            targetPageId = MedNotes.DataStore.createPage(folderId, notebookId);
+        }
+
+        this._cancelPeek();
+        MedNotes.DataStore.setActiveSelection(folderId, notebookId, targetPageId);
     },
 
     // ─────────────────────────────────────────────────────────────────
@@ -1204,6 +1231,15 @@ MedNotes.Canvas = {
         if (this._pan.active) {
             this._pan.active = false;
             this.uiCanvas.style.cursor = this.activeTool === 'hand' ? 'grab' : 'crosshair';
+
+            if (this._peek.active) {
+                const commitThreshold = this.PEEK_MAX * this.PEEK_COMMIT_RATIO;
+                if (this._peek.amount >= commitThreshold) {
+                    this._confirmPeek();
+                } else {
+                    this._cancelPeek();
+                }
+            }
         }
 
         if (this._currentStroke && this._currentStroke.points.length > 1) {
