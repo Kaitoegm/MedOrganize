@@ -2769,6 +2769,7 @@ MedNotes.Canvas = {
     // loadActivePage — carrega os strokes da página ativa do DataStore
     // ─────────────────────────────────────────────────────────────────
     loadActivePage: function () {
+        this._cancelPeek();
         const page = this._getActivePage();
         const wrapper = document.getElementById('canvas-wrapper');
         const emptyState = document.getElementById('canvas-empty-state');
