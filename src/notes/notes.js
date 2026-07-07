@@ -2607,6 +2607,38 @@ MedNotes.Canvas = {
         const { folderId, notebookId, pageId } = MedNotes.DataStore.active;
         if (!pageId) return null;
         return MedNotes.DataStore.getPage(folderId, notebookId, pageId);
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _getNeighborPage — localiza a página adjacente (próxima/anterior)
+    // no MESMO caderno. NÃO cria página nova — isso só acontece ao
+    // confirmar o snap (ver _confirmPeek). Retorna null quando não há
+    // vizinha nessa direção (ex.: 'prev' na primeira página).
+    // ─────────────────────────────────────────────────────────────────
+    _getNeighborPage: function (direction) {
+        const DS = MedNotes.DataStore;
+        const { folderId, notebookId, pageId } = DS.active;
+        if (!pageId) return null;
+
+        const folder   = DS.state.folders.find(f => f.id === folderId);
+        const notebook = folder?.notebooks.find(nb => nb.id === notebookId);
+        if (!notebook) return null;
+
+        const idx = notebook.pages.findIndex(p => p.id === pageId);
+        if (idx === -1) return null;
+
+        if (direction === 'next') {
+            const p = notebook.pages[idx + 1] || null;
+            return { folderId, notebookId, pageId: p ? p.id : null, page: p };
+        }
+
+        if (direction === 'prev') {
+            if (idx === 0) return null; // primeira página: sem anterior
+            const p = notebook.pages[idx - 1];
+            return { folderId, notebookId, pageId: p.id, page: p };
+        }
+
+        return null;
     }
 };
 // ── PAGE MANAGER (Passo 10) ──────────────────────────────────────────
