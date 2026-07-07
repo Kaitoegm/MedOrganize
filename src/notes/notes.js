@@ -2841,5 +2841,5 @@ document.addEventListener('DOMContentLoaded', () => {
     MedNotes.Rail.init();
 
     MedNotes.initialized = true;
-    console.log('%c✅ MedNotes pronto (Passos 1-10)', 'color:#9c27b0;font-weight:700;font-size:13px;');
+    console.log('%c✅ MedNotes pronto (Passos 1-10 + redesign de navegação)', 'color:#9c27b0;font-weight:700;font-size:13px;');
 });
