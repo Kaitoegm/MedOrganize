@@ -699,8 +699,8 @@ MedNotes.Canvas = {
                 // Zoom
                 const delta = -e.deltaY * 0.001;
                 this.zoomAt(sx, sy, delta);
-            } else {
-                // Scroll normal → pan
+            } else if (!this._peek.snapping) {
+                // Scroll normal → pan (ignora durante animação de snap/bounce)
                 this.view.x -= e.deltaX;
                 this.view.y -= e.deltaY;
                 this._clampPanWithPeek();
@@ -997,6 +997,7 @@ MedNotes.Canvas = {
         const sy = e.clientY - rect.top;
 
         if (this.activeTool === 'hand' || (e.buttons === 4) || (e.pointerType === 'touch' && this.activeTool !== 'pen' && this.activeTool !== 'highlighter' && this.activeTool !== 'eraser')) {
+            if (this._peek.snapping) return; // não interfere durante animação de snap/bounce
             // Iniciar pan
             this._pan.active    = true;
             this._pan.startX    = sx;
