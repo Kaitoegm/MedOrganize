@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="MedNotes — Caderno de Anotações para Medicina. Escrita à mão, organização por pastas e cadernos.">
+    <title>MedNotes — Caderno de Estudos</title>
+
+    <!-- Inter font — limpa e profissional para o MedNotes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- MedNotes CSS (será expandido no Passo 2) -->
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body class="mednotes-app" id="mednotes-body">
+
+    <!-- ===============================================================
+         OVERLAY DE ENTRADA (slide-up ao carregar, slide-down ao sair)
+    ================================================================ -->
+    <div id="notes-transition-overlay" class="notes-transition-overlay" aria-hidden="true"></div>
+
+    <!-- ===============================================================
+         APP SHELL — Layout Principal do MedNotes
+    ================================================================ -->
+    <div class="notes-shell" id="notes-shell">
+
+        <!-- ── BOTÃO TOGGLE DA SIDEBAR ── -->
+        <button
+            id="sidebar-toggle-btn"
+            class="sidebar-toggle-btn"
+            title="Recolher/Expandir barra lateral"
+            aria-label="Alternar barra lateral"
+            aria-expanded="true"
+            aria-controls="notes-sidebar"
+        >
+            <svg class="toggle-icon-open" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+            </svg>
+            <svg class="toggle-icon-closed" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none;">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="15" y1="3" x2="15" y2="21"/>
+            </svg>
+        </button>
+
+        <!-- ── SIDEBAR ESQUERDA (Pastas / Cadernos / Páginas) ── -->
+        <aside class="notes-sidebar" id="notes-sidebar" role="navigation" aria-label="Navegação de cadernos">
+
+            <!-- Cabeçalho da Sidebar -->
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span class="sidebar-logo-text">MedNotes</span>
+                </div>
+
+            <!-- Árvore de Pastas (Passos 3/4) -->
+            <div class="sidebar-tree" id="sidebar-tree" role="tree">
+                <div class="sidebar-empty-state" id="sidebar-empty-state">
+                    <svg viewBox="0 0 64 68" width="64" height="64" fill="none" aria-hidden="true">
+                        <rect x="8" y="16" width="48" height="36" rx="4" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="2"/>
+                        <path d="M8 24 h48" stroke="#5c6bc0" stroke-width="1.5"/>
+                        <line x1="18" y1="34" x2="46" y2="34" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="18" y1="40" x2="38" y2="40" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <p>Nenhuma pasta ainda.</p>
+                    <p class="sidebar-empty-hint">Crie sua primeira pasta abaixo!</p>
+                </div>
+            </div>
+
+            <!-- Rodapé da Sidebar -->
+            <div class="sidebar-footer">
+                <button class="sidebar-action-btn" id="btn-new-folder" title="Nova Pasta" aria-label="Criar nova pasta">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        <line x1="12" y1="11" x2="12" y2="17"/>
+                        <line x1="9" y1="14" x2="15" y2="14"/>
+                    </svg>
+                    <span>Nova Pasta</span>
+                </button>
+
+                <button class="sidebar-action-btn sidebar-action-btn--secondary" id="btn-new-page" title="Nova Página" aria-label="Criar nova página" disabled>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="13" x2="12" y2="17"/>
+                        <line x1="10" y1="15" x2="14" y2="15"/>
+                    </svg>
+                    <span>Nova Página</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── ÁREA PRINCIPAL ── -->
+        <div class="notes-main" id="notes-main">
+
+            <!-- ── TOOLBAR SUPERIOR ── -->
+            <header class="notes-toolbar" id="notes-toolbar" role="toolbar" aria-label="Ferramentas de desenho">
+
+
+                <!-- Grupo Esquerdo -->
+                <div class="toolbar-group toolbar-group--left">
+                    <button
+                        class="toolbar-btn toolbar-btn--back"
+                        id="btn-back-to-medorganize"
+                        title="Voltar ao MedOrganize"
+                        aria-label="Voltar ao MedOrganize"
+                        onclick="returnToMedOrganize()"
+                    >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+
+                    <nav class="toolbar-breadcrumb" id="toolbar-breadcrumb" aria-label="Localização da página">
+                        <span class="breadcrumb-item breadcrumb-item--link" id="breadcrumb-folder"
+                              role="button" tabindex="0"
+                              title="Ir para a pasta">—</span>
+                        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+                        <span class="breadcrumb-item breadcrumb-item--link" id="breadcrumb-notebook"
+                              role="button" tabindex="0"
+                              title="Ir para o caderno">—</span>
+                        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+                        <span class="breadcrumb-item breadcrumb-page" id="breadcrumb-page">Selecione uma página</span>
+                    </nav>
+                </div>
+
+                <!-- Grupo Central: ferramentas de desenho (Passos 6–9) -->
+                <div class="toolbar-group toolbar-group--center" id="drawing-tools">
+
+                    <button class="tool-btn tool-btn--active" id="tool-hand" title="Mover canvas (H)" data-tool="hand" aria-pressed="true">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/>
+                            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-pen" title="Caneta (P)" data-tool="pen" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                        <span class="tool-color-bar" aria-hidden="true"></span>
+                    </button>
+
+                    <button class="tool-btn" id="tool-highlighter" title="Marca-texto" data-tool="highlighter" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+                        </svg>
+                        <span class="tool-color-bar" aria-hidden="true"></span>
+                    </button>
+
+                    <button class="tool-btn" id="tool-eraser" title="Borracha (E)" data-tool="eraser" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 20H7L3 16l10-10 7 7-2.5 2.5"/><path d="M6 15l3 3.5"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-lasso" title="Lasso (L)" data-tool="lasso" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 22a5 5 0 0 1-2-4"/><path d="M7 16.93c.96.43 1.96.74 2.99.91"/>
+                            <path d="M3.34 14A6.8 6.8 0 0 1 2 10c0-4.42 4.48-8 10-8s10 3.58 10 8a7.19 7.19 0 0 1-.33 2"/>
+                            <path d="M5 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-shapes" title="Formas (S)" data-tool="shapes" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="8" height="8" rx="1"/>
+                            <circle cx="17" cy="7" r="4"/>
+                            <path d="M12 21l4-8 4 8z"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-ruler" title="Régua (R)" data-tool="ruler" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="8" width="22" height="8" rx="1"/>
+                            <line x1="5" y1="12" x2="5" y2="16"/><line x1="9" y1="12" x2="9" y2="14"/>
+                            <line x1="13" y1="12" x2="13" y2="16"/><line x1="17" y1="12" x2="17" y2="14"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-text" title="Texto (T)" data-tool="text" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <polyline points="4 7 4 4 20 4 20 7"/>
+                            <line x1="9" y1="20" x2="15" y2="20"/>
+                            <line x1="12" y1="4" x2="12" y2="20"/>
+                        </svg>
+                    </button>
+
+                    <button class="tool-btn" id="tool-laser" title="Laser Pointer (Z)" data-tool="laser" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"/>
+                            <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+                            <line x1="4.22" y1="4.22" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.78" y2="19.78"/>
+                            <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Grupo Direito -->
+                <div class="toolbar-group toolbar-group--right">
+
+                    <button class="tool-btn" id="btn-page-manager" title="Páginas (G)" aria-label="Gerenciar páginas" aria-haspopup="dialog" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <button class="tool-btn" id="tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" disabled>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                        </svg>
+                    </button>
+                    <button class="tool-btn" id="tool-redo" title="Refazer (Ctrl+Y)" aria-label="Refazer" disabled>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
+                        </svg>
+                    </button>
+
+                    <div class="tool-divider" aria-hidden="true"></div>
+
+                    <div class="save-status" id="save-status" role="status" aria-live="polite">
+                        <span class="save-status-dot" id="save-dot"></span>
+                        <span class="save-status-text" id="save-text">Pronto</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── ÁREA DO CANVAS ── -->
+            <main class="notes-canvas-area" id="notes-canvas-area" aria-label="Canvas de anotações">
+
+                <!-- Estado vazio: nenhuma página selecionada -->
+                <div class="canvas-empty-state" id="canvas-empty-state">
+                    <div class="canvas-empty-inner">
+                        <svg viewBox="0 0 120 120" width="110" height="110" fill="none">
+                            <rect x="20" y="15" width="80" height="90" rx="8" fill="#f0f2ff" stroke="#5c6bc0" stroke-width="2.5"/>
+                            <circle cx="20" cy="30" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="45" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="60" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="75" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <circle cx="20" cy="90" r="4" fill="#9c27b0" opacity="0.6"/>
+                            <line x1="35" y1="40" x2="85" y2="40" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round"/>
+                            <line x1="35" y1="52" x2="85" y2="52" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                            <line x1="35" y1="64" x2="70" y2="64" stroke="#5c6bc0" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+                            <rect x="68" y="68" width="8" height="26" rx="2" transform="rotate(-35 68 68)" fill="#9c27b0" opacity="0.8"/>
+                            <polygon points="63,92 69,92 66,99" fill="#5c6bc0" opacity="0.8"/>
+                        </svg>
+
+                        <h2>Bem-vindo ao MedNotes</h2>
+                        <p>Selecione uma página na barra lateral<br>ou crie sua primeira pasta para começar.</p>
+
+                        <button class="canvas-empty-btn" onclick="document.getElementById('btn-new-folder').click()">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                                <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+                            </svg>
+                            Criar primeira pasta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas de desenho (Passo 5+) -->
+                <div class="canvas-wrapper" id="canvas-wrapper" style="display:none;">
+                    <canvas id="notes-canvas-bg"   class="notes-canvas notes-canvas--bg"   aria-hidden="true"></canvas>
+                    <canvas id="notes-canvas-main" class="notes-canvas notes-canvas--main" role="img" aria-label="Área de escrita"></canvas>
+                    <canvas id="notes-canvas-ui"   class="notes-canvas notes-canvas--ui"   aria-hidden="true"></canvas>
+                    <div id="text-overlays" class="text-overlays"></div>
+                </div>
+            </main>
+
+        </div><!-- /notes-main -->
+    </div><!-- /notes-shell -->
+
+    <!-- ===============================================================
+         PAINÉIS FLUTUANTES & MODAIS (Passo 2)
+    ================================================================ -->
+
+    <!-- ── LASSO CONTEXT MENU ── -->
+    <div id="lasso-context-menu" class="lasso-context-menu" role="menu" aria-label="Ações da seleção" aria-hidden="true">
+        <button class="lasso-action-btn" data-action="move" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            Mover
+        </button>
+        <button class="lasso-action-btn" data-action="copy" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+        </button>
+        <button class="lasso-action-btn" data-action="color" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            Cor
+        </button>
+        <div class="lasso-divider" role="separator"></div>
+        <button class="lasso-action-btn lasso-action-btn--danger" data-action="delete" role="menuitem">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Deletar
+        </button>
+    </div>
+
+    <!-- ── MINIMAP ── -->
+    <div id="canvas-minimap" class="canvas-minimap" aria-hidden="true" title="Minimap — posição no canvas">
+        <canvas id="minimap-canvas" width="160" height="120"></canvas>
+        <div id="minimap-viewport" class="minimap-viewport"></div>
+    </div>
+
+    <!-- ── ZOOM BADGE ── -->
+    <span id="zoom-badge" class="zoom-badge" aria-live="polite" aria-label="Nível de zoom">100%</span>
+
+    <!-- MedNotes JS principal (Passos 3+) -->
+    <script src="notes.js"></script>
+
+    <script>
+        /* ── Passo 2: Lógica de UI dos painéis ── */
+
+        // Animação de ENTRADA ao carregar a página
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('notes-transition-overlay');
+            overlay.classList.add('mn-overlay--entering');
+            setTimeout(() => overlay.classList.add('mn-overlay--done'), 500);
+
+            // Inicializar sidebar toggle
+            initSidebarToggle();
+        });
+
+        // ── Voltar ao MedOrganize ──
+        function returnToMedOrganize() {
+            const overlay = document.getElementById('notes-transition-overlay');
+            const shell   = document.getElementById('notes-shell');
+            shell.classList.add('notes-shell--exiting');
+            overlay.classList.remove('mn-overlay--done');
+            overlay.classList.add('mn-overlay--exiting');
+            setTimeout(() => { window.location.href = 'index.html'; }, 480);
+        }
+
+        // ── Sidebar Toggle ──
+        function initSidebarToggle() {
+            const btn      = document.getElementById('sidebar-toggle-btn');
+            const sidebar  = document.getElementById('notes-sidebar');
+            const shell    = document.getElementById('notes-shell');
+            const iconOpen = btn.querySelector('.toggle-icon-open');
+            const iconClosed = btn.querySelector('.toggle-icon-closed');
+
+            let collapsed = false;
+
+            btn.addEventListener('click', () => {
+                collapsed = !collapsed;
+                shell.classList.toggle('sidebar-collapsed', collapsed);
+                sidebar.setAttribute('aria-hidden', collapsed);
+                btn.setAttribute('aria-expanded', !collapsed);
+                iconOpen.style.display   = collapsed ? 'none' : '';
+                iconClosed.style.display = collapsed ? '' : 'none';
+            });
+        }
+
+    </script>
+    <!-- ══ TOOL POPOVERS (fora do header para posicionamento fixed correto) ══ -->
+
+    <div id="popover-eraser" class="tool-popover tool-popover--rich hidden" data-tool="eraser" role="menu" aria-label="Opções da borracha">
+        <div class="popover-label">Modo da Borracha</div>
+        <button class="popover-item active" data-mode="point" role="menuitemradio" aria-checked="true">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M14 4L4 14M8 4l8 8"/>
+                    <circle cx="10" cy="14" r="3"/>
+                </svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Ponto</span>
+                <span class="popover-item-sub">Divide o traço onde passa</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="stroke" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M3 10 Q7 5 10 10 Q13 15 17 10"/>
+                    <path d="M13 4L7 16" stroke-width="2.5"/>
+                </svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Objeto</span>
+                <span class="popover-item-sub">Apaga o traço inteiro</span>
+            </span>
+        </button>
+
+        <div class="popover-label">Tamanho</div>
+        <div class="popover-slider-row">
+            <input type="range" class="popover-size-slider" min="4" max="60" step="1" value="12" aria-label="Tamanho da borracha">
+            <span class="popover-size-value">12</span>
+        </div>
+    </div>
+
+    <div id="popover-lasso" class="tool-popover hidden" role="menu" aria-label="Modo do laço">
+        <div class="popover-label">Modo de Seleção</div>
+        <button class="popover-item active" data-mode="free" role="menuitemradio" aria-checked="true">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 10 Q5 4 10 4 Q15 4 15 9 Q15 14 10 15 Q7 15.5 6 18"/>
+                    <circle cx="6" cy="18" r="1.5" fill="currentColor"/>
+                </svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Laço Livre</span>
+                <span class="popover-item-sub">Form a livre</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="rect" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="5" width="14" height="10" rx="1" stroke-dasharray="3 2"/>
+                </svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Retangular</span>
+                <span class="popover-item-sub">Seleciona por área</span>
+            </span>
+        </button>
+    </div>
+
+    <div id="popover-shapes" class="tool-popover hidden" role="menu" aria-label="Formas geométricas">
+        <div class="popover-label">Formas Geométricas</div>
+        <button class="popover-item active" data-mode="rect" role="menuitemradio" aria-checked="true">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="14" height="10" rx="1"/></svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Retângulo</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="circle" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7"/></svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Círculo</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="triangle" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L17 17H3L10 3z"/></svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Triângulo</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="line" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="17" x2="17" y2="3"/></svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Linha Reta</span>
+            </span>
+        </button>
+        <button class="popover-item" data-mode="arrow" role="menuitemradio" aria-checked="false">
+            <span class="popover-item-icon">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="17" x2="17" y2="3"/><polyline points="10 3 17 3 17 10"/></svg>
+            </span>
+            <span class="popover-item-text">
+                <span class="popover-item-title">Seta</span>
+            </span>
+        </button>
+    </div>
+
+    <!-- ── POPOVER: CANETA (Fase A) ── -->
+    <div id="popover-pen" class="tool-popover tool-popover--rich hidden" data-tool="pen" role="menu" aria-label="Opções da caneta">
+        <div class="popover-label">Tipo de Caneta</div>
+        <div class="popover-type-grid">
+            <button class="popover-type-btn active" data-type="ballpoint" title="Traço uniforme e opaco">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20 Q9 15 12 12 T20 4"/></svg>
+                <span>Esferográfica</span>
+            </button>
+            <button class="popover-type-btn" data-type="fountain" title="Largura variável pela pressão e velocidade">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 20 Q9 15 12 12 T20 4" stroke-width="3"/><path d="M4 20 Q9 15 12 12" stroke-width="1"/></svg>
+                <span>Tinteiro</span>
+            </button>
+            <button class="popover-type-btn" data-type="pencil" title="Textura granulada, tom suave">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2.5 2"><path d="M4 20 Q9 15 12 12 T20 4"/></svg>
+                <span>Lápis</span>
+            </button>
+            <button class="popover-type-btn" data-type="fineliner" title="Traço fino e preciso">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M4 20 L20 4"/></svg>
+                <span>Fineliner</span>
+            </button>
+        </div>
+
+        <div class="popover-label">Espessura</div>
+        <div class="popover-size-presets" role="group" aria-label="Espessuras predefinidas">
+            <button class="popover-size-dot" data-size="0.5" aria-label="Finíssimo"><i style="width:3px;height:3px;"></i></button>
+            <button class="popover-size-dot" data-size="1.5" aria-label="Fino"><i style="width:6px;height:6px;"></i></button>
+            <button class="popover-size-dot active" data-size="3" aria-label="Médio"><i style="width:10px;height:10px;"></i></button>
+            <button class="popover-size-dot" data-size="6" aria-label="Grosso"><i style="width:14px;height:14px;"></i></button>
+            <button class="popover-size-dot" data-size="12" aria-label="Extra grosso"><i style="width:18px;height:18px;"></i></button>
+        </div>
+        <div class="popover-slider-row">
+            <input type="range" class="popover-size-slider" min="0.5" max="20" step="0.5" value="3" aria-label="Espessura do traço">
+            <span class="popover-size-value">3</span>
+        </div>
+
+        <div class="popover-label">Cor</div>
+        <div class="popover-color-grid" role="group" aria-label="Cores da caneta">
+            <button class="popover-color-swatch active" data-color="#1a1b2e" style="background:#1a1b2e;" title="Preto Profundo"></button>
+            <button class="popover-color-swatch" data-color="#3949ab" style="background:#3949ab;" title="Azul Índigo"></button>
+            <button class="popover-color-swatch" data-color="#7c4dff" style="background:#7c4dff;" title="Roxo Acento"></button>
+            <button class="popover-color-swatch" data-color="#00897b" style="background:#00897b;" title="Verde Teal"></button>
+            <button class="popover-color-swatch" data-color="#e53935" style="background:#e53935;" title="Vermelho Clínico"></button>
+            <button class="popover-color-swatch" data-color="#fb8c00" style="background:#fb8c00;" title="Laranja Alerta"></button>
+            <button class="popover-color-swatch" data-color="#6d4c41" style="background:#6d4c41;" title="Marrom Terra"></button>
+            <input type="color" class="popover-color-custom" value="#1a1b2e" title="Cor personalizada" aria-label="Cor personalizada">
+        </div>
+
+        <div class="popover-label">Opacidade</div>
+        <div class="popover-slider-row">
+            <input type="range" class="popover-opacity-slider" min="10" max="100" step="5" value="100" aria-label="Opacidade">
+            <span class="popover-opacity-value">100%</span>
+        </div>
+    </div>
+
+    <!-- ── POPOVER: MARCA-TEXTO (Fase A) ── -->
+    <div id="popover-highlighter" class="tool-popover tool-popover--rich hidden" data-tool="highlighter" role="menu" aria-label="Opções do marca-texto">
+        <div class="popover-label">Tipo de Marca-texto</div>
+        <div class="popover-type-grid">
+            <button class="popover-type-btn active" data-type="round" title="Traço translúcido arredondado">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"><path d="M5 17 L19 7"/></svg>
+                <span>Redonda</span>
+            </button>
+            <button class="popover-type-btn" data-type="chisel" title="Ponta chanfrada — largura varia com o ângulo">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" opacity="0.6"><polygon points="4,18 16,5 20,9 8,21"/></svg>
+                <span>Chanfrada</span>
+            </button>
+            <button class="popover-type-btn" data-type="line" title="Segure no fim do traço para virar linha reta">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" opacity="0.6"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+                <span>Linha Reta</span>
+            </button>
+        </div>
+
+        <div class="popover-label">Espessura</div>
+        <div class="popover-size-presets" role="group" aria-label="Espessuras predefinidas">
+            <button class="popover-size-dot" data-size="8" aria-label="Fino"><i style="width:6px;height:6px;"></i></button>
+            <button class="popover-size-dot active" data-size="12" aria-label="Médio"><i style="width:10px;height:10px;"></i></button>
+            <button class="popover-size-dot" data-size="18" aria-label="Grosso"><i style="width:14px;height:14px;"></i></button>
+            <button class="popover-size-dot" data-size="26" aria-label="Extra grosso"><i style="width:18px;height:18px;"></i></button>
+        </div>
+        <div class="popover-slider-row">
+            <input type="range" class="popover-size-slider" min="4" max="40" step="1" value="12" aria-label="Espessura do marca-texto">
+            <span class="popover-size-value">12</span>
+        </div>
+
+        <div class="popover-label">Cor</div>
+        <div class="popover-color-grid" role="group" aria-label="Cores do marca-texto">
+            <button class="popover-color-swatch active" data-color="#ffeb3b" style="background:#ffeb3b;" title="Amarelo"></button>
+            <button class="popover-color-swatch" data-color="#69f0ae" style="background:#69f0ae;" title="Verde Neon"></button>
+            <button class="popover-color-swatch" data-color="#40c4ff" style="background:#40c4ff;" title="Azul Céu"></button>
+            <button class="popover-color-swatch" data-color="#ff80ab" style="background:#ff80ab;" title="Rosa"></button>
+            <button class="popover-color-swatch" data-color="#ea80fc" style="background:#ea80fc;" title="Lilás"></button>
+            <button class="popover-color-swatch" data-color="#ff6d00" style="background:#ff6d00;" title="Laranja"></button>
+            <input type="color" class="popover-color-custom" value="#ffeb3b" title="Cor personalizada" aria-label="Cor personalizada">
+        </div>
+
+        <div class="popover-label">Opacidade</div>
+        <div class="popover-slider-row">
+            <input type="range" class="popover-opacity-slider" min="10" max="100" step="5" value="45" aria-label="Opacidade">
+            <span class="popover-opacity-value">45%</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PASSO 10 — GERENCIADOR DE PÁGINAS (Thumbnails)
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="page-manager-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+
+    <aside id="page-manager-panel" class="page-manager-panel" role="dialog" aria-modal="false"
+           aria-labelledby="page-manager-title" aria-hidden="true">
+
+        <!-- Cabeçalho -->
+        <header class="pm-header">
+            <div class="pm-header-titles">
+                <h2 class="pm-title" id="page-manager-title">Páginas</h2>
+                <span class="pm-subtitle" id="pm-notebook-name">—</span>
+            </div>
+            <button class="pm-close-btn" id="pm-close-btn" title="Fechar (Esc)" aria-label="Fechar painel de páginas">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Grid de miniaturas (preenchido via JS) -->
+        <div class="pm-grid" id="page-manager-grid" role="list"></div>
+
+        <!-- Estado vazio -->
+        <div class="pm-empty" id="pm-empty" hidden>
+            <svg viewBox="0 0 64 64" width="56" height="56" fill="none" stroke="#5c6bc0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="10" y="8" width="30" height="40" rx="3"/>
+                <path d="M18 18h14M18 26h14M18 34h9"/>
+            </svg>
+            <p id="pm-empty-text">Selecione um caderno para ver suas páginas.</p>
+        </div>
+
+        <!-- Rodapé -->
+        <footer class="pm-footer">
+            <button class="pm-new-page-btn" id="pm-new-page-btn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/>
+                </svg>
+                Nova Página
+            </button>
+        </footer>
+    </aside>
+
+</body>
+</html>

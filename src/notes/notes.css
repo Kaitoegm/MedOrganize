@@ -1,0 +1,1929 @@
+/* ====================================================================
+   MEDNOTES â€” Design System & App Shell CSS
+   Passo 1: FundaÃ§Ã£o visual completa (expandido nos Passos 2â€“20)
+
+   Paleta: Azul #5c6bc0 | Roxo #9c27b0 | Acento #7c4dff
+   Fonte:  Inter (Google Fonts)
+   Tema:   Claro por padrÃ£o
+==================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* â”€â”€ Design Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+:root {
+    /* Cores principais */
+    --mn-blue:          #5c6bc0;
+    --mn-blue-light:    #7986cb;
+    --mn-blue-dark:     #3949ab;
+    --mn-purple:        #9c27b0;
+    --mn-purple-light:  #ba68c8;
+    --mn-accent:        #7c4dff;
+
+    /* SuperfÃ­cies */
+    --mn-bg:            #f8f9ff;
+    --mn-bg-sidebar:    #ffffff;
+    --mn-bg-toolbar:    #ffffff;
+    --mn-bg-canvas:     #f0f2ff;
+    --mn-surface:       #ffffff;
+    --mn-surface-hover: #f0f2ff;
+    --mn-surface-active:#e8eaf6;
+
+    /* Texto */
+    --mn-text-primary:  #1a1b2e;
+    --mn-text-secondary:#4a4e8a;
+    --mn-text-muted:    #7986cb;
+    --mn-text-placeholder: #b0bec5;
+
+    /* Bordas */
+    --mn-border:        rgba(92, 107, 192, 0.15);
+    --mn-border-strong: rgba(92, 107, 192, 0.3);
+
+    /* Sombras */
+    --mn-shadow-sm:     0 1px 3px rgba(92, 107, 192, 0.12), 0 1px 2px rgba(92, 107, 192, 0.06);
+    --mn-shadow-md:     0 4px 6px rgba(92, 107, 192, 0.1), 0 2px 4px rgba(92, 107, 192, 0.06);
+    --mn-shadow-lg:     0 10px 15px rgba(92, 107, 192, 0.1), 0 4px 6px rgba(92, 107, 192, 0.05);
+
+    /* Layout */
+    --mn-sidebar-width: 260px;
+    --mn-toolbar-height: 52px;
+    --mn-radius-sm:     6px;
+    --mn-radius-md:     10px;
+    --mn-radius-lg:     16px;
+    --mn-radius-full:   9999px;
+
+    /* TransiÃ§Ãµes */
+    --mn-transition:    all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --mn-transition-spring: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* Fonte */
+    --mn-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* â”€â”€ Reset & Base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.mednotes-app {
+    font-family: var(--mn-font);
+    background: var(--mn-bg);
+    color: var(--mn-text-primary);
+    height: 100dvh;
+    width: 100dvw;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevenir zoom acidental no tablet */
+    touch-action: manipulation;
+    user-select: none;
+}
+
+button {
+    font-family: var(--mn-font);
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea {
+    font-family: var(--mn-font);
+    outline: none;
+    border: none;
+}
+
+/* â”€â”€ Overlay de TransiÃ§Ã£o â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-transition-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #5c6bc0 0%, #7c4dff 50%, #9c27b0 100%);
+    z-index: 99999;
+    pointer-events: none;
+
+    /* Estado inicial: cobrindo a tela (entrada do app) */
+    transform: translateY(0);
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+}
+
+/* Fase: entrando â€” overlay sai de cima para cima */
+.notes-transition-overlay.mn-overlay--entering {
+    transform: translateY(-100%);
+}
+
+/* Fase: concluÃ­do â€” overlay completamente fora */
+.notes-transition-overlay.mn-overlay--done {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fase: saindo â€” overlay desce de volta */
+.notes-transition-overlay.mn-overlay--exiting {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: all;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Shell saindo: fade sutil */
+.notes-shell--exiting {
+    opacity: 0.8;
+    transform: scale(0.98);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* â”€â”€ App Shell: Grid Principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-shell {
+    display: grid;
+    grid-template-columns: var(--mn-sidebar-width) 1fr;
+    height: 100dvh;
+    width: 100dvw;
+    overflow: hidden;
+    transition: var(--mn-transition);
+}
+
+/* â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    background: var(--mn-bg-sidebar);
+    border-right: 1px solid var(--mn-border);
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    box-shadow: var(--mn-shadow-sm);
+}
+
+/* CabeÃ§alho da Sidebar */
+.sidebar-header {
+    padding: 16px 14px 12px;
+    border-bottom: 1px solid var(--mn-border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mn-blue);
+    padding: 2px 0;
+}
+
+.sidebar-logo svg {
+    color: var(--mn-purple);
+    flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--mn-blue) 0%, var(--mn-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Ãrvore de pastas */
+.sidebar-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--mn-border) transparent;
+}
+
+.sidebar-tree::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-tree::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-tree::-webkit-scrollbar-thumb {
+    background: var(--mn-border);
+    border-radius: 2px;
+}
+
+/* Estado vazio da sidebar */
+.sidebar-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--mn-text-muted);
+}
+
+.sidebar-empty-state p {
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.sidebar-empty-hint {
+    font-size: 0.78rem !important;
+    font-weight: 400 !important;
+    color: var(--mn-text-placeholder) !important;
+}
+
+/* Rodapé da Sidebar */
+.sidebar-footer {
+    padding: 10px 12px;
+    border-top: 1px solid var(--mn-border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.sidebar-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: var(--mn-radius-md);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--mn-blue-dark);
+    background: var(--mn-surface-active);
+    transition: var(--mn-transition);
+}
+
+.sidebar-action-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(92,107,192,0.15) 0%, rgba(156,39,176,0.1) 100%);
+    color: var(--mn-blue-dark);
+    transform: translateY(-1px);
+}
+
+.sidebar-action-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.sidebar-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sidebar-action-btn--secondary {
+    background: transparent;
+    color: var(--mn-text-secondary);
+}
+
+.sidebar-action-btn--secondary:hover:not(:disabled) {
+    background: var(--mn-surface-hover);
+}
+
+/* ── ARVORE DA SIDEBAR (Passo 4) ─────────────────────────────── */
+.tree-folder { margin-bottom: 2px; }
+
+.tree-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px 5px 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+    position: relative;
+    min-height: 34px;
+}
+.tree-row:hover { background: var(--mn-surface-hover); }
+
+.tree-row--folder {
+    padding-left: 4px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--mn-text-primary);
+}
+.tree-row--notebook {
+    padding-left: 16px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--mn-text-secondary);
+}
+.tree-row--page {
+    padding-left: 32px;
+    font-size: 0.81rem;
+    color: var(--mn-text-secondary);
+}
+.tree-row--page.is-active {
+    background: rgba(92,107,192,0.1);
+    color: var(--mn-blue-dark);
+    font-weight: 600;
+}
+.tree-row--page.is-active:hover { background: rgba(92,107,192,0.15); }
+
+/* Chevron animado */
+.tree-chevron {
+    display: flex;
+    flex-shrink: 0;
+    color: var(--mn-text-muted);
+    transition: transform 0.2s ease;
+}
+.tree-row:not(.is-expanded) > .tree-chevron { transform: rotate(-90deg); }
+
+.tree-icon { font-size: 1em; flex-shrink: 0; }
+
+.tree-folder-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%; flex-shrink: 0;
+}
+.tree-page-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--mn-border);
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.2s;
+}
+.tree-page-dot.is-active {
+    background: var(--mn-blue);
+    transform: scale(1.3);
+}
+.tree-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+/* Badge de contagem */
+.tree-badge {
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--mn-text-muted);
+    background: var(--mn-surface-hover);
+    padding: 1px 6px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.tree-row:hover .tree-badge,
+.tree-row--folder .tree-badge { opacity: 1; }
+.tree-badge--sm { font-size: 0.68rem; padding: 1px 5px; }
+
+/* Botao contexto (tres pontinhos) */
+.tree-ctx-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    color: var(--mn-text-muted);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+.tree-row:hover .tree-ctx-btn { opacity: 1; pointer-events: auto; }
+.tree-ctx-btn:hover { background: rgba(0,0,0,0.08); color: var(--mn-text-primary); }
+
+/* Colapsar/expandir */
+.tree-folder-body,
+.tree-notebook-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tree-folder-body.is-open,
+.tree-notebook-body.is-open { max-height: 9999px; }
+
+/* Botao adicionar pagina */
+.tree-add-page-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 8px 4px 46px;
+    font-size: 0.77rem; font-weight: 500;
+    color: var(--mn-text-muted);
+    transition: color 0.15s, background 0.15s;
+    width: 100%; border-radius: 6px; margin-bottom: 4px;
+}
+.tree-add-page-btn:hover { color: var(--mn-blue); background: rgba(92,107,192,0.06); }
+
+/* Botao adicionar caderno */
+.tree-add-nb-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 8px 4px 22px;
+    font-size: 0.77rem; font-weight: 500;
+    color: var(--mn-text-muted);
+    transition: color 0.15s, background 0.15s;
+    width: 100%; border-radius: 6px; margin: 2px 0 6px;
+}
+.tree-add-nb-btn:hover { color: var(--mn-purple); background: rgba(156,39,176,0.06); }
+
+/* Menu de contexto flutuante */
+.tree-ctx-menu {
+    position: fixed; z-index: 9999;
+    background: #fff;
+    border: 1px solid var(--mn-border);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+    padding: 4px; min-width: 180px;
+    animation: ctx-pop 0.15s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes ctx-pop {
+    from { opacity: 0; transform: scale(0.9) translateY(-6px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.tree-ctx-menu button {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; padding: 9px 12px;
+    font-size: 0.85rem; font-weight: 500;
+    color: var(--mn-text-primary);
+    border-radius: 7px;
+    transition: background 0.12s; text-align: left;
+}
+.tree-ctx-menu button:hover { background: var(--mn-surface-hover); }
+.tree-ctx-menu button.danger { color: #e53935; }
+.tree-ctx-menu button.danger:hover { background: rgba(229,57,53,0.08); }
+
+/* ── ÁREA PRINCIPAL ──────────────────────────────────────────────────────── */
+.notes-main {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--mn-bg);
+}
+
+/* â”€â”€ TOOLBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-toolbar {
+    height: var(--mn-toolbar-height);
+    min-height: var(--mn-toolbar-height);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    background: var(--mn-bg-toolbar);
+    border-bottom: 1px solid var(--mn-border);
+    box-shadow: var(--mn-shadow-sm);
+    position: relative;
+    z-index: 5;
+    flex-shrink: 0;
+}
+
+/* Grupos da toolbar */
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.toolbar-group--left {
+    flex-shrink: 0;
+    gap: 6px;
+    margin-right: auto;
+}
+
+.toolbar-group--center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 2px;
+}
+
+.toolbar-group--right {
+    flex-shrink: 0;
+    gap: 4px;
+    margin-left: auto;
+}
+
+/* Separador vertical */
+.tool-divider {
+    width: 1px;
+    height: 22px;
+    background: var(--mn-border);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+/* BotÃ£o Voltar */
+.toolbar-btn--back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mn-radius-md);
+    color: var(--mn-text-secondary);
+    background: transparent;
+    transition: var(--mn-transition);
+    flex-shrink: 0;
+}
+
+.toolbar-btn--back:hover {
+    background: var(--mn-surface-active);
+    color: var(--mn-blue-dark);
+    transform: translateX(-2px);
+}
+
+/* Breadcrumb */
+.toolbar-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78rem;
+    color: var(--mn-text-muted);
+    max-width: 280px;
+    overflow: hidden;
+}
+
+.breadcrumb-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+}
+
+.breadcrumb-page {
+    color: var(--mn-text-primary);
+    font-weight: 500;
+    max-width: 120px;
+}
+
+.breadcrumb-sep {
+    color: var(--mn-border-strong);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* â”€â”€ BotÃµes de Ferramenta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mn-radius-sm);
+    color: var(--mn-text-secondary);
+    background: transparent;
+    transition: var(--mn-transition);
+    flex-shrink: 0;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tool-btn:hover:not(:disabled) {
+    background: var(--mn-surface-hover);
+    color: var(--mn-blue);
+}
+
+.tool-btn--active,
+.tool-btn[aria-pressed="true"] {
+    background: linear-gradient(135deg, rgba(92,107,192,0.15) 0%, rgba(124,77,255,0.12) 100%);
+    color: var(--mn-blue-dark);
+    box-shadow: inset 0 0 0 1.5px rgba(92,107,192,0.3);
+}
+
+.tool-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+
+/* â”€â”€ Status de Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.save-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: var(--mn-radius-full);
+    background: var(--mn-surface-hover);
+    min-width: 80px;
+}
+
+.save-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a5d6a7; /* verde: salvo */
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+.save-status-dot--saving { background: #fff176; } /* amarelo */
+.save-status-dot--error  { background: #ef9a9a; } /* vermelho */
+
+.save-status-text {
+    font-size: 0.72rem;
+    color: var(--mn-text-muted);
+    white-space: nowrap;
+}
+
+/* â”€â”€ ÃREA DO CANVAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-canvas-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--mn-bg-canvas);
+
+    /* PadrÃ£o de pontinhos leve no fundo geral */
+    background-image: radial-gradient(circle, rgba(92,107,192,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Estado vazio */
+.canvas-empty-state {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInUp 0.5s ease both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.canvas-empty-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+    padding: 40px;
+    max-width: 360px;
+}
+
+.canvas-empty-inner h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--mn-text-primary);
+    letter-spacing: -0.02em;
+}
+
+.canvas-empty-inner p {
+    font-size: 0.9rem;
+    color: var(--mn-text-secondary);
+    line-height: 1.6;
+}
+
+.canvas-empty-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--mn-blue) 0%, var(--mn-accent) 100%);
+    color: #fff;
+    border-radius: var(--mn-radius-full);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-top: 8px;
+    box-shadow: 0 4px 15px rgba(92,107,192,0.35);
+    transition: var(--mn-transition-spring);
+}
+
+.canvas-empty-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(92,107,192,0.45);
+}
+
+.canvas-empty-btn:active {
+    transform: translateY(0);
+}
+
+/* Canvas Wrapper (quando uma pÃ¡gina estÃ¡ aberta) */
+.canvas-wrapper {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.notes-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    touch-action: none; /* fundamental para S-Pen */
+}
+
+.notes-canvas--bg   { z-index: 1; }
+.notes-canvas--main { z-index: 2; }
+.notes-canvas--ui   { z-index: 3; }
+
+.text-overlays {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    transform-origin: 0 0; /* Fase D: recebe translate+scale do viewport */
+    overflow: visible;
+}
+
+/* ── FASE D: Caixas de texto editáveis/movíveis/redimensionáveis ── */
+.canvas-text-element {
+    position: absolute;
+    min-width: 40px;
+    border: 1.5px dashed transparent;
+    border-radius: 6px;
+    cursor: move;
+    pointer-events: none; /* interativo só no modo texto (.text-mode) */
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.text-overlays.text-mode .canvas-text-element {
+    pointer-events: auto;
+}
+
+.text-overlays.text-mode .canvas-text-element:hover {
+    border-color: rgba(92, 107, 192, 0.45);
+    background: rgba(92, 107, 192, 0.05);
+}
+
+.canvas-text-element.editing {
+    cursor: text;
+    border-color: var(--mn-blue);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 2px 12px rgba(92, 107, 192, 0.25);
+}
+
+.text-content {
+    min-height: 1.35em;
+    padding: 4px 8px;
+    font-family: var(--mn-font);
+    font-weight: 500;
+    line-height: 1.35;
+    white-space: pre-wrap;
+    word-break: break-word;
+    outline: none;
+    cursor: inherit;
+}
+
+.canvas-text-element.editing .text-content {
+    cursor: text;
+}
+
+/* Botão de apagar — canto superior direito, some fora do hover/edição */
+.text-delete-btn {
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    background: #e53935;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: opacity 0.12s, transform 0.12s, background 0.12s;
+    z-index: 2;
+}
+
+.text-overlays.text-mode .canvas-text-element:hover .text-delete-btn,
+.canvas-text-element.editing .text-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.text-delete-btn:hover {
+    background: #c62828;
+}
+
+/* Alça de redimensionar — canto inferior direito */
+.text-resize-handle {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--mn-blue);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    cursor: nwse-resize;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+    transition: opacity 0.12s, transform 0.12s;
+    z-index: 2;
+}
+
+.text-overlays.text-mode .canvas-text-element:hover .text-resize-handle,
+.canvas-text-element.editing .text-resize-handle {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* ── MINIMAP (Passo 5) ────────────────────────────────────────────────── */
+.canvas-minimap {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 20;
+    width: 160px;
+    height: 120px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid var(--mn-border-strong);
+    border-radius: var(--mn-radius-md);
+    box-shadow: var(--mn-shadow-md);
+    overflow: hidden;
+    cursor: crosshair;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: opacity 0.2s ease;
+}
+
+.canvas-minimap:hover {
+    opacity: 1 !important;
+    box-shadow: var(--mn-shadow-lg);
+}
+
+#minimap-canvas {
+    display: block;
+    width: 160px;
+    height: 120px;
+}
+
+.minimap-viewport {
+    position: absolute;
+    border: 1.5px solid var(--mn-blue);
+    background: rgba(92,107,192,0.08);
+    pointer-events: none;
+    border-radius: 2px;
+}
+
+/* ── ZOOM BADGE (Passo 5) ──────────────────────────────────────────────── */
+.zoom-badge {
+    position: absolute;
+    bottom: 16px;
+    right: 188px;
+    z-index: 20;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-full);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--mn-text-secondary);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    pointer-events: none;
+}
+
+/* â”€â”€ Scrollbar global do app â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.mednotes-app ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+.mednotes-app ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mednotes-app ::-webkit-scrollbar-thumb {
+    background: var(--mn-border-strong);
+    border-radius: 3px;
+}
+
+/* â”€â”€ UtilitÃ¡rios â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.mn-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* ====================================================================
+   PASSO 2 â€” Componentes Expandidos
+   Sidebar colapsÃ¡vel, glassmorphism, painÃ©is, modais, minimap,
+   otimizaÃ§Ã£o tablet landscape (Galaxy Tab S6 Lite 2000Ã—1200)
+==================================================================== */
+
+/* â”€â”€ Sidebar Toggle Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.sidebar-toggle-btn {
+    position: fixed;
+    top: calc(var(--mn-toolbar-height) / 2);
+    left: calc(var(--mn-sidebar-width) - 15px);
+    transform: translateY(-50%);
+    z-index: 50;
+
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--mn-bg-toolbar);
+    border: 1px solid var(--mn-border-strong);
+    box-shadow: var(--mn-shadow-md);
+    color: var(--mn-text-secondary);
+    cursor: pointer;
+    transition: var(--mn-transition-spring);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-toggle-btn:hover {
+    background: linear-gradient(135deg, var(--mn-blue) 0%, var(--mn-accent) 100%);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 4px 12px rgba(92,107,192,0.35);
+}
+
+.sidebar-toggle-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* â”€â”€ Sidebar ColapsÃ¡vel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-shell {
+    transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notes-shell.sidebar-collapsed {
+    grid-template-columns: 0 1fr;
+}
+
+.notes-shell.sidebar-collapsed .notes-sidebar {
+    transform: translateX(-100%);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.notes-sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.notes-shell.sidebar-collapsed .sidebar-toggle-btn {
+    left: 8px;
+}
+
+/* â”€â”€ Toolbar com Glassmorphism â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.notes-toolbar {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px) saturate(1.5);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    border-bottom: 1px solid rgba(92, 107, 192, 0.12);
+}
+
+/* Efeito de gradiente sutil na toolbar */
+.notes-toolbar::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,77,255,0.2), transparent);
+    pointer-events: none;
+}
+
+
+/* â”€â”€ Lasso Context Menu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.lasso-context-menu {
+    position: fixed;
+    z-index: 7000;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--mn-border-strong);
+    border-radius: var(--mn-radius-md);
+    box-shadow: var(--mn-shadow-lg);
+    padding: 4px;
+    min-width: 140px;
+
+    opacity: 0;
+    transform: scale(0.92) translateY(-4px);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lasso-context-menu.lasso-menu--visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+}
+
+.lasso-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: var(--mn-radius-sm);
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: var(--mn-text-primary);
+    background: transparent;
+    transition: var(--mn-transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.lasso-action-btn:hover {
+    background: var(--mn-surface-hover);
+    color: var(--mn-blue-dark);
+}
+
+.lasso-action-btn--danger {
+    color: #e53935;
+}
+
+.lasso-action-btn--danger:hover {
+    background: #fde8e8;
+    color: #c62828;
+}
+
+.lasso-divider {
+    height: 1px;
+    background: var(--mn-border);
+    margin: 3px 0;
+}
+
+/* â”€â”€ Minimap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.canvas-minimap {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 4000;
+    width: 160px;
+    height: 120px;
+    border-radius: var(--mn-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--mn-border-strong);
+    box-shadow: var(--mn-shadow-md);
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: var(--mn-transition);
+    display: none; /* Mostrado via JS quando canvas estÃ¡ aberto */
+}
+
+.canvas-minimap:hover {
+    box-shadow: var(--mn-shadow-lg);
+    transform: scale(1.02);
+}
+
+.canvas-minimap canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+.minimap-viewport {
+    position: absolute;
+    border: 2px solid var(--mn-blue);
+    border-radius: 2px;
+    background: rgba(92,107,192,0.1);
+    pointer-events: none;
+    transition: all 0.05s ease;
+}
+
+/* ── CUSTOM DIALOG MODAL (Aesthetic: Medical Precision Glassmorphism) ── */
+.mn-glass-dialog-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100dvw; height: 100dvh;
+    background: rgba(26, 27, 46, 0.5);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mn-glass-dialog-backdrop.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mn-glass-dialog {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 24px 48px -12px rgba(92, 107, 192, 0.25), 
+                0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    border-radius: 24px;
+    width: 380px;
+    max-width: 90vw;
+    padding: 32px 32px 28px;
+    transform: translateY(24px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mn-glass-dialog-backdrop.is-visible .mn-glass-dialog {
+    transform: translateY(0) scale(1);
+}
+
+.mn-glass-dialog::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--mn-blue), var(--mn-purple));
+}
+
+.mn-glass-dialog-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--mn-bg);
+    color: var(--mn-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 16px rgba(92, 107, 192, 0.08), 0 0 0 1px rgba(92, 107, 192, 0.05) inset;
+}
+
+.mn-glass-dialog-icon.danger {
+    color: #e53935;
+    background: #ffebee;
+    box-shadow: 0 8px 16px rgba(229, 57, 53, 0.08), 0 0 0 1px rgba(229, 57, 53, 0.05) inset;
+}
+
+.mn-glass-dialog h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mn-text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+}
+
+.mn-glass-dialog p {
+    font-size: 0.95rem;
+    color: var(--mn-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.mn-glass-dialog-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 2px solid var(--mn-border-strong);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--mn-text-primary);
+    margin-bottom: 24px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(92,107,192,0.02) inset;
+}
+
+.mn-glass-dialog-input:focus {
+    outline: none;
+    border-color: var(--mn-blue);
+    box-shadow: 0 0 0 4px rgba(92, 107, 192, 0.15);
+}
+
+.mn-glass-dialog-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.mn-glass-dialog-btn {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mn-glass-dialog-btn--cancel {
+    background: transparent;
+    color: var(--mn-text-secondary);
+    border: 1px solid var(--mn-border-strong);
+}
+
+.mn-glass-dialog-btn--cancel:hover {
+    background: var(--mn-surface-hover);
+    color: var(--mn-text-primary);
+    border-color: rgba(92, 107, 192, 0.4);
+}
+
+.mn-glass-dialog-btn--confirm {
+    background: var(--mn-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(92, 107, 192, 0.25);
+}
+
+.mn-glass-dialog-btn--confirm:hover {
+    background: var(--mn-blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(92, 107, 192, 0.35);
+}
+
+.shortcut-item:last-child {
+    margin-bottom: 0;
+}
+
+.shortcut-item span:last-child {
+    margin-left: auto;
+    font-weight: 500;
+}
+
+/* Estilo premium para as teclas (chiclet) */
+.shortcut-item kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+    border: 1px solid #d1d5db;
+    border-bottom-width: 2.5px;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--mn-text-primary);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.05);
+}
+
+.shortcut-item .plus {
+    margin: 0 6px;
+    color: var(--mn-text-muted);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.shortcut-drag {
+    font-style: italic;
+    color: var(--mn-blue);
+    background: rgba(92,107,192,0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ===============================================================
+   TOOL POPOVERS — Glassmorphism Premium
+================================================================ */
+
+/* Popover container: surge acima do botão com animação suave */
+.tool-popover {
+    position: fixed;
+    z-index: 10000;
+    min-width: 200px;
+    padding: 8px 6px;
+    border-radius: 14px;
+    background: rgba(18, 19, 36, 0.96);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(92, 107, 192, 0.25);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 1px 0 rgba(255,255,255,0.05) inset;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    /* Animação de entrada */
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
+    transform-origin: top center;
+}
+
+.tool-popover.hidden {
+    display: none;
+    pointer-events: none;
+}
+
+/* Etiqueta de categoria no topo */
+.popover-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(156, 176, 255, 0.55);
+    padding: 4px 10px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 4px;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Item (button) do popover */
+.popover-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba(232, 234, 246, 0.8);
+    transition: background 0.12s, color 0.12s, transform 0.1s;
+    position: relative;
+    text-align: left;
+    width: 100%;
+}
+
+.popover-item:hover {
+    background: rgba(92, 107, 192, 0.18);
+    color: #e8eaf6;
+    transform: translateX(2px);
+}
+
+.popover-item:active {
+    transform: translateX(2px) scale(0.98);
+}
+
+/* Item ativo: barra lateral colorida */
+.popover-item.active {
+    background: rgba(92, 107, 192, 0.14);
+    color: #a5b4fc;
+}
+
+.popover-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, #7c8ef0, #9c27b0);
+    box-shadow: 0 0 8px rgba(124, 142, 240, 0.5);
+}
+
+/* Ícone do item */
+.popover-item-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(92, 107, 192, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(165, 180, 252, 0.9);
+    transition: background 0.12s, color 0.12s;
+}
+
+.popover-item:hover .popover-item-icon,
+.popover-item.active .popover-item-icon {
+    background: rgba(92, 107, 192, 0.28);
+    color: #a5b4fc;
+}
+
+/* Texto: título + subtexto */
+.popover-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.popover-item-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.popover-item-sub {
+    font-size: 10.5px;
+    color: rgba(165, 180, 252, 0.45);
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.popover-item:hover .popover-item-sub {
+    color: rgba(165, 180, 252, 0.65);
+}
+
+/* ── POPOVERS RICOS (Fase A): tipo + tamanho + cor + opacidade ──── */
+.tool-popover--rich {
+    min-width: 248px;
+    max-width: 268px;
+    padding: 8px 10px 12px;
+}
+
+.tool-popover--rich .popover-label {
+    margin-top: 8px;
+}
+
+.tool-popover--rich .popover-label:first-child {
+    margin-top: 0;
+}
+
+/* Grid de tipos de pincel */
+.popover-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    padding: 2px;
+}
+
+.popover-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px 6px;
+    border-radius: 9px;
+    border: 1.5px solid transparent;
+    background: rgba(92, 107, 192, 0.08);
+    color: rgba(232, 234, 246, 0.75);
+    cursor: pointer;
+    font-size: 10.5px;
+    font-weight: 500;
+    min-height: 48px;
+    transition: background 0.12s, color 0.12s, border-color 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.popover-type-btn:hover {
+    background: rgba(92, 107, 192, 0.18);
+    color: #e8eaf6;
+}
+
+.popover-type-btn:active {
+    transform: scale(0.96);
+}
+
+.popover-type-btn.active {
+    border-color: rgba(124, 142, 240, 0.7);
+    background: rgba(92, 107, 192, 0.22);
+    color: #a5b4fc;
+    box-shadow: 0 0 10px rgba(124, 142, 240, 0.25);
+}
+
+/* Presets de tamanho (bolinhas) */
+.popover-size-presets {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+}
+
+.popover-size-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1.5px solid transparent;
+    background: rgba(92, 107, 192, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.popover-size-dot i {
+    display: block;
+    border-radius: 50%;
+    background: rgba(232, 234, 246, 0.85);
+    pointer-events: none;
+}
+
+.popover-size-dot:hover {
+    background: rgba(92, 107, 192, 0.22);
+    transform: scale(1.1);
+}
+
+.popover-size-dot.active {
+    border-color: rgba(124, 142, 240, 0.8);
+    background: rgba(92, 107, 192, 0.28);
+}
+
+.popover-size-dot.active i {
+    background: #a5b4fc;
+}
+
+/* Linha de slider (tamanho / opacidade) */
+.popover-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 2px;
+}
+
+.popover-slider-row input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(124,142,240,0.9), rgba(156,39,176,0.8));
+    cursor: pointer;
+}
+
+.popover-slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e8eaf6;
+    border: 2px solid #7c8ef0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: transform 0.12s;
+}
+
+.popover-slider-row input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.popover-size-value,
+.popover-opacity-value {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(165, 180, 252, 0.85);
+    min-width: 32px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Grid de cores */
+.popover-color-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    padding: 4px 8px;
+    align-items: center;
+}
+
+.popover-color-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.12);
+    transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.popover-color-swatch:hover {
+    transform: scale(1.2);
+}
+
+.popover-color-swatch.active {
+    border-color: #e8eaf6;
+    box-shadow: 0 0 0 2px rgba(124, 142, 240, 0.6), 0 1px 3px rgba(0,0,0,0.35);
+    transform: scale(1.1);
+}
+
+.popover-color-custom {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 2px dashed rgba(165, 180, 252, 0.5);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.12s, border-color 0.12s;
+}
+
+.popover-color-custom:hover {
+    transform: scale(1.2);
+    border-color: #a5b4fc;
+}
+
+.popover-color-custom::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.popover-color-custom::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+}
+
+/* Barrinha de cor sob os botões caneta/marca-texto */
+.tool-btn {
+    position: relative;
+}
+
+.tool-color-bar {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    background: #1a1b2e;
+    pointer-events: none;
+    transition: background 0.2s;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.7; }
+}
+/* -- MICRO-ANIMATIONS: Tool Button Active (S-Pen haptic feel) -- */
+.tool-btn { transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s; }
+.tool-btn:active { transform: scale(0.92) !important; }
+.tool-btn--active { animation: tool-activate 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes tool-activate {
+    0%  { transform: scale(0.9); }
+    60% { transform: scale(1.08); }
+    100%{ transform: scale(1); }
+}
+
+/* -- CANVAS AREA: smooth transition when page changes -- */
+.canvas-wrapper.page-loading { opacity: 0; transform: scale(0.98); }
+.canvas-wrapper { transition: opacity 0.2s ease, transform 0.2s ease; }
+
+/* -- S-PEN PRESSURE CURSOR -- */
+.notes-canvas--ui { cursor: crosshair; }
+.notes-canvas--ui[data-tool= pen] { cursor: url('data:image/svg+xml,<svg xmlns=http://www.w3.org/2000/svg width=16 height=16 viewBox=0 0 16 16><circle cx=1 cy=15 r=1.5 fill=%231a1b2e/></svg>') 1 15, crosshair; }
+
+/* -- RESPONSIVE: Tablet S6 Lite optimizations -- */
+@media (hover: none) and (pointer: coarse) {
+    .tool-btn { min-width: 44px; min-height: 44px; }
+    .sidebar-action-btn { min-height: 48px; }
+}
+/* -- SAVE STATUS (pulsing) -- */
+.save-status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #43a047; margin-right: 4px; }
+.save-status.saving .save-status-dot { background: #fb8c00; animation: pulse-dot 1s ease-in-out infinite; }
+.save-status.error .save-status-dot { background: #e53935; }
+
+/* ====================================================================
+   PASSO 10 — GERENCIADOR DE PÁGINAS (Thumbnails)
+==================================================================== */
+
+/* Botão da toolbar em estado ativo (painel aberto) */
+#btn-page-manager.tool-btn--active {
+    background: var(--mn-surface-active);
+    color: var(--mn-blue-dark);
+}
+
+/* -- Overlay escuro atrás do painel -- */
+.page-manager-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 27, 46, 0.35);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
+    z-index: 900;
+}
+.page-manager-overlay.open { opacity: 1; visibility: visible; }
+
+/* -- Painel deslizante à direita -- */
+.page-manager-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 320px;
+    max-width: 85vw;
+    background: var(--mn-surface);
+    border-left: 1px solid var(--mn-border);
+    box-shadow: -8px 0 24px rgba(92, 107, 192, 0.15);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 901;
+    font-family: var(--mn-font);
+}
+.page-manager-panel.open { transform: translateX(0); }
+
+/* -- Cabeçalho -- */
+.pm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--mn-border);
+    flex-shrink: 0;
+}
+.pm-header-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pm-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mn-text-primary);
+    margin: 0;
+}
+.pm-subtitle {
+    font-size: 12px;
+    color: var(--mn-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pm-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: var(--mn-radius-sm);
+    background: transparent;
+    color: var(--mn-text-secondary);
+    cursor: pointer;
+    transition: var(--mn-transition);
+    flex-shrink: 0;
+}
+.pm-close-btn:hover { background: var(--mn-surface-hover); color: var(--mn-text-primary); }
+
+/* -- Grid de miniaturas -- */
+.pm-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 14px;
+    align-content: start;
+}
+.pm-grid::-webkit-scrollbar { width: 8px; }
+.pm-grid::-webkit-scrollbar-thumb { background: var(--mn-border-strong); border-radius: 4px; }
+
+/* -- Card de página -- */
+.pm-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+    background: var(--mn-surface);
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--mn-transition);
+    box-shadow: var(--mn-shadow-sm);
+}
+.pm-card:hover {
+    border-color: var(--mn-blue-light);
+    box-shadow: var(--mn-shadow-md);
+    transform: translateY(-2px);
+}
+.pm-card--active {
+    border-color: var(--mn-accent);
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.18);
+}
+
+/* Miniatura (imagem gerada do canvas) */
+.pm-card-thumb {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: top center;
+    background: #ffffff;
+    display: block;
+    border-bottom: 1px solid var(--mn-border);
+    pointer-events: none;
+}
+
+/* Rodapé do card: nome + data */
+.pm-card-info {
+    padding: 7px 9px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.pm-card-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mn-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.pm-card-date {
+    font-size: 10px;
+    color: var(--mn-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ações no hover (duplicar / excluir) */
+.pm-card-actions {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+.pm-card:hover .pm-card-actions,
+.pm-card:focus-within .pm-card-actions { opacity: 1; }
+.pm-card-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: var(--mn-radius-sm);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--mn-shadow-sm);
+    color: var(--mn-text-secondary);
+    cursor: pointer;
+    transition: var(--mn-transition);
+}
+.pm-card-action:hover { background: #fff; color: var(--mn-blue-dark); }
+.pm-card-action--danger:hover { color: #e53935; }
+
+/* Índice da página (canto superior esquerdo) */
+.pm-card-index {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(92, 107, 192, 0.85);
+    border-radius: var(--mn-radius-full);
+    pointer-events: none;
+}
+
+/* Estados de drag & drop */
+.pm-card.dragging { opacity: 0.4; }
+.pm-card.drag-over { border-color: var(--mn-purple); box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2); }
+
+/* -- Estado vazio -- */
+.pm-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    text-align: center;
+    color: var(--mn-text-muted);
+}
+.pm-empty p { font-size: 13px; margin: 0; max-width: 200px; }
+
+/* -- Rodapé -- */
+.pm-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--mn-border);
+    flex-shrink: 0;
+}
+.pm-new-page-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px;
+    border: none;
+    border-radius: var(--mn-radius-md);
+    background: linear-gradient(135deg, var(--mn-blue), var(--mn-accent));
+    color: #fff;
+    font-family: var(--mn-font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--mn-transition);
+    box-shadow: var(--mn-shadow-sm);
+}
+.pm-new-page-btn:hover { filter: brightness(1.06); box-shadow: var(--mn-shadow-md); }
+.pm-new-page-btn:active { transform: scale(0.98); }
+
+/* Toque no tablet: alvos maiores + ações sempre visíveis */
+@media (hover: none) and (pointer: coarse) {
+    .pm-card-actions { opacity: 1; }
+    .pm-card-action { width: 34px; height: 34px; }
+    .pm-close-btn { width: 44px; height: 44px; }
+}
+
