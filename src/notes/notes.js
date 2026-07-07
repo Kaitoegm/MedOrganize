@@ -3193,15 +3193,7 @@ MedNotes.PageManager = {
 
     // ── Reordena páginas no array e persiste ──
     _reorder: function (ctx, fromId, toId) {
-        if (!fromId || fromId === toId) return;
-        const pages = ctx.notebook.pages;
-        const fromIdx = pages.findIndex(p => p.id === fromId);
-        const toIdx   = pages.findIndex(p => p.id === toId);
-        if (fromIdx === -1 || toIdx === -1) return;
-
-        const [moved] = pages.splice(fromIdx, 1);
-        pages.splice(toIdx, 0, moved);
-        MedNotes.DataStore.save();
+        MedNotes.Actions.reorderPages(ctx.notebook, fromId, toId);
         this.renderGrid();
     },
 

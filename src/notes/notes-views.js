@@ -122,7 +122,19 @@ MedNotes.Actions = {
             });
         }
         this.refreshUI();
-    }
+    },
+
+    // Reordena páginas dentro de um caderno e persiste
+    reorderPages: function (notebook, fromId, toId) {
+        if (!fromId || fromId === toId) return;
+        const pages = notebook.pages;
+        const fromIdx = pages.findIndex(p => p.id === fromId);
+        const toIdx   = pages.findIndex(p => p.id === toId);
+        if (fromIdx === -1 || toIdx === -1) return;
+        const [moved] = pages.splice(fromIdx, 1);
+        pages.splice(toIdx, 0, moved);
+        MedNotes.DataStore.save();
+    },
 };
 
 // ── POPOVER — flutuante genérico (menus ⋯, emoji, cores) ────────────
@@ -350,8 +362,104 @@ MedNotes.Views = {
         });
     },
 
-    // Stub — substituído na Task 6
-    _renderNotebook: function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Caderno (em construção)</h1></div>'; },
+    _pageCardHTML: function (page, index, activeId) {
+        const dateLabel = page.updatedAt ? Utils.timeAgo(page.updatedAt) : '';
+        return `
+        <div class="pm-card${page.id === activeId ? ' pm-card--active' : ''}" data-id="${page.id}" draggable="true" role="button" tabindex="0">
+            <span class="pm-card-index">${index + 1}</span>
+            <div class="pm-card-actions">
+                <button class="pm-card-action" data-act="rename" title="Renomear página" aria-label="Renomear página">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button class="pm-card-action" data-act="duplicate" title="Duplicar página" aria-label="Duplicar página">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+                <button class="pm-card-action pm-card-action--danger" data-act="delete" title="Excluir página" aria-label="Excluir página">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                </button>
+            </div>
+            <img class="pm-card-thumb" alt="Miniatura de ${this._esc(page.name)}" src="${MedNotes.PageManager._makeThumbnail(page)}">
+            <div class="pm-card-info">
+                <span class="pm-card-name">${this._esc(page.name)}</span>
+                <span class="pm-card-date">${this._esc(dateLabel)}</span>
+            </div>
+        </div>`;
+    },
+
+    _renderNotebook: function () {
+        const DS = MedNotes.DataStore;
+        const f  = DS.state.folders.find(x => x.id === this.route.folderId);
+        const nb = f?.notebooks.find(x => x.id === this.route.notebookId);
+        if (!f || !nb) { this.show('home'); return; }
+
+        const activeId = DS.active.pageId;
+        this.container.innerHTML = `
+        <div class="mnv-screen mnv-notebook-view">
+            <header class="mnv-head">
+                <div class="mnv-head-left">
+                    <button class="mnv-back-btn" id="mnv-back" aria-label="Voltar para a pasta">←</button>
+                    <div>
+                        <h1 class="mnv-title">${nb.icon} ${this._esc(nb.name)}</h1>
+                        <p class="mnv-sub">${f.icon} ${this._esc(f.name)} · ${nb.pages.length} página${nb.pages.length !== 1 ? 's' : ''}</p>
+                    </div>
+                </div>
+                <button class="mnv-pill-btn" id="mnv-new-page">+ Nova Página</button>
+            </header>
+            <div class="mnv-grid mnv-grid--pages">
+                ${nb.pages.map((p, i) => this._pageCardHTML(p, i, activeId)).join('')}
+                <button class="mnv-add-card" id="mnv-add-page"><span>+</span>Nova Página</button>
+            </div>
+        </div>`;
+
+        this.container.querySelector('#mnv-back').addEventListener('click', () => this.show('folder', f.id));
+        const create = () => MedNotes.Actions.promptCreate('page', f.id, nb.id);
+        this.container.querySelector('#mnv-new-page').addEventListener('click', create);
+        this.container.querySelector('#mnv-add-page').addEventListener('click', create);
+
+        let dragId = null;
+        this.container.querySelectorAll('.pm-card').forEach(card => {
+            const pageId = card.dataset.id;
+
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.pm-card-action')) return;
+                DS.setActiveSelection(f.id, nb.id, pageId);
+            });
+            card.querySelector('[data-act="rename"]').addEventListener('click', (e) => {
+                e.stopPropagation();
+                MedNotes.Actions.promptRename('page', f.id, nb.id, pageId);
+            });
+            card.querySelector('[data-act="duplicate"]').addEventListener('click', (e) => {
+                e.stopPropagation();
+                MedNotes.Actions.duplicatePage(f.id, nb.id, pageId);
+                MedNotes.Actions.showToast('📄 Página duplicada!', 'success');
+            });
+            card.querySelector('[data-act="delete"]').addEventListener('click', (e) => {
+                e.stopPropagation();
+                MedNotes.Actions.promptDelete('page', f.id, nb.id, pageId);
+            });
+
+            card.addEventListener('dragstart', (e) => {
+                dragId = pageId;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                this.container.querySelectorAll('.drag-over').forEach(c => c.classList.remove('drag-over'));
+            });
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (dragId && dragId !== pageId) card.classList.add('drag-over');
+            });
+            card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                MedNotes.Actions.reorderPages(nb, dragId, pageId);
+                dragId = null;
+            });
+        });
+    },
 
     // Menu ⋯ dos cards — implementação completa na Task 8 (emoji/cor/etiqueta)
     _openCardMenu: function (anchor, kind, ids) {
