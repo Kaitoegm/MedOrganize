@@ -1628,12 +1628,23 @@ MedNotes.Canvas = {
         const vw = this.bgCanvas.clientWidth;
         const vh = this.bgCanvas.clientHeight;
         const { x: vx, y: vy, zoom } = this.view;
+        const activePage = this._getActivePage();
 
-        // 1. Layer de fundo (pauta)
-        this._renderBackground(this.bgCtx, vw, vh, vx, vy, zoom);
+        this.bgCtx.clearRect(0, 0, vw, vh);
+        this.mainCtx.clearRect(0, 0, vw, vh);
 
-        // 2. Layer principal (strokes persistidos)
-        this._renderStrokes(this.mainCtx, vw, vh, vx, vy, zoom);
+        const currentPageData = {
+            background: activePage?.background || 'dotgrid',
+            bgColor:    activePage?.bgColor    || '#ffffff',
+            canvasW: this.CANVAS_W,
+            canvasH: this.CANVAS_H
+        };
+
+        // 1. Layer de fundo (pauta) da página atual
+        this._renderBackground(this.bgCtx, vx, vy, zoom, currentPageData, 0);
+
+        // 2. Layer principal (strokes persistidos) da página atual
+        this._renderStrokes(this.mainCtx, vx, vy, zoom, { strokes: this.strokes }, 0, this._currentStroke);
 
         // 3. Layer UI (stroke em andamento + cursor borracha)
         this._renderUI(this.uiCtx, vw, vh, vx, vy, zoom);
@@ -1653,109 +1664,109 @@ MedNotes.Canvas = {
     },
 
     // ─────────────────────────────────────────────────────────────────
-    // _renderBackground — desenha a pauta do canvas
+    // _renderBackground — desenha a pauta de UMA página, em coordenadas
+    // lógicas (via ctx.translate/scale), com offset vertical opcional.
+    // pageData: { background, bgColor, canvasW, canvasH }
+    // offsetY: deslocamento vertical em unidades lógicas (0 = página atual)
     // ─────────────────────────────────────────────────────────────────
-    _renderBackground: function (ctx, vw, vh, vx, vy, zoom) {
-        const activePage = this._getActivePage();
-        const bgType  = activePage?.background || 'dotgrid';
-        const bgColor = activePage?.bgColor    || '#ffffff';
+    _renderBackground: function (ctx, vx, vy, zoom, pageData, offsetY) {
+        const bgType  = pageData.background || 'dotgrid';
+        const bgColor = pageData.bgColor    || '#ffffff';
+        const cw = pageData.canvasW;
+        const ch = pageData.canvasH;
 
-        ctx.clearRect(0, 0, vw, vh);
+        ctx.save();
+        ctx.translate(vx, vy);
+        ctx.scale(zoom, zoom);
+        ctx.translate(0, offsetY);
 
         // Fundo colorido da página
         ctx.fillStyle = bgColor;
-        const x0 = Math.max(0, vx);
-        const y0 = Math.max(0, vy);
-        const x1 = Math.min(vw, vx + this.CANVAS_W * zoom);
-        const y1 = Math.min(vh, vy + this.CANVAS_H * zoom);
-        ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+        ctx.fillRect(0, 0, cw, ch);
 
         // Sombra suave da borda do canvas
         ctx.save();
         ctx.shadowColor = 'rgba(92,107,192,0.18)';
-        ctx.shadowBlur  = 24;
+        ctx.shadowBlur  = 24 / zoom;
         ctx.strokeStyle = 'rgba(92,107,192,0.12)';
-        ctx.lineWidth   = 2;
-        ctx.strokeRect(vx, vy, this.CANVAS_W * zoom, this.CANVAS_H * zoom);
+        ctx.lineWidth   = 2 / zoom;
+        ctx.strokeRect(0, 0, cw, ch);
         ctx.restore();
 
-        if (bgType === 'none') return;
+        if (bgType !== 'none') {
+            // Clipa a pauta dentro do canvas
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, cw, ch);
+            ctx.clip();
 
-        // Clipa a pauta dentro do canvas
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(vx, vy, this.CANVAS_W * zoom, this.CANVAS_H * zoom);
-        ctx.clip();
+            const gridColor = bgColor === '#1a1b2e'
+                ? 'rgba(255,255,255,0.06)'
+                : 'rgba(92,107,192,0.10)';
 
-        const gridColor = bgColor === '#1a1b2e'
-            ? 'rgba(255,255,255,0.06)'
-            : 'rgba(92,107,192,0.10)';
+            const spacing = 40; // 40px lógicos — o ctx.scale já cuida do zoom
 
-        const spacing = 40 * zoom; // 40px lógicos
-
-        if (bgType === 'lined') {
-            ctx.strokeStyle = gridColor;
-            ctx.lineWidth   = 1;
-            // Linhas horizontais
-            let startY = vy + ((-vy) % spacing + spacing) % spacing;
-            for (let yy = startY; yy <= vy + this.CANVAS_H * zoom; yy += spacing) {
-                ctx.beginPath();
-                ctx.moveTo(vx, yy);
-                ctx.lineTo(vx + this.CANVAS_W * zoom, yy);
-                ctx.stroke();
-            }
-
-        } else if (bgType === 'dotgrid') {
-            ctx.fillStyle = gridColor.replace('0.10', '0.30');
-            const dotR = Math.max(0.8, 1.2 * zoom);
-            let startX = vx + ((-vx) % spacing + spacing) % spacing;
-            let startY = vy + ((-vy) % spacing + spacing) % spacing;
-            for (let yy = startY; yy <= vy + this.CANVAS_H * zoom; yy += spacing) {
-                for (let xx = startX; xx <= vx + this.CANVAS_W * zoom; xx += spacing) {
+            if (bgType === 'lined') {
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth   = 1 / zoom;
+                for (let yy = 0; yy <= ch; yy += spacing) {
                     ctx.beginPath();
-                    ctx.arc(xx, yy, dotR, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.moveTo(0, yy);
+                    ctx.lineTo(cw, yy);
+                    ctx.stroke();
+                }
+
+            } else if (bgType === 'dotgrid') {
+                ctx.fillStyle = gridColor.replace('0.10', '0.30');
+                const dotR = Math.max(0.8 / zoom, 1.2);
+                for (let yy = 0; yy <= ch; yy += spacing) {
+                    for (let xx = 0; xx <= cw; xx += spacing) {
+                        ctx.beginPath();
+                        ctx.arc(xx, yy, dotR, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+            } else if (bgType === 'grid') {
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth   = 1 / zoom;
+                for (let yy = 0; yy <= ch; yy += spacing) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, yy);
+                    ctx.lineTo(cw, yy);
+                    ctx.stroke();
+                }
+                for (let xx = 0; xx <= cw; xx += spacing) {
+                    ctx.beginPath();
+                    ctx.moveTo(xx, 0);
+                    ctx.lineTo(xx, ch);
+                    ctx.stroke();
                 }
             }
 
-        } else if (bgType === 'grid') {
-            ctx.strokeStyle = gridColor;
-            ctx.lineWidth   = 1;
-            let startX = vx + ((-vx) % spacing + spacing) % spacing;
-            let startY = vy + ((-vy) % spacing + spacing) % spacing;
-            for (let yy = startY; yy <= vy + this.CANVAS_H * zoom; yy += spacing) {
-                ctx.beginPath();
-                ctx.moveTo(vx, yy);
-                ctx.lineTo(vx + this.CANVAS_W * zoom, yy);
-                ctx.stroke();
-            }
-            for (let xx = startX; xx <= vx + this.CANVAS_W * zoom; xx += spacing) {
-                ctx.beginPath();
-                ctx.moveTo(xx, vy);
-                ctx.lineTo(xx, vy + this.CANVAS_H * zoom);
-                ctx.stroke();
-            }
+            ctx.restore();
         }
 
         ctx.restore();
     },
 
     // ─────────────────────────────────────────────────────────────────
-    // _renderStrokes — desenha todos os strokes persistidos
+    // _renderStrokes — desenha os strokes de UMA página, com offset
+    // vertical opcional (mesma convenção de _renderBackground).
+    // pageData: { strokes: Array }
     // ─────────────────────────────────────────────────────────────────
-    _renderStrokes: function (ctx, vw, vh, vx, vy, zoom) {
-        ctx.clearRect(0, 0, vw, vh);
+    _renderStrokes: function (ctx, vx, vy, zoom, pageData, offsetY, currentStroke) {
         ctx.save();
         ctx.translate(vx, vy);
         ctx.scale(zoom, zoom);
+        ctx.translate(0, offsetY);
 
-        for (const stroke of this.strokes) {
+        for (const stroke of pageData.strokes) {
             this._drawStroke(ctx, stroke);
         }
 
-        // Stroke em andamento
-        if (this._currentStroke) {
-            this._drawStroke(ctx, this._currentStroke);
+        if (currentStroke) {
+            this._drawStroke(ctx, currentStroke);
         }
 
         ctx.restore();
@@ -2549,9 +2560,11 @@ MedNotes.Canvas = {
         if (wrapper)    wrapper.style.display = 'block';
         if (emptyState) emptyState.style.display = 'none';
 
-        // Ajusta dimensão do canvas lógico
-        if (page.canvasW) this.CANVAS_W = page.canvasW;
-        if (page.canvasH) this.CANVAS_H = page.canvasH;
+        // Ajusta dimensão do canvas lógico (reseta para o default se a
+        // página não tiver override — evita vazar dimensão de uma página
+        // anterior para outra sem override).
+        this.CANVAS_W = page.canvasW || 8000;
+        this.CANVAS_H = page.canvasH || 6000;
 
         // Carrega strokes
         this.strokes = page.canvasData ? JSON.parse(page.canvasData) : [];
