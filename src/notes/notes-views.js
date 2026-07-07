@@ -167,6 +167,24 @@ MedNotes.Popover = {
     }
 };
 
+// ── EMOJI PICKER — grade curada p/ medicina e estudo ────────────────
+MedNotes.EmojiPicker = {
+    EMOJIS: ['🏥','🫀','🧠','💊','🩺','🦴','🫁','🧬','🔬','💉','🩻','🧫','🦠','🧪','🩹','🚑','⚕️','🌡️','😷','🧴','📚','📓','📖','✏️','📝','🗂️','📌','🔖','⭐','❤️','🎯','🧩','💡','⚡','🔥','🌿','🌸','🍀','🌙','☀️'],
+
+    open: function (anchor, onSelect) {
+        const grid = document.createElement('div');
+        grid.className = 'mnv-emoji-grid';
+        for (const em of this.EMOJIS) {
+            const btn = document.createElement('button');
+            btn.className = 'mnv-emoji-cell';
+            btn.textContent = em;
+            btn.addEventListener('click', () => { MedNotes.Popover.close(); onSelect(em); });
+            grid.appendChild(btn);
+        }
+        MedNotes.Popover.open(anchor, grid);
+    }
+};
+
 // ── VIEWS — roteador das telas Home / Pasta / Caderno / Editor ──────
 MedNotes.Views = {
     route: { view: 'home', folderId: null, notebookId: null },
@@ -458,14 +476,85 @@ MedNotes.Views = {
         });
     },
 
-    // Menu ⋯ dos cards — implementação completa na Task 8 (emoji/cor/etiqueta)
-    _openCardMenu: function (anchor, kind, ids) {
-        MedNotes.Actions.showToast('Menu em breve (Task 8)', 'info');
+    PALETTE: ['#5c6bc0', '#7c4dff', '#9c27b0', '#ec407a', '#e53935', '#fb8c00',
+              '#f9a825', '#43a047', '#00897b', '#00acc1', '#6d4c41', '#546e7a'],
+
+    _openEmojiFor: function (anchor, kind, ids) {
+        const DS = MedNotes.DataStore;
+        MedNotes.EmojiPicker.open(anchor, (emoji) => {
+            if (kind === 'folder') {
+                const f = DS.state.folders.find(x => x.id === ids.folderId);
+                if (f) { f.icon = emoji; DS.save(); }
+            } else {
+                const f  = DS.state.folders.find(x => x.id === ids.folderId);
+                const nb = f?.notebooks.find(x => x.id === ids.notebookId);
+                if (nb) { nb.icon = emoji; DS.save(); }
+            }
+        });
     },
 
-    // Seletor de emoji — implementação completa na Task 8
-    _openEmojiFor: function (anchor, kind, ids) {
-        MedNotes.Actions.showToast('Seletor de emoji em breve (Task 8)', 'info');
+    _openColorFor: function (anchor, kind, ids) {
+        const DS = MedNotes.DataStore;
+        const grid = document.createElement('div');
+        grid.className = 'mnv-color-grid';
+        for (const c of this.PALETTE) {
+            const cell = document.createElement('button');
+            cell.className = 'mnv-color-cell';
+            cell.style.background = c;
+            cell.title = c;
+            cell.addEventListener('click', () => {
+                MedNotes.Popover.close();
+                if (kind === 'folder') {
+                    const f = DS.state.folders.find(x => x.id === ids.folderId);
+                    if (f) { f.color = c; DS.save(); }
+                } else {
+                    const f  = DS.state.folders.find(x => x.id === ids.folderId);
+                    const nb = f?.notebooks.find(x => x.id === ids.notebookId);
+                    if (nb) { nb.color = c; DS.save(); }
+                }
+            });
+            grid.appendChild(cell);
+        }
+        MedNotes.Popover.open(anchor, grid);
+    },
+
+    _editLabel: async function (ids) {
+        const DS = MedNotes.DataStore;
+        const f = DS.state.folders.find(x => x.id === ids.folderId);
+        if (!f) return;
+        const current = f.label || '';
+        const val = await MedNotes.Dialog.prompt('Etiqueta da Pasta', 'Texto curto exibido na etiqueta (vazio = usar o nome da pasta):', current);
+        if (val === null) return;
+        f.label = val.trim() || null;
+        DS.save();
+    },
+
+    _openCardMenu: function (anchor, kind, ids) {
+        const mk = (label, danger, fn) => {
+            const b = document.createElement('button');
+            b.className = 'mnv-pop-item' + (danger ? ' mnv-pop-item--danger' : '');
+            b.textContent = label;
+            b.addEventListener('click', () => { MedNotes.Popover.close(); fn(); });
+            return b;
+        };
+
+        const box = document.createElement('div');
+        const A = MedNotes.Actions;
+
+        if (kind === 'folder') {
+            box.appendChild(mk('✏️ Renomear', false, () => A.promptRename('folder', ids.folderId, null, null)));
+            box.appendChild(mk('🎨 Mudar cor', false, () => this._openColorFor(anchor, 'folder', ids)));
+            box.appendChild(mk('😀 Mudar emoji', false, () => this._openEmojiFor(anchor, 'folder', ids)));
+            box.appendChild(mk('🏷️ Editar etiqueta', false, () => this._editLabel(ids)));
+            box.appendChild(mk('🗑️ Excluir', true, () => A.promptDelete('folder', ids.folderId, null, null)));
+        } else if (kind === 'notebook') {
+            box.appendChild(mk('✏️ Renomear', false, () => A.promptRename('notebook', ids.folderId, ids.notebookId, null)));
+            box.appendChild(mk('🎨 Mudar cor', false, () => this._openColorFor(anchor, 'notebook', ids)));
+            box.appendChild(mk('😀 Mudar emoji', false, () => this._openEmojiFor(anchor, 'notebook', ids)));
+            box.appendChild(mk('🗑️ Excluir', true, () => A.promptDelete('notebook', ids.folderId, ids.notebookId, null)));
+        }
+
+        MedNotes.Popover.open(anchor, box);
     },
 
     _esc: (str) => String(str == null ? '' : str)

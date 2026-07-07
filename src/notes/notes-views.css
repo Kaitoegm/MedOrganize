@@ -217,3 +217,19 @@ body[data-view="editor"] #views-container { display: none; }
     .rail-btn--home, .rail-btn--folder, .rail-btn--exit { width: 44px; height: 44px; }
 }
 .mnv-nb-card .mnv-menu-btn:hover { background: rgba(255, 255, 255, .5); color: #1a1b2e; }
+
+/* ── Grades de emoji e cor ───────────────────────────────────────── */
+.mnv-emoji-grid { display: grid; grid-template-columns: repeat(8, 36px); gap: 4px; padding: 4px; }
+.mnv-emoji-cell {
+    width: 36px; height: 36px; border: none; background: transparent;
+    border-radius: 8px; font-size: 19px; cursor: pointer; line-height: 1;
+}
+.mnv-emoji-cell:hover { background: var(--mn-surface-active); }
+
+.mnv-color-grid { display: grid; grid-template-columns: repeat(6, 32px); gap: 6px; padding: 6px; }
+.mnv-color-cell {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, .08); cursor: pointer;
+    transition: var(--mn-transition);
+}
+.mnv-color-cell:hover { transform: scale(1.12); }
