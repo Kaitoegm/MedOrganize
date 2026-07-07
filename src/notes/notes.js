@@ -1486,12 +1486,12 @@ MedNotes.Canvas = {
     // ─────────────────────────────────────────────────────────────────
     // resetView — centraliza o canvas no viewport com zoom 100%
     // ─────────────────────────────────────────────────────────────────
-    resetView: function () {
+    resetView: function (zoom) {
         const vw = this.bgCanvas.clientWidth;
         const vh = this.bgCanvas.clientHeight;
-        this.view.zoom = 1;
-        this.view.x = (vw - this.CANVAS_W) / 2;
-        this.view.y = (vh - this.CANVAS_H) / 2;
+        this.view.zoom = zoom || 1;
+        this.view.x = (vw - this.CANVAS_W * this.view.zoom) / 2;
+        this.view.y = (vh - this.CANVAS_H * this.view.zoom) / 2;
         this._dirty = true;
         this._updateZoomBadge();
     },
@@ -2771,6 +2771,7 @@ MedNotes.Canvas = {
     // ─────────────────────────────────────────────────────────────────
     loadActivePage: function () {
         this._cancelPeek();
+        const preservedZoom = this.view.zoom;
         const page = this._getActivePage();
         const wrapper = document.getElementById('canvas-wrapper');
         const emptyState = document.getElementById('canvas-empty-state');
@@ -2806,8 +2807,9 @@ MedNotes.Canvas = {
         this._redoStack = [];
         this._updateUndoButtons();
 
-        // Centraliza a visão
-        this.resetView();
+        // Centraliza a visão, preservando o zoom atual (não reseta para 100%
+        // a cada troca de página — Ctrl+0 continua resetando de verdade)
+        this.resetView(preservedZoom);
         this._dirty = true;
 
         // Garante que o canvas esteja bem dimensionado
