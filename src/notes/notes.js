@@ -173,7 +173,6 @@ MedNotes.DataStore = {
         this.active.pageId = pageId;
 
         if (MedNotes.Views)   MedNotes.Views.enterEditor();
-        if (MedNotes.Sidebar) MedNotes.Sidebar.updateSelectionUI();   // sai na Task 8
         if (MedNotes.Canvas)  MedNotes.Canvas.loadActivePage();
 
         this.updateBreadcrumb();
@@ -323,404 +322,6 @@ MedNotes.Dialog = {
         return this.show({ type: 'confirm', title, message, isDanger });
     }
 };
-
-// ── SIDEBAR (Passo 4) ─────────────────────────────────────────────────
-MedNotes.Sidebar = {
-
-    // IDs das pastas/cadernos que estão expandidos
-    expanded: { folders: new Set(), notebooks: new Set() },
-
-    // Elemento de contexto aberto (para fechar ao clicar fora)
-    _openCtxMenu: null,
-
-    init: function () {
-        this.treeEl  = document.getElementById('sidebar-tree');
-        this.searchEl = document.getElementById('sidebar-search-input');
-
-        // ── Botão "Nova Pasta" no rodapé ──────────────────────────────
-        document.getElementById('btn-new-folder')?.addEventListener('click', () => {
-            this.promptCreate('folder', null, null);
-        });
-
-        // ── Botão "Nova Página" no rodapé ────────────────────────────
-        document.getElementById('btn-new-page')?.addEventListener('click', () => {
-            const { folderId, notebookId } = MedNotes.DataStore.active;
-            if (!folderId || !notebookId) {
-                this.showToast('⚠️ Selecione um caderno primeiro.', 'warn');
-                return;
-            }
-            this.promptCreate('page', folderId, notebookId);
-        });
-
-        // ── Busca em tempo real ───────────────────────────────────────
-        this.searchEl?.addEventListener('input', () => this.render());
-
-        // ── Fechar menus de contexto ao clicar fora ───────────────────
-        document.addEventListener('click', (e) => {
-            if (this._openCtxMenu && !this._openCtxMenu.contains(e.target)) {
-                this._closeCtxMenu();
-            }
-        });
-
-        this.render();
-    },
-
-    // ────────────────────────────────────────────────────────────────
-    // render — constrói a árvore completa na sidebar
-    // ────────────────────────────────────────────────────────────────
-    render: function () {
-        if (!this.treeEl) return;
-
-        const query   = (this.searchEl?.value || '').toLowerCase().trim();
-        const folders = MedNotes.DataStore.state.folders;
-
-        // ── Estado vazio ──────────────────────────────────────────────
-        if (folders.length === 0) {
-            this.treeEl.innerHTML = `
-                <div class="sidebar-empty-state" id="sidebar-empty-state">
-                    <svg viewBox="0 0 64 64" width="48" height="48" fill="none">
-                        <rect x="8" y="16" width="48" height="36" rx="4" fill="#e8eaf6" stroke="#5c6bc0" stroke-width="2"/>
-                        <path d="M8 24 h48" stroke="#5c6bc0" stroke-width="1.5"/>
-                        <line x1="18" y1="34" x2="46" y2="34" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
-                        <line x1="18" y1="40" x2="38" y2="40" stroke="#9c27b0" stroke-width="1.5" stroke-linecap="round"/>
-                    </svg>
-                    <p>Nenhuma pasta ainda.</p>
-                    <p class="sidebar-empty-hint">Clique em "Nova Pasta" abaixo!</p>
-                </div>`;
-            return;
-        }
-
-        let html = '';
-
-        folders.forEach(folder => {
-            // ── Filtrar por busca ─────────────────────────────────────
-            const folderMatch = !query || folder.name.toLowerCase().includes(query);
-
-            // Descobrir se algum notebook/página da pasta bate com a query
-            const visibleNotebooks = folder.notebooks.filter(nb => {
-                if (!query) return true;
-                const nbMatch = nb.name.toLowerCase().includes(query);
-                const pageMatch = nb.pages.some(p => p.name.toLowerCase().includes(query));
-                return nbMatch || pageMatch;
-            });
-
-            if (!folderMatch && visibleNotebooks.length === 0) return;
-
-            const isExpanded = this.expanded.folders.has(folder.id) || !!query;
-
-            html += `
-            <div class="tree-folder" data-folder-id="${folder.id}">
-                <!-- Linha da pasta -->
-                <div class="tree-row tree-row--folder ${isExpanded ? 'is-expanded' : ''}"
-                     data-action="toggle-folder" data-folder-id="${folder.id}">
-                    <span class="tree-chevron" aria-hidden="true">
-                        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                            <polyline points="4 6 8 10 12 6"/>
-                        </svg>
-                    </span>
-                    <span class="tree-folder-dot" style="background:${folder.color}"></span>
-                    <span class="tree-icon">${folder.icon}</span>
-                    <span class="tree-label">${this._esc(folder.name)}</span>
-                    <span class="tree-badge">${this._countPages(folder)}</span>
-                    <button class="tree-ctx-btn" data-ctx="folder"
-                            data-folder-id="${folder.id}"
-                            aria-label="Opções da pasta ${folder.name}"
-                            title="Opções">
-                        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-                            <circle cx="8" cy="3"  r="1.4"/><circle cx="8" cy="8"  r="1.4"/><circle cx="8" cy="13" r="1.4"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Corpo da pasta (cadernos) -->
-                <div class="tree-folder-body ${isExpanded ? 'is-open' : ''}">`;
-
-            folder.notebooks.forEach(nb => {
-                const nbMatch  = !query || nb.name.toLowerCase().includes(query);
-                const visPages = query
-                    ? nb.pages.filter(p => p.name.toLowerCase().includes(query))
-                    : nb.pages;
-
-                if (!nbMatch && visPages.length === 0) return;
-
-                const nbExpanded = this.expanded.notebooks.has(nb.id)
-                    || nb.id === MedNotes.DataStore.active.notebookId
-                    || !!query;
-
-                html += `
-                    <div class="tree-notebook" data-notebook-id="${nb.id}">
-                        <!-- Linha do caderno -->
-                        <div class="tree-row tree-row--notebook ${nbExpanded ? 'is-expanded' : ''}"
-                             data-action="toggle-notebook"
-                             data-folder-id="${folder.id}"
-                             data-notebook-id="${nb.id}">
-                            <span class="tree-chevron" aria-hidden="true">
-                                <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                    <polyline points="4 6 8 10 12 6"/>
-                                </svg>
-                            </span>
-                            <svg class="tree-nb-icon" viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="${folder.color}" stroke-width="1.8" stroke-linecap="round">
-                                <rect x="3" y="2" width="14" height="16" rx="2"/><line x1="7" y1="6" x2="13" y2="6"/><line x1="7" y1="9" x2="13" y2="9"/><line x1="7" y1="12" x2="10" y2="12"/>
-                            </svg>
-                            <span class="tree-label">${this._esc(nb.name)}</span>
-                            <span class="tree-badge tree-badge--sm">${nb.pages.length}</span>
-                            <button class="tree-ctx-btn" data-ctx="notebook"
-                                    data-folder-id="${folder.id}"
-                                    data-notebook-id="${nb.id}"
-                                    aria-label="Opções do caderno ${nb.name}"
-                                    title="Opções">
-                                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
-                                    <circle cx="8" cy="3"  r="1.4"/><circle cx="8" cy="8"  r="1.4"/><circle cx="8" cy="13" r="1.4"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Páginas do caderno -->
-                        <div class="tree-notebook-body ${nbExpanded ? 'is-open' : ''}">`;
-
-                visPages.forEach(p => {
-                    const isActive = p.id === MedNotes.DataStore.active.pageId;
-                    html += `
-                            <div class="tree-row tree-row--page ${isActive ? 'is-active' : ''}"
-                                 data-action="open-page"
-                                 data-folder-id="${folder.id}"
-                                 data-notebook-id="${nb.id}"
-                                 data-page-id="${p.id}"
-                                 title="${this._esc(p.name)}">
-                                <span class="tree-page-dot ${isActive ? 'is-active' : ''}"></span>
-                                <span class="tree-label">${this._esc(p.name)}</span>
-                                <button class="tree-ctx-btn" data-ctx="page"
-                                        data-folder-id="${folder.id}"
-                                        data-notebook-id="${nb.id}"
-                                        data-page-id="${p.id}"
-                                        aria-label="Opções da página ${p.name}"
-                                        title="Opções">
-                                    <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
-                                        <circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/>
-                                    </svg>
-                                </button>
-                            </div>`;
-                });
-
-                // Botão "Nova Página" dentro do caderno
-                html += `
-                            <button class="tree-add-page-btn"
-                                    data-action="add-page"
-                                    data-folder-id="${folder.id}"
-                                    data-notebook-id="${nb.id}">
-                                <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                                    <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
-                                </svg>
-                                Nova Página
-                            </button>
-                        </div>
-                    </div>`;
-            });
-
-            // Botão "Novo Caderno" no fundo da pasta
-            html += `
-                    <button class="tree-add-nb-btn"
-                            data-action="add-notebook"
-                            data-folder-id="${folder.id}">
-                        <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                            <line x1="8" y1="2" x2="8" y2="14"/><line x1="2" y1="8" x2="14" y2="8"/>
-                        </svg>
-                        Novo Caderno
-                    </button>
-                </div>
-            </div>`;
-        });
-
-        this.treeEl.innerHTML = html;
-
-        // ── Anexar eventos ao HTML gerado ─────────────────────────────
-        this._bindEvents();
-
-        // ── Atualizar botão "Nova Página" do rodapé ───────────────────
-        const newPageBtn = document.getElementById('btn-new-page');
-        if (newPageBtn) {
-            newPageBtn.disabled = !MedNotes.DataStore.active.notebookId;
-        }
-    },
-
-    // ────────────────────────────────────────────────────────────────
-    // _bindEvents — delega cliques de toda a árvore
-    // ────────────────────────────────────────────────────────────────
-    _bindEvents: function () {
-        // Correção de Bug: Evitar anexar múltiplos listeners na mesma árvore a cada render
-        if (this._eventsBound) return;
-        this._eventsBound = true;
-
-        this.treeEl.addEventListener('click', (e) => {
-            // Ignorar se clicou num botão de contexto (tratado separado)
-            const ctxBtn = e.target.closest('[data-ctx]');
-            if (ctxBtn) {
-                e.stopPropagation();
-                this._openCtx(ctxBtn);
-                return;
-            }
-
-            const row = e.target.closest('[data-action]');
-            if (!row) return;
-
-            const action     = row.dataset.action;
-            const folderId   = row.dataset.folderId;
-            const notebookId = row.dataset.notebookId;
-            const pageId     = row.dataset.pageId;
-
-            switch (action) {
-                case 'toggle-folder':
-                    this.expanded.folders.has(folderId)
-                        ? this.expanded.folders.delete(folderId)
-                        : this.expanded.folders.add(folderId);
-
-                    MedNotes.DataStore.active.folderId = folderId;
-                    MedNotes.DataStore.updateBreadcrumb();
-                    this.render();
-                    break;
-
-                case 'toggle-notebook':
-                    this.expanded.notebooks.has(notebookId)
-                        ? this.expanded.notebooks.delete(notebookId)
-                        : this.expanded.notebooks.add(notebookId);
-
-                    MedNotes.DataStore.active.folderId   = folderId;
-                    MedNotes.DataStore.active.notebookId = notebookId;
-                    MedNotes.DataStore.updateBreadcrumb();
-                    this.render();
-                    break;
-
-                case 'open-page':
-                    MedNotes.DataStore.setActiveSelection(folderId, notebookId, pageId);
-                    this.render(); // para atualizar highlight
-                    break;
-
-                case 'add-notebook':
-                    this.promptCreate('notebook', folderId, null);
-                    break;
-
-                case 'add-page':
-                    this.promptCreate('page', folderId, notebookId);
-                    break;
-            }
-        }, { capture: false });
-    },
-
-    // ────────────────────────────────────────────────────────────────
-    // _openCtx — mostra menu de contexto flutuante
-    // ────────────────────────────────────────────────────────────────
-    _openCtx: function (btn) {
-        this._closeCtxMenu();
-
-        const ctx        = btn.dataset.ctx;       // folder | notebook | page
-        const folderId   = btn.dataset.folderId;
-        const notebookId = btn.dataset.notebookId;
-        const pageId     = btn.dataset.pageId;
-
-        const menu = document.createElement('div');
-        menu.className = 'tree-ctx-menu';
-
-        let items = '';
-        if (ctx === 'folder') {
-            items = `
-                <button data-op="rename">✏️ Renomear pasta</button>
-                <button data-op="add-notebook">📓 Novo caderno</button>
-                <button data-op="delete" class="danger">🗑️ Excluir pasta</button>`;
-        } else if (ctx === 'notebook') {
-            items = `
-                <button data-op="rename">✏️ Renomear caderno</button>
-                <button data-op="add-page">📄 Nova página</button>
-                <button data-op="delete" class="danger">🗑️ Excluir caderno</button>`;
-        } else if (ctx === 'page') {
-            items = `
-                <button data-op="rename">✏️ Renomear página</button>
-                <button data-op="duplicate">📋 Duplicar página</button>
-                <button data-op="delete" class="danger">🗑️ Excluir página</button>`;
-        }
-        menu.innerHTML = items;
-
-        // Posicionar junto ao botão
-        const rect = btn.getBoundingClientRect();
-        menu.style.top  = (rect.bottom + 4) + 'px';
-        menu.style.left = Math.min(rect.left, window.innerWidth - 200) + 'px';
-
-        document.body.appendChild(menu);
-        this._openCtxMenu = menu;
-
-        // Tratar cliques no menu
-        menu.addEventListener('click', (e) => {
-            const op = e.target.closest('[data-op]')?.dataset?.op;
-            if (!op) return;
-            this._closeCtxMenu();
-
-            switch (op) {
-                case 'rename':
-                    this.promptRename(ctx, folderId, notebookId, pageId);
-                    break;
-                case 'delete':
-                    this.promptDelete(ctx, folderId, notebookId, pageId);
-                    break;
-                case 'add-notebook':
-                    this.promptCreate('notebook', folderId, null);
-                    break;
-                case 'add-page':
-                    this.promptCreate('page', folderId, notebookId);
-                    break;
-                case 'duplicate':
-                    this._duplicatePage(folderId, notebookId, pageId);
-                    break;
-            }
-        });
-    },
-
-    _closeCtxMenu: function () {
-        if (this._openCtxMenu) {
-            this._openCtxMenu.remove();
-            this._openCtxMenu = null;
-        }
-    },
-
-    // ────────────────────────────────────────────────────────────────
-    // promptCreate — delega para MedNotes.Actions (ex-Sidebar, Task 1)
-    // ────────────────────────────────────────────────────────────────
-    promptCreate: function (...args) { return MedNotes.Actions.promptCreate(...args); },
-
-    // ────────────────────────────────────────────────────────────────
-    // promptRename — delega para MedNotes.Actions (ex-Sidebar, Task 1)
-    // ────────────────────────────────────────────────────────────────
-    promptRename: function (...args) { return MedNotes.Actions.promptRename(...args); },
-
-    // ────────────────────────────────────────────────────────────────
-    // promptDelete — delega para MedNotes.Actions (ex-Sidebar, Task 1)
-    // ────────────────────────────────────────────────────────────────
-    promptDelete: function (...args) { return MedNotes.Actions.promptDelete(...args); },
-
-    // ────────────────────────────────────────────────────────────────
-    // _duplicatePage — delega para MedNotes.Actions (ex-Sidebar, Task 1)
-    // ────────────────────────────────────────────────────────────────
-    _duplicatePage: function (...args) { return MedNotes.Actions.duplicatePage(...args); },
-
-    // ────────────────────────────────────────────────────────────────
-    // updateSelectionUI — chamado pelo DataStore ao mudar página ativa
-    // ────────────────────────────────────────────────────────────────
-    updateSelectionUI: function () {
-        // Garante que a pasta e caderno da seleção estejam expandidos
-        const { folderId, notebookId } = MedNotes.DataStore.active;
-        if (folderId)   this.expanded.folders.add(folderId);
-        if (notebookId) this.expanded.notebooks.add(notebookId);
-        this.render();
-    },
-
-    // ────────────────────────────────────────────────────────────────
-    // Helpers
-    // ────────────────────────────────────────────────────────────────
-    _esc: (str) => str.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-
-    _countPages: (folder) => folder.notebooks.reduce((acc, nb) => acc + nb.pages.length, 0),
-
-    showToast: function (...args) { return MedNotes.Actions.showToast(...args); },
-};
-
 
 // ── CANVAS ENGINE (Passo 5) ──────────────────────────────────────────
 MedNotes.Canvas = {
@@ -1524,7 +1125,7 @@ MedNotes.Canvas = {
                 this.strokes.push(stroke);
                 this._pushUndoState();
                 this._savePage();
-                if (MedNotes.Sidebar) MedNotes.Sidebar.showToast('✏️ Forma adicionada!', 'info');
+                MedNotes.Actions.showToast('✏️ Forma adicionada!', 'info');
             }
             this._shapeStart = null;
             this._shapeCurrent = null;
@@ -1898,7 +1499,7 @@ MedNotes.Canvas = {
     _copySelection: function () {
         if (!this._selectedStrokes.length) return;
         this._clipboard = JSON.parse(JSON.stringify(this._selectedStrokes));
-        if (MedNotes.Sidebar) MedNotes.Sidebar.showToast('📋 Copiado!', 'info');
+        MedNotes.Actions.showToast('📋 Copiado!', 'info');
     },
 
     _pasteSelection: function () {
@@ -1919,7 +1520,7 @@ MedNotes.Canvas = {
         this._pushUndoState();
         this._dirty = true;
         this._savePage();
-        if (MedNotes.Sidebar) MedNotes.Sidebar.showToast('📌 Colado!', 'info');
+        MedNotes.Actions.showToast('📌 Colado!', 'info');
     },
 
     // ─────────────────────────────────────────────────────────────────
@@ -2997,7 +2598,7 @@ MedNotes.Canvas = {
 // ── PAGE MANAGER (Passo 10) ──────────────────────────────────────────
 // Painel lateral direito com miniaturas de todas as páginas do caderno
 // ativo. Reaproveita Canvas._drawStroke para renderizar os thumbnails e
-// Sidebar (_duplicatePage / promptDelete / promptCreate) para as ações.
+// MedNotes.Actions (_duplicatePage / promptDelete / promptCreate) para as ações.
 MedNotes.PageManager = {
     THUMB_W: 240,          // largura do thumbnail em px (2x de ~120 exibidos)
     isOpen: false,
@@ -3234,11 +2835,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`%c📓 MedNotes v${MedNotes.version} carregando...`, 'color:#5c6bc0;font-weight:700;font-size:14px;');
 
     MedNotes.DataStore.init();
-    MedNotes.Sidebar.init();
     MedNotes.Canvas.init();
     MedNotes.PageManager.init();
     MedNotes.Views.init();
-    MedNotes.Rail?.init?.();   // Rail só existe a partir da Task 7
+    MedNotes.Rail.init();
 
     MedNotes.initialized = true;
     console.log('%c✅ MedNotes pronto (Passos 1-10)', 'color:#9c27b0;font-weight:700;font-size:13px;');

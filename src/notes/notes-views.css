@@ -174,4 +174,46 @@ body[data-view="editor"] #views-container { display: none; }
 .mnv-nb-name { display: block; color: #1a1b2e; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mnv-nb-meta { display: block; color: var(--mnv-ink-soft); font-size: 10px; margin-top: 1px; }
 .mnv-nb-card .mnv-menu-btn { background: rgba(255, 255, 255, .25); color: #fff; }
+
+/* ── Mini-rail ───────────────────────────────────────────────────── */
+.mn-rail {
+    width: 58px; height: 100%;
+    background: #fffdf5; border-right: 1px solid var(--mnv-kraft-line);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 0; gap: 10px;
+}
+.rail-btn {
+    display: flex; align-items: center; justify-content: center;
+    border: none; cursor: pointer; font-family: var(--mn-font);
+    transition: var(--mn-transition); flex-shrink: 0;
+}
+.rail-btn--home {
+    width: 40px; height: 40px; border-radius: 13px; color: #fff;
+    background: linear-gradient(135deg, var(--mn-blue), var(--mn-accent));
+    box-shadow: 0 3px 8px rgba(92, 107, 192, .35);
+}
+.rail-btn--home:hover { filter: brightness(1.08); }
+.rail-divider { width: 26px; height: 1px; background: var(--mnv-kraft-line); flex-shrink: 0; }
+.rail-folders {
+    display: flex; flex-direction: column; gap: 8px; flex: 1;
+    overflow-y: auto; scrollbar-width: none; align-items: center; width: 100%;
+}
+.rail-folders::-webkit-scrollbar { display: none; }
+.rail-btn--folder {
+    width: 38px; height: 38px; border-radius: 12px; font-size: 16px;
+    border: 2px solid var(--f-color);
+    background: color-mix(in srgb, var(--f-color) 12%, #ffffff);
+}
+.rail-btn--folder:hover { transform: scale(1.08); }
+.rail-btn--exit {
+    width: 38px; height: 38px; border-radius: 12px;
+    background: #fffdf5; border: 1.5px solid var(--mnv-kraft-line);
+    color: var(--mnv-ink-soft);
+}
+.rail-btn--exit:hover { color: #1a1b2e; }
+
+@media (hover: none) and (pointer: coarse) {
+    .mn-rail { width: 64px; }
+    .rail-btn--home, .rail-btn--folder, .rail-btn--exit { width: 44px; height: 44px; }
+}
 .mnv-nb-card .mnv-menu-btn:hover { background: rgba(255, 255, 255, .5); color: #1a1b2e; }

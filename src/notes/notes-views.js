@@ -12,7 +12,6 @@ MedNotes.Actions = {
     // No editor não há nada de navegação visível para atualizar.
     refreshUI: function () {
         if (MedNotes.Views && MedNotes.Views.route.view === 'editor') return;
-        MedNotes.Sidebar?.render?.();      // removido junto com a Sidebar (Task 8)
         MedNotes.Views?.refresh?.();
         MedNotes.Rail?.render?.();
     },
@@ -44,10 +43,8 @@ MedNotes.Actions = {
         let id = null;
         if (type === 'folder') {
             id = MedNotes.DataStore.createFolder(name.trim());
-            MedNotes.Sidebar?.expanded?.folders?.add(id);
         } else if (type === 'notebook') {
             id = MedNotes.DataStore.createNotebook(folderId, name.trim());
-            if (id) MedNotes.Sidebar?.expanded?.notebooks?.add(id);
         } else if (type === 'page') {
             id = MedNotes.DataStore.createPage(folderId, notebookId, name.trim());
             if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
@@ -474,4 +471,37 @@ MedNotes.Views = {
     _esc: (str) => String(str == null ? '' : str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
+};
+
+// ── RAIL — mini-barra lateral de ícones ──────────────────────────────
+MedNotes.Rail = {
+    init: function () {
+        this.el = document.getElementById('mn-rail');
+        this.render();
+    },
+
+    render: function () {
+        if (!this.el) return;
+        const folders = MedNotes.DataStore.state.folders;
+        const shortcuts = folders.map(f => `
+            <button class="rail-btn rail-btn--folder" data-id="${f.id}"
+                    title="${f.name.replace(/"/g, '&quot;')}"
+                    aria-label="Abrir pasta ${f.name.replace(/"/g, '&quot;')}"
+                    style="--f-color:${f.color}">${f.icon}</button>`).join('');
+
+        this.el.innerHTML = `
+            <button class="rail-btn rail-btn--home" id="rail-home" title="Início" aria-label="Ir para o início">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+            </button>
+            <div class="rail-divider"></div>
+            <div class="rail-folders">${shortcuts}</div>
+            <button class="rail-btn rail-btn--exit" id="rail-exit" title="Voltar ao MedOrganize" aria-label="Voltar ao MedOrganize">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>`;
+
+        this.el.querySelector('#rail-home').addEventListener('click', () => MedNotes.Views.show('home'));
+        this.el.querySelector('#rail-exit').addEventListener('click', () => returnToMedOrganize());
+        this.el.querySelectorAll('.rail-btn--folder').forEach(b =>
+            b.addEventListener('click', () => MedNotes.Views.show('folder', b.dataset.id)));
+    }
 };
