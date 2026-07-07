@@ -649,103 +649,24 @@ MedNotes.Sidebar = {
     },
 
     // ────────────────────────────────────────────────────────────────
-    // promptCreate — mini diálogo inline para criar pasta/caderno/página
+    // promptCreate — delega para MedNotes.Actions (ex-Sidebar, Task 1)
     // ────────────────────────────────────────────────────────────────
-    promptCreate: async function (type, folderId, notebookId) {
-        const labels = { folder: 'Nova Pasta', notebook: 'Novo Caderno', page: 'Nova Página' };
-        const name = await MedNotes.Dialog.prompt(`Criar ${labels[type]}`, `Informe o nome d${type === 'folder' ? 'a' : 'o'} ${labels[type]}:`, '');
-        if (!name || !name.trim()) return;
-
-        if (type === 'folder') {
-            const id = MedNotes.DataStore.createFolder(name.trim());
-            this.expanded.folders.add(id);
-        } else if (type === 'notebook') {
-            const id = MedNotes.DataStore.createNotebook(folderId, name.trim());
-            if (id) this.expanded.notebooks.add(id);
-        } else if (type === 'page') {
-            const id = MedNotes.DataStore.createPage(folderId, notebookId, name.trim());
-            if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
-        }
-        this.render();
-    },
+    promptCreate: function (...args) { return MedNotes.Actions.promptCreate(...args); },
 
     // ────────────────────────────────────────────────────────────────
-    // promptRename
+    // promptRename — delega para MedNotes.Actions (ex-Sidebar, Task 1)
     // ────────────────────────────────────────────────────────────────
-    promptRename: async function (ctx, folderId, notebookId, pageId) {
-        const DS = MedNotes.DataStore;
-        let current = '';
-
-        if (ctx === 'folder') {
-            current = DS.state.folders.find(f => f.id === folderId)?.name || '';
-        } else if (ctx === 'notebook') {
-            const f = DS.state.folders.find(f => f.id === folderId);
-            current = f?.notebooks.find(nb => nb.id === notebookId)?.name || '';
-        } else if (ctx === 'page') {
-            current = DS.getPage(folderId, notebookId, pageId)?.name || '';
-        }
-
-        const newName = await MedNotes.Dialog.prompt('Renomear Item', 'Informe o novo nome:', current);
-        if (!newName || !newName.trim() || newName.trim() === current) return;
-
-        if (ctx === 'folder') {
-            const f = DS.state.folders.find(f => f.id === folderId);
-            if (f) { f.name = newName.trim(); DS.save(); }
-        } else if (ctx === 'notebook') {
-            const f  = DS.state.folders.find(f => f.id === folderId);
-            const nb = f?.notebooks.find(nb => nb.id === notebookId);
-            if (nb) { nb.name = newName.trim(); DS.save(); }
-        } else if (ctx === 'page') {
-            DS.updatePageData(folderId, notebookId, pageId, { name: newName.trim() });
-            DS.updateBreadcrumb();
-        }
-        this.render();
-    },
+    promptRename: function (...args) { return MedNotes.Actions.promptRename(...args); },
 
     // ────────────────────────────────────────────────────────────────
-    // promptDelete — confirmação antes de excluir
+    // promptDelete — delega para MedNotes.Actions (ex-Sidebar, Task 1)
     // ────────────────────────────────────────────────────────────────
-    promptDelete: async function (ctx, folderId, notebookId, pageId) {
-        const DS = MedNotes.DataStore;
-        const typeNames = { folder: 'esta pasta e todo o seu conteúdo', notebook: 'este caderno e todas as páginas', page: 'esta página' };
-        
-        const confirmed = await MedNotes.Dialog.confirm('Excluir Item', `Tem certeza que deseja excluir ${typeNames[ctx]}? Esta ação não pode ser desfeita.`, true);
-        if (!confirmed) return;
-
-        if (ctx === 'folder') {
-            DS.deleteFolder(folderId);
-        } else if (ctx === 'notebook') {
-            DS.deleteNotebook(folderId, notebookId);
-        } else if (ctx === 'page') {
-            const f  = DS.state.folders.find(f => f.id === folderId);
-            const nb = f?.notebooks.find(nb => nb.id === notebookId);
-            if (nb) {
-                nb.pages = nb.pages.filter(p => p.id !== pageId);
-                if (DS.active.pageId === pageId) DS.clearActiveSelection();
-                DS.save();
-            }
-        }
-        this.render();
-    },
+    promptDelete: function (...args) { return MedNotes.Actions.promptDelete(...args); },
 
     // ────────────────────────────────────────────────────────────────
-    // _duplicatePage
+    // _duplicatePage — delega para MedNotes.Actions (ex-Sidebar, Task 1)
     // ────────────────────────────────────────────────────────────────
-    _duplicatePage: function (folderId, notebookId, pageId) {
-        const DS   = MedNotes.DataStore;
-        const orig = DS.getPage(folderId, notebookId, pageId);
-        if (!orig) return;
-
-        const newId = DS.createPage(folderId, notebookId, orig.name + ' (cópia)');
-        if (newId && (orig.canvasData || orig.textData)) {
-            DS.updatePageData(folderId, notebookId, newId, {
-                background: orig.background,
-                canvasData: orig.canvasData,
-                textData:   orig.textData
-            });
-        }
-        this.render();
-    },
+    _duplicatePage: function (...args) { return MedNotes.Actions.duplicatePage(...args); },
 
     // ────────────────────────────────────────────────────────────────
     // updateSelectionUI — chamado pelo DataStore ao mudar página ativa
@@ -765,19 +686,7 @@ MedNotes.Sidebar = {
 
     _countPages: (folder) => folder.notebooks.reduce((acc, nb) => acc + nb.pages.length, 0),
 
-    showToast: function (msg, type = 'info') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = `mn-toast mn-toast--${type}`;
-        toast.textContent = msg;
-        container.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.add('mn-toast--show'));
-        setTimeout(() => {
-            toast.classList.remove('mn-toast--show');
-            setTimeout(() => toast.remove(), 400);
-        }, 2800);
-    }
+    showToast: function (...args) { return MedNotes.Actions.showToast(...args); },
 };
 
 
@@ -3081,10 +2990,10 @@ MedNotes.PageManager = {
         document.getElementById('pm-new-page-btn')?.addEventListener('click', async () => {
             const { folderId, notebookId } = MedNotes.DataStore.active;
             if (!folderId || !notebookId) {
-                MedNotes.Sidebar.showToast('⚠️ Selecione um caderno primeiro.', 'warn');
+                MedNotes.Actions.showToast('⚠️ Selecione um caderno primeiro.', 'warn');
                 return;
             }
-            await MedNotes.Sidebar.promptCreate('page', folderId, notebookId);
+            await MedNotes.Actions.promptCreate('page', folderId, notebookId);
             this.renderGrid();
         });
 
@@ -3214,13 +3123,13 @@ MedNotes.PageManager = {
         // Ações
         card.querySelector('[data-act="duplicate"]').addEventListener('click', (e) => {
             e.stopPropagation();
-            MedNotes.Sidebar._duplicatePage(ctx.folderId, ctx.notebookId, page.id);
-            MedNotes.Sidebar.showToast('📄 Página duplicada!', 'success');
+            MedNotes.Actions.duplicatePage(ctx.folderId, ctx.notebookId, page.id);
+            MedNotes.Actions.showToast('📄 Página duplicada!', 'success');
             this.renderGrid();
         });
         card.querySelector('[data-act="delete"]').addEventListener('click', async (e) => {
             e.stopPropagation();
-            await MedNotes.Sidebar.promptDelete('page', ctx.folderId, ctx.notebookId, page.id);
+            await MedNotes.Actions.promptDelete('page', ctx.folderId, ctx.notebookId, page.id);
             this.renderGrid();
         });
 
