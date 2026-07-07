@@ -215,10 +215,87 @@ MedNotes.Views = {
         MedNotes.Rail?.render?.();
     },
 
-    // Stubs — substituídos nas Tasks 4, 5 e 6
-    _renderHome:     function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Home (em construção)</h1></div>'; },
+    _greeting: function () {
+        const h = new Date().getHours();
+        if (h >= 5 && h < 12)  return ['Bom dia', '☀️'];
+        if (h >= 12 && h < 18) return ['Boa tarde', '🌤️'];
+        return ['Boa noite', '🌙'];
+    },
+
+    _maybeAskName: async function () {
+        const DS = MedNotes.DataStore;
+        if (DS.getUsername() || this._nameAsked) return;
+        this._nameAsked = true;
+        const name = await MedNotes.Dialog.prompt('Bem-vindo ao MedNotes! 👋', 'Como você se chama? (usamos na saudação da tela inicial)', '');
+        if (name && name.trim()) { DS.setUsername(name.trim()); this.refresh(); }
+    },
+
+    _folderCardHTML: function (f) {
+        const nNb = f.notebooks.length;
+        const nPg = f.notebooks.reduce((a, nb) => a + nb.pages.length, 0);
+        const label = (f.label || f.name).toUpperCase();
+        return `
+        <div class="mnv-folder-card" data-id="${f.id}" role="button" tabindex="0" aria-label="Abrir pasta ${this._esc(f.name)}">
+            <span class="mnv-folder-tab" style="background:${f.color}"></span>
+            <span class="mnv-folder-paper"></span>
+            <button class="mnv-menu-btn" title="Opções" aria-label="Opções da pasta">⋯</button>
+            <span class="mnv-folder-emoji">${f.icon}</span>
+            <span class="mnv-folder-name">${this._esc(f.name)}</span>
+            <span class="mnv-folder-meta">${nNb} caderno${nNb !== 1 ? 's' : ''} · ${nPg} página${nPg !== 1 ? 's' : ''}</span>
+            <span class="mnv-folder-label" style="background:${f.color}">${this._esc(label)}</span>
+        </div>`;
+    },
+
+    _renderHome: function () {
+        const DS = MedNotes.DataStore;
+        const [saud, emoji] = this._greeting();
+        const name = DS.getUsername();
+        const nFolders = DS.state.folders.length;
+        const nPages = DS.state.folders.reduce((a, f) =>
+            a + f.notebooks.reduce((b, nb) => b + nb.pages.length, 0), 0);
+        const dateStr = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        this.container.innerHTML = `
+        <div class="mnv-screen mnv-home">
+            <header class="mnv-head">
+                <div>
+                    <h1 class="mnv-greeting">${saud}${name ? ', ' + this._esc(name) : ''} ${emoji}</h1>
+                    <p class="mnv-sub">${dateStr} · ${nFolders} pasta${nFolders !== 1 ? 's' : ''} · ${nPages} página${nPages !== 1 ? 's' : ''}</p>
+                </div>
+                <button class="mnv-pill-btn" id="mnv-new-folder">+ Nova Pasta</button>
+            </header>
+            <div class="mnv-grid mnv-grid--folders">
+                ${DS.state.folders.map(f => this._folderCardHTML(f)).join('')}
+                <button class="mnv-add-card" id="mnv-add-folder"><span>+</span>Nova Pasta</button>
+            </div>
+        </div>`;
+
+        const create = () => MedNotes.Actions.promptCreate('folder', null, null);
+        this.container.querySelector('#mnv-new-folder').addEventListener('click', create);
+        this.container.querySelector('#mnv-add-folder').addEventListener('click', create);
+
+        this.container.querySelectorAll('.mnv-folder-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.mnv-menu-btn')) return;
+                this.show('folder', card.dataset.id);
+            });
+            card.querySelector('.mnv-menu-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this._openCardMenu(e.currentTarget, 'folder', { folderId: card.dataset.id });
+            });
+        });
+
+        this._maybeAskName();
+    },
+
+    // Stubs — substituídos nas Tasks 5 e 6
     _renderFolder:   function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Pasta (em construção)</h1></div>'; },
     _renderNotebook: function () { this.container.innerHTML = '<div class="mnv-screen"><h1 class="mnv-title">Caderno (em construção)</h1></div>'; },
+
+    // Menu ⋯ dos cards — implementação completa na Task 8 (emoji/cor/etiqueta)
+    _openCardMenu: function (anchor, kind, ids) {
+        MedNotes.Actions.showToast('Menu em breve (Task 8)', 'info');
+    },
 
     _esc: (str) => String(str == null ? '' : str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
