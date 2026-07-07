@@ -543,22 +543,71 @@ MedNotes.Canvas = {
     },
 
     // ─────────────────────────────────────────────────────────────────
-    // _confirmPeek — efetiva a troca de página vista na espiada. Cria a
-    // página se ainda não existir (rolando além da última página do
-    // caderno). Nesta versão a troca é instantânea; a Task 5 substitui
-    // esta função por uma versão animada, mesma assinatura.
+    // _confirmPeek — efetiva a troca de página vista na espiada. Anima a
+    // view até a vizinha ocupar 100% da viewport e só então cria a
+    // página (se necessário) e troca a seleção ativa — a troca em si
+    // acontece de forma invisível, bem quando a animação termina.
     // ─────────────────────────────────────────────────────────────────
     _confirmPeek: function () {
-        const { folderId, notebookId, neighbor } = { ...this._peek, folderId: this._peek.neighbor.folderId, notebookId: this._peek.neighbor.notebookId };
-        let targetPageId = neighbor.pageId;
+        const direction = this._peek.direction;
+        const neighbor  = this._peek.neighbor;
+        const { folderId, notebookId } = neighbor;
 
-        if (!targetPageId) {
-            // Não havia próxima página — cria uma nova, em branco.
-            targetPageId = MedNotes.DataStore.createPage(folderId, notebookId);
-        }
+        // Posição de view.y que faria a página VIZINHA ficar centralizada
+        // na viewport, como se resetView() já tivesse sido chamado para
+        // ela (zoom preservado durante a animação — o zoom só reseta para
+        // 100% no loadActivePage ao final, igual a qualquer troca de página
+        // no app hoje).
+        const vh = this.bgCanvas.clientHeight;
+        const offsetY = direction === 'next'
+            ? this.CANVAS_H + this.PAGE_GAP
+            : -(this.CANVAS_H + this.PAGE_GAP);
+        const finalY = (vh - this.CANVAS_H * this.view.zoom) / 2 - offsetY * this.view.zoom;
 
-        this._cancelPeek();
-        MedNotes.DataStore.setActiveSelection(folderId, notebookId, targetPageId);
+        this._animatePeekTo(finalY, 300, () => {
+            let targetPageId = neighbor.pageId;
+            if (!targetPageId) {
+                targetPageId = MedNotes.DataStore.createPage(folderId, notebookId);
+            }
+            this._cancelPeek();
+            MedNotes.DataStore.setActiveSelection(folderId, notebookId, targetPageId);
+        });
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _easeOutCubic — easing padrão para as animações de espiada
+    // ─────────────────────────────────────────────────────────────────
+    _easeOutCubic: function (t) {
+        return 1 - Math.pow(1 - t, 3);
+    },
+
+    // ─────────────────────────────────────────────────────────────────
+    // _animatePeekTo — anima this.view.y de seu valor atual até
+    // targetY, ao longo de durationMs, chamando onDone ao terminar.
+    // Marca _peek.snapping = true durante a animação (bloqueia novos
+    // gestos de espiada) e a desmarca ao final.
+    // ─────────────────────────────────────────────────────────────────
+    _animatePeekTo: function (targetY, durationMs, onDone) {
+        this._peek.snapping = true;
+        const startY = this.view.y;
+        const startTime = performance.now();
+
+        const step = (now) => {
+            const t = Math.min(1, (now - startTime) / durationMs);
+            const eased = this._easeOutCubic(t);
+            this.view.y = startY + (targetY - startY) * eased;
+            this._dirty = true;
+
+            if (t < 1) {
+                requestAnimationFrame(step);
+            } else {
+                this.view.y = targetY;
+                this._peek.snapping = false;
+                this._dirty = true;
+                if (onDone) onDone();
+            }
+        };
+        requestAnimationFrame(step);
     },
 
     // ─────────────────────────────────────────────────────────────────
@@ -1237,7 +1286,17 @@ MedNotes.Canvas = {
                 if (this._peek.amount >= commitThreshold) {
                     this._confirmPeek();
                 } else {
-                    this._cancelPeek();
+                    const direction = this._peek.direction;
+                    const vh = this.bgCanvas.clientHeight;
+                    const ch = this.CANVAS_H * this.view.zoom;
+                    const margin = 120;
+                    const clampMinY = -(ch - margin);
+                    const clampMaxY = vh - margin;
+                    const restY = direction === 'next' ? clampMinY : clampMaxY;
+
+                    this._animatePeekTo(restY, 220, () => {
+                        this._cancelPeek();
+                    });
                 }
             }
         }
