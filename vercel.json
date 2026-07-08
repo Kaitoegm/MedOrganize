@@ -1,0 +1,13 @@
+{
+  "buildCommand": "",
+  "devCommand": "",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "framework": "static",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
