@@ -1,13 +1,15 @@
 {
+  "version": 2,
+  "public": ".",
   "buildCommand": "",
   "devCommand": "",
   "installCommand": "",
-  "outputDirectory": ".",
   "framework": "static",
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "cleanUrls": false
 }
