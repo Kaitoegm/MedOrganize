@@ -180,8 +180,22 @@
                         <span class="save-status-dot" id="save-dot"></span>
                         <span class="save-status-text" id="save-text">Pronto</span>
                     </div>
+
+                    <div class="drive-sync-wrap">
+                        <button class="drive-sync-status" id="drive-sync-status" role="status" aria-live="polite"
+                                title="Opções de sincronização" aria-haspopup="true" aria-expanded="false" hidden>
+                            <span class="drive-sync-icon" id="drive-sync-icon">☁️</span>
+                            <span class="drive-sync-text" id="drive-sync-text">Sincronizado</span>
+                        </button>
+                        <div class="drive-sync-popover" id="drive-sync-popover" role="menu" hidden></div>
+                    </div>
                 </div>
             </header>
+
+            <!-- ── BANNER OFFLINE ── -->
+            <div class="offline-banner" id="offline-banner" role="status" aria-live="polite" hidden>
+                📡 Offline — salvando localmente. Sincroniza quando a conexão voltar.
+            </div>
 
             <!-- ── ÁREA DO CANVAS ── -->
             <main class="notes-canvas-area" id="notes-canvas-area" aria-label="Canvas de anotações">
@@ -280,6 +294,15 @@
             setTimeout(() => overlay.classList.add('mn-overlay--done'), 500);
         });
 
+        // Service Worker: cache do app shell para uso offline (Passo 17)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch((e) => {
+                    console.warn('Falha ao registrar Service Worker:', e);
+                });
+            });
+        }
+
         // ── Voltar ao MedOrganize ──
         function returnToMedOrganize() {
             const overlay = document.getElementById('notes-transition-overlay');
@@ -287,7 +310,7 @@
             shell.classList.add('notes-shell--exiting');
             overlay.classList.remove('mn-overlay--done');
             overlay.classList.add('mn-overlay--exiting');
-            setTimeout(() => { window.location.href = 'index.html'; }, 480);
+            setTimeout(() => { window.location.href = '../main/index.html'; }, 480);
         }
 
     </script>

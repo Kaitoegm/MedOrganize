@@ -72,6 +72,7 @@ MedNotes.DataStore = {
     save: function() {
         localStorage.setItem(this.LOCAL_KEY, JSON.stringify(this.state));
         if (MedNotes.Actions) MedNotes.Actions.refreshUI();
+        MedNotes.DriveSync?.scheduleSync();
     },
 
     // Migração aditiva: preenche campos novos em dados antigos.
@@ -3506,6 +3507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     MedNotes.AppSettings._applyFavColorsToPenPopover();
     MedNotes.TemplateGallery.init();
     MedNotes.DriveAuth?.init();
+    MedNotes.DriveSync?.init();
 
     MedNotes.initialized = true;
     console.log('%c✅ MedNotes pronto (Passos 1-10 + redesign de navegação)', 'color:#9c27b0;font-weight:700;font-size:13px;');

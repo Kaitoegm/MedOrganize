@@ -1718,3 +1718,57 @@ input, textarea {
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
+/* ── Indicador de sincronização (Passo 16) ──────────────────────── */
+.drive-sync-wrap { position: relative; }
+.drive-sync-status {
+    display: flex; align-items: center; gap: 6px;
+    min-height: 44px;
+    padding: 5px 10px; border: none; border-radius: var(--mn-radius-md);
+    background: transparent; cursor: pointer;
+    font-family: var(--mn-font); font-size: 12px; color: var(--mn-text-muted);
+    transition: var(--mn-transition);
+}
+.drive-sync-status:hover { background: var(--mn-surface-hover); }
+.drive-sync-status[hidden] { display: none; }
+.drive-sync-status--syncing .drive-sync-icon { animation: mn-spin 1s linear infinite; }
+.drive-sync-status--error { color: #e53935; }
+.drive-sync-status--idle { color: var(--mn-blue); }
+.drive-sync-status--disconnected { color: var(--mn-text-placeholder); }
+.drive-sync-status--disconnected .drive-sync-icon { filter: grayscale(1); opacity: 0.6; }
+@keyframes mn-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── Popover de sincronização (clique no indicador) ──────────────── */
+.drive-sync-popover {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    min-width: 250px; z-index: 60;
+    background: var(--mn-surface); border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-md); box-shadow: var(--mn-shadow-lg);
+    padding: 14px; display: flex; flex-direction: column; gap: 10px;
+    animation: mn-popover-in 0.16s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.drive-sync-popover[hidden] { display: none; }
+@keyframes mn-popover-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.drive-sync-popover-sync-info {
+    font-size: 11.5px; color: var(--mn-text-muted); line-height: 1.4;
+    padding-bottom: 8px; border-bottom: 1px solid var(--mn-border);
+}
+.drive-sync-popover-actions { display: flex; flex-direction: column; gap: 6px; }
+.drive-sync-popover-actions .settings-option {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%; min-height: 44px; text-align: left;
+}
+.drive-sync-popover-actions .settings-option--danger:hover {
+    border-color: #e53935; color: #e53935; background: rgba(229,57,53,0.08);
+}
+
+/* ── Banner offline (Passo 17) ───────────────────────────────────── */
+.offline-banner {
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px 16px; font-family: var(--mn-font); font-size: 12.5px; font-weight: 600;
+    background: #fb8c00; color: #fff; text-align: center;
+}
+.offline-banner[hidden] { display: none; }
+
