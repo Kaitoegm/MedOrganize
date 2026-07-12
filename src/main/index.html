@@ -1228,31 +1228,81 @@
     </button>
 
     <script>
+        // ── Passo 19 — Etapa 2: flip 3D com detecção de performance ──
+        // Chave compartilhada com notes.js (mesma origem): guarda a
+        // escolha do modo de entrada ('flip' | 'slide' | 'off') e, na
+        // primeira vez, decide sozinho medindo frame drop durante o flip.
+        const ENTRY_ANIM_KEY = 'mednotes_entry_anim';
+        const REDUCED_MOTION_KEY = 'mednotes_reduced_motion';
+
+        function getEntryAnimMode() {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 'off';
+            if (localStorage.getItem(REDUCED_MOTION_KEY) === 'on') return 'off';
+            const stored = localStorage.getItem(ENTRY_ANIM_KEY);
+            if (stored === 'flip' || stored === 'slide' || stored === 'off') return stored;
+            return 'flip'; // primeira vez: tenta o flip 3D e mede
+        }
+
+        // Mede frames durante os primeiros ~650ms do flip. Se jank
+        // pesado (muitos frames > 24ms), grava 'slide' para as próximas
+        // entradas — a atual já está em andamento e não é interrompida.
+        function measureFlipJank(durationMs, onDone) {
+            const frameTimes = [];
+            let last = performance.now();
+            const start = last;
+            function tick(now) {
+                frameTimes.push(now - last);
+                last = now;
+                if (now - start < durationMs) {
+                    requestAnimationFrame(tick);
+                } else {
+                    const jankFrames = frameTimes.filter(f => f > 24).length;
+                    const jankRatio = frameTimes.length ? jankFrames / frameTimes.length : 0;
+                    onDone(jankRatio);
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
         function openMedNotes() {
             const overlay = document.getElementById('mednotes-flip-overlay');
             const btn = document.getElementById('mednotes-moon-btn');
+            const mode = getEntryAnimMode();
 
             // Desabilita botão para evitar cliques duplos
             btn.disabled = true;
 
-            // Fase 1: overlay entra pela parte inferior (slide-up)
+            overlay.classList.remove('mode-flip', 'mode-slide');
+            overlay.classList.add(mode === 'slide' ? 'mode-slide' : 'mode-flip');
+
+            // Só mede performance na primeira vez (quando ainda não há
+            // preferência salva) — depois disso o modo já é conhecido.
+            const isFirstMeasurement = mode === 'flip' && !localStorage.getItem(ENTRY_ANIM_KEY);
+            if (isFirstMeasurement) {
+                measureFlipJank(650, (jankRatio) => {
+                    localStorage.setItem(ENTRY_ANIM_KEY, jankRatio > 0.3 ? 'slide' : 'flip');
+                });
+            }
+
+            // Fase 1: overlay entra (flip 3D ou slide-up, conforme o modo)
             overlay.classList.add('active');
 
             // Fase 2: após a animação de entrada, mostrar o loader
             setTimeout(() => {
                 overlay.classList.add('show-back');
-            }, 350);
+            }, mode === 'slide' ? 350 : 550);
 
             // Fase 3: navegar para o MedNotes
             setTimeout(() => {
+                sessionStorage.setItem('mednotes_from_flip', mode);
                 window.location.href = '../notes/notes.html';
-            }, 900);
+            }, mode === 'slide' ? 900 : 1050);
         }
     </script>
 
     <!-- Anime.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="../../data/termo_validation_words.js"></script>
+    <script src="termo_validation_words.js"></script>
     <script src="app.js?v=1.0.4"></script>
 </body>
 </html>
