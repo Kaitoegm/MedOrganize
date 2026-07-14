@@ -2279,7 +2279,7 @@ body {
     width: 240px;
     height: 312px;
     /* Aspect ratio of 438x570 scaled to 240px */
-    background-image: url('assets/aesthetic/gacha-removebg-preview.png');
+    background-image: url('../assets/aesthetic/gacha-removebg-preview.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -3315,7 +3315,7 @@ body {
 }
 
 .error-notebook-content {
-    background: url('assets/aesthetic/Livro-de-erros,%20background%20para%20as%20escritas%20e%20imagem.png') no-repeat center center;
+    background: url('../assets/aesthetic/Livro-de-erros,%20background%20para%20as%20escritas%20e%20imagem.png') no-repeat center center;
     background-size: 100% 100%;
     width: 900px;
     height: 491px;
@@ -6611,6 +6611,33 @@ body.dark-theme .cherry-decor.dark-only {
         transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         box-shadow 0.3s ease,
         clip-path 0.3s ease;
+
+    /* Brilho idle (Passo 19 — Etapa 2): contém o pseudo-elemento de
+       varredura de luz dentro da forma de meia-lua. */
+    overflow: hidden;
+}
+
+/* Brilho que varre o botão a cada ~8s — convite discreto ao toque.
+   Só transform (translateX), compositor-only. */
+.mednotes-moon-btn::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -60%;
+    width: 40%;
+    height: 140%;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%);
+    transform: translateX(-40px) skewX(-15deg);
+    animation: moonShine 8s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes moonShine {
+    0%, 88%, 100% { transform: translateX(-40px) skewX(-15deg); opacity: 0; }
+    92% { opacity: 1; }
+    96% { transform: translateX(220px) skewX(-15deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mednotes-moon-btn::before { animation: none; display: none; }
 }
 
 /* Conteúdo interno centralizado na parte superior da meia-lua */
@@ -6658,13 +6685,13 @@ body.dark-theme .cherry-decor.dark-only {
         inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
-/* Active: pressiona */
+/* Active: pressiona (scale sutil + desce, spring de volta ao soltar) */
 .mednotes-moon-btn:active:not(:disabled) {
-    transform: translateX(-50%) translateY(2px);
+    transform: translateX(-50%) translateY(2px) scale(0.92);
     box-shadow:
         0 -2px 10px rgba(92, 107, 192, 0.3),
         0 -1px 4px rgba(156, 39, 176, 0.2);
-    transition-duration: 0.1s;
+    transition: transform 0.1s ease;
 }
 
 /* Disabled: durante a transição */
@@ -6693,42 +6720,55 @@ body.dark-theme .cherry-decor.dark-only {
     animation: moonPulse 3s ease-in-out infinite;
 }
 
-/* ------- Flip Overlay (Transição de Tela) ------- */
+/* ------- Flip Overlay (Transição de Tela) — Passo 19 Etapa 2 -------
+   Dois modos, escolhidos em JS conforme performance do dispositivo:
+   - .mode-flip:  vira como página de livro (rotateY 3D, origem esquerda)
+   - .mode-slide: fallback 2D (clip-path slide-up, comportamento antigo)
+   O modo é decidido no primeiro uso (medição de frame drop) e lembrado
+   em localStorage; o usuário também pode fixá-lo nas configurações. */
 .mednotes-flip-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
     pointer-events: none;
-    perspective: 1200px;
+    perspective: 2000px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    opacity: 0;
 }
 
 .flip-page {
     position: absolute;
     inset: 0;
-    transform-origin: bottom center;
     backface-visibility: hidden;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Front page: imita a tela atual (creme) */
 .flip-page-front {
     background: #FAF6E8;
-    transform: rotateX(0deg);
     z-index: 2;
 }
 
-/* Back page: cor do MedNotes (branco limpo) */
+/* Back page: cor do MedNotes (gradiente azul/roxo da identidade) */
 .flip-page-back {
-    background: linear-gradient(180deg, #f5f7ff 0%, #eef0fb 100%);
-    transform: rotateX(180deg) translateY(-100%);
+    background: linear-gradient(160deg, #5c6bc0 0%, #7c4dff 60%, #9c27b0 100%);
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Sombra de dobra: escurece no giro, clareia ao assentar. Só opacity —
+   compositor-only (princípio do Passo 19). */
+.flip-page-front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, transparent 40%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
 
 /* Loader dentro do back page */
@@ -6746,33 +6786,51 @@ body.dark-theme .cherry-decor.dark-only {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #5c6bc0;
+    color: #ffffff;
     letter-spacing: 0.02em;
 }
 
-/* Overlay inativo: invisível, sem eventos */
-.mednotes-flip-overlay {
-    opacity: 0;
-    pointer-events: none;
+/* ══ MODO FLIP 3D (padrão) ═══════════════════════════════════════ */
+.mednotes-flip-overlay.mode-flip .flip-page {
+    transform-origin: left center;
+    transition: transform 0.65s cubic-bezier(0.36, 0.09, 0.2, 1.02); /* spring-soft aproximado */
+}
+.mednotes-flip-overlay.mode-flip .flip-page-front {
+    transform: rotateY(0deg);
+}
+.mednotes-flip-overlay.mode-flip .flip-page-back {
+    transform: rotateY(180deg);
+}
+.mednotes-flip-overlay.mode-flip.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.mednotes-flip-overlay.mode-flip.active .flip-page-front {
+    transform: rotateY(-180deg);
+}
+.mednotes-flip-overlay.mode-flip.active .flip-page-front::after {
+    opacity: 1;
+}
+.mednotes-flip-overlay.mode-flip.active .flip-page-back {
+    transform: rotateY(0deg);
 }
 
-/* Fase 1 — ativo: slide-up da parte inferior */
-.mednotes-flip-overlay.active {
+/* ══ MODO SLIDE (fallback 2D — comportamento original) ═══════════ */
+.mednotes-flip-overlay.mode-slide .flip-page { position: static; }
+.mednotes-flip-overlay.mode-slide.active {
     opacity: 1;
     pointer-events: all;
     animation: overlaySlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
+.mednotes-flip-overlay.mode-slide .flip-page-front { display: none; }
+.mednotes-flip-overlay.mode-slide .flip-page-back  { position: absolute; inset: 0; transform: none; }
 
 @keyframes overlaySlideUp {
-    from {
-        clip-path: inset(100% 0 0 0);
-    }
-    to {
-        clip-path: inset(0% 0 0 0);
-    }
+    from { clip-path: inset(100% 0 0 0); }
+    to   { clip-path: inset(0% 0 0 0); }
 }
 
-/* Fase 2 — mostrar loader */
+/* Fase 2 — mostrar loader (comum aos dois modos) */
 .mednotes-flip-overlay.show-back .flip-loader {
     opacity: 1;
     transform: translateY(0);
@@ -6786,5 +6844,24 @@ body.dark-theme .cherry-decor.dark-only {
 @keyframes notebookBounce {
     from { transform: translateY(0) rotate(-3deg); }
     to   { transform: translateY(-6px) rotate(3deg); }
+}
+
+/* prefers-reduced-motion: sem flip nem slide, só fade curto */
+@media (prefers-reduced-motion: reduce) {
+    .mednotes-flip-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+        animation: none !important;
+        transition: opacity 0.15s ease !important;
+    }
+    .mednotes-flip-overlay .flip-page,
+    .mednotes-flip-overlay .flip-page-front,
+    .mednotes-flip-overlay .flip-page-back {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+    .mednotes-flip-overlay.active .flip-page-back { display: flex; }
+    .mednotes-flip-overlay.active .flip-page-front { display: none; }
 }
 

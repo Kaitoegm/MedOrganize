@@ -23,6 +23,16 @@
     <div id="notes-transition-overlay" class="notes-transition-overlay" aria-hidden="true"></div>
 
     <!-- ===============================================================
+         OVERLAY DE SAÍDA — flip reverso ao voltar (Passo 19 — Etapa 2)
+         Espelha .mednotes-flip-overlay do MedOrganize: front = MedNotes
+         (fecha), back = cor creme do MedOrganize (revela).
+    ================================================================ -->
+    <div id="mednotes-exit-flip-overlay" class="mednotes-flip-overlay" aria-hidden="true">
+        <div class="flip-page flip-page-front flip-page-front--notes"></div>
+        <div class="flip-page flip-page-back flip-page-back--medorganize"></div>
+    </div>
+
+    <!-- ===============================================================
          APP SHELL — Layout Principal do MedNotes
     ================================================================ -->
     <div class="notes-shell" id="notes-shell">
@@ -68,6 +78,8 @@
 
                 <!-- Grupo Central: ferramentas de desenho (Passos 6–9) -->
                 <div class="toolbar-group toolbar-group--center" id="drawing-tools">
+                    <!-- Pill deslizante da ferramenta ativa (Passo 19 — Etapa 4) -->
+                    <div id="tool-active-pill" class="tool-active-pill" aria-hidden="true"></div>
 
                     <button class="tool-btn tool-btn--active" id="tool-hand" title="Mover canvas (H)" data-tool="hand" aria-pressed="true">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -161,14 +173,20 @@
                         </svg>
                     </button>
 
+                    <button class="tool-btn" id="btn-focus-mode" title="Modo Foco (F)" aria-label="Entrar em modo foco" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/>
+                        </svg>
+                    </button>
+
                     <div class="tool-divider" aria-hidden="true"></div>
 
-                    <button class="tool-btn" id="tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" disabled>
+                    <button class="tool-btn tool-btn--empty" id="tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer" aria-disabled="true">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
                         </svg>
                     </button>
-                    <button class="tool-btn" id="tool-redo" title="Refazer (Ctrl+Y)" aria-label="Refazer" disabled>
+                    <button class="tool-btn tool-btn--empty" id="tool-redo" title="Refazer (Ctrl+Y)" aria-label="Refazer" aria-disabled="true">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>
                         </svg>
@@ -276,6 +294,37 @@
     <!-- ── ZOOM BADGE ── -->
     <span id="zoom-badge" class="zoom-badge" aria-live="polite" aria-label="Nível de zoom">100%</span>
 
+    <!-- ── INDICADOR DE PÁGINA (peek) — Passo 19, Etapa 7.3 ── -->
+    <span id="peek-page-indicator" class="peek-page-indicator" aria-hidden="true"></span>
+
+    <!-- ── MINI-TOOLBAR DO MODO FOCO — Passo 19, Etapa 7.1 ── -->
+    <div id="focus-mini-toolbar" class="focus-mini-toolbar" aria-hidden="true">
+        <div class="focus-mini-toolbar-pill">
+            <button class="tool-btn" data-tool="pen" title="Caneta (P)" aria-label="Caneta" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                </svg>
+            </button>
+            <button class="tool-btn" data-tool="eraser" title="Borracha (E)" aria-label="Borracha" aria-pressed="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/>
+                    <path d="M22 21H7"/>
+                </svg>
+            </button>
+            <button class="tool-btn tool-btn--empty" id="focus-tool-undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+                </svg>
+            </button>
+            <div class="tool-divider" aria-hidden="true"></div>
+            <button class="tool-btn" id="focus-exit-btn" title="Sair do modo foco (F)" aria-label="Sair do modo foco">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- MedNotes JS principal (Passos 3+) -->
     <script src="notes.js"></script>
     <!-- Redesign de navegação: Views, Rail, Actions -->
@@ -287,11 +336,31 @@
     <script>
         /* ── Passo 2: Lógica de UI dos painéis ── */
 
-        // Animação de ENTRADA ao carregar a página
+        // Animação de ENTRADA ao carregar a página (Passo 19 — Etapa 2)
+        // Overlay sai (igual antes) + cascata de chegada nos blocos
+        // principais da UI. A cascata só roda cheia quando a navegação
+        // veio do flip do MedOrganize (sessionStorage); abrir notes.html
+        // direto (bookmark/refresh) faz só o fade do overlay, sem stagger.
         window.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('notes-transition-overlay');
+            const fromFlip = sessionStorage.getItem('mednotes_from_flip');
+            sessionStorage.removeItem('mednotes_from_flip');
+
             overlay.classList.add('mn-overlay--entering');
             setTimeout(() => overlay.classList.add('mn-overlay--done'), 500);
+
+            if (fromFlip && window.MedNotes && MedNotes.Motion) {
+                const targets = [
+                    document.getElementById('notes-toolbar'),
+                    document.getElementById('mn-rail'),
+                    document.getElementById('notes-canvas-area')
+                ].filter(Boolean);
+                targets.forEach(el => { el.style.opacity = '0'; });
+                MedNotes.Motion.staggerIn(targets, [
+                    { opacity: 0, transform: 'translateY(12px)' },
+                    { opacity: 1, transform: 'translateY(0)' }
+                ], { gap: 60, max: 3, duration: MedNotes.Motion.DUR.medium, easing: MedNotes.Motion.EASE_SPRING });
+            }
         });
 
         // Service Worker: cache do app shell para uso offline (Passo 17)
@@ -303,14 +372,31 @@
             });
         }
 
-        // ── Voltar ao MedOrganize ──
+        // ── Voltar ao MedOrganize (Passo 19 — Etapa 2: flip reverso) ──
         function returnToMedOrganize() {
-            const overlay = document.getElementById('notes-transition-overlay');
-            const shell   = document.getElementById('notes-shell');
+            const shell = document.getElementById('notes-shell');
             shell.classList.add('notes-shell--exiting');
-            overlay.classList.remove('mn-overlay--done');
-            overlay.classList.add('mn-overlay--exiting');
-            setTimeout(() => { window.location.href = '../main/index.html'; }, 480);
+
+            const mode = localStorage.getItem('mednotes_entry_anim') || 'flip';
+            const reduced = window.MedNotes && MedNotes.Motion ? MedNotes.Motion.reduced : matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (mode === 'off' || reduced) {
+                // Sem flip nem slide: fade curto via overlay simples existente
+                const overlay = document.getElementById('notes-transition-overlay');
+                overlay.classList.remove('mn-overlay--done');
+                overlay.classList.add('mn-overlay--exiting');
+                setTimeout(() => { window.location.href = '../main/index.html'; }, 200);
+                return;
+            }
+
+            const flipOverlay = document.getElementById('mednotes-exit-flip-overlay');
+            flipOverlay.classList.remove('mode-flip', 'mode-slide');
+            flipOverlay.classList.add(mode === 'slide' ? 'mode-slide' : 'mode-flip');
+            flipOverlay.classList.add('active');
+
+            setTimeout(() => {
+                window.location.href = '../main/index.html';
+            }, mode === 'slide' ? 450 : 620);
         }
 
     </script>
@@ -441,6 +527,10 @@
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><path d="M4 20 L20 4"/></svg>
                 <span>Fineliner</span>
             </button>
+            <button class="popover-type-btn" data-type="brushpen" title="Máxima faixa dinâmica de espessura">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M4 20 Q9 15 12 12 T20 4" stroke-width="5"/><path d="M15 8 Q17 6 20 4" stroke-width="1.2"/></svg>
+                <span>Pincel</span>
+            </button>
         </div>
 
         <div class="popover-label">Espessura</div>
@@ -472,6 +562,14 @@
         <div class="popover-slider-row">
             <input type="range" class="popover-opacity-slider" min="10" max="100" step="5" value="100" aria-label="Opacidade">
             <span class="popover-opacity-value">100%</span>
+        </div>
+
+        <div class="popover-label">Aperfeiçoar traço</div>
+        <div class="popover-smoothing-group" role="group" aria-label="Grau de suavização do traço">
+            <button class="popover-smoothing-btn active" data-smoothing="off">Desligado</button>
+            <button class="popover-smoothing-btn" data-smoothing="light">Leve</button>
+            <button class="popover-smoothing-btn" data-smoothing="medium">Médio</button>
+            <button class="popover-smoothing-btn" data-smoothing="strong">Forte</button>
         </div>
     </div>
 
@@ -520,6 +618,14 @@
         <div class="popover-slider-row">
             <input type="range" class="popover-opacity-slider" min="10" max="100" step="5" value="45" aria-label="Opacidade">
             <span class="popover-opacity-value">45%</span>
+        </div>
+
+        <div class="popover-label">Aperfeiçoar traço</div>
+        <div class="popover-smoothing-group" role="group" aria-label="Grau de suavização do traço">
+            <button class="popover-smoothing-btn active" data-smoothing="off">Desligado</button>
+            <button class="popover-smoothing-btn" data-smoothing="light">Leve</button>
+            <button class="popover-smoothing-btn" data-smoothing="medium">Médio</button>
+            <button class="popover-smoothing-btn" data-smoothing="strong">Forte</button>
         </div>
     </div>
 
@@ -655,9 +761,9 @@
     <!-- ═══════════════════════════════════════════════════════════════
          CONFIGURAÇÕES DO APP (Passo 12)
     ════════════════════════════════════════════════════════════════ -->
-    <div id="app-settings-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+    <div id="app-settings-overlay" class="page-manager-overlay mn-global-panel" aria-hidden="true"></div>
 
-    <aside id="app-settings-panel" class="page-manager-panel" role="dialog" aria-modal="false"
+    <aside id="app-settings-panel" class="page-manager-panel mn-global-panel" role="dialog" aria-modal="false"
            aria-labelledby="app-settings-title" aria-hidden="true">
         <header class="pm-header">
             <div class="pm-header-titles">
@@ -686,6 +792,24 @@
             </div>
 
             <div class="settings-field">
+                <label>Animações e feedback</label>
+                <div class="settings-option-grid" id="as-haptics" role="radiogroup" aria-label="Vibração ao tocar">
+                    <button class="settings-option" data-value="on"  role="radio" aria-checked="false">Vibração: Ligada</button>
+                    <button class="settings-option" data-value="off" role="radio" aria-checked="false">Vibração: Desligada</button>
+                </div>
+                <div class="settings-option-grid" id="as-reduced-motion" role="radiogroup" aria-label="Reduzir animações">
+                    <button class="settings-option" data-value="off" role="radio" aria-checked="false">Animações: Completas</button>
+                    <button class="settings-option" data-value="on"  role="radio" aria-checked="false">Animações: Reduzidas</button>
+                </div>
+                <div class="settings-option-grid" id="as-entry-anim" role="radiogroup" aria-label="Animação de entrada">
+                    <button class="settings-option" data-value="flip"  role="radio" aria-checked="false">Entrada: Flip 3D</button>
+                    <button class="settings-option" data-value="slide" role="radio" aria-checked="false">Entrada: Slide</button>
+                    <button class="settings-option" data-value="off"   role="radio" aria-checked="false">Entrada: Nenhuma</button>
+                </div>
+                <button class="settings-option settings-option--full" id="as-shortcuts-btn">⌨️ Atalhos e gestos</button>
+            </div>
+
+            <div class="settings-field">
                 <label>Paleta de cores favoritas (caneta)</label>
                 <div class="settings-swatch-row settings-swatch-row--edit" id="as-fav-colors"></div>
             </div>
@@ -707,7 +831,7 @@
     <!-- ═══════════════════════════════════════════════════════════════
          GALERIA DE TEMPLATES (Passo 14)
     ════════════════════════════════════════════════════════════════ -->
-    <div id="template-overlay" class="page-manager-overlay" aria-hidden="true"></div>
+    <div id="template-overlay" class="page-manager-overlay mn-global-panel" aria-hidden="true"></div>
 
     <div id="template-modal" class="template-modal" role="dialog" aria-modal="true"
          aria-labelledby="template-modal-title" aria-hidden="true">
@@ -721,6 +845,137 @@
         </header>
         <div class="template-grid" id="template-grid"></div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PREVIEW DE VERSÕES COM DIFF — Passo 21, Etapa 8
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="diff-overlay" class="page-manager-overlay mn-global-panel" aria-hidden="true"></div>
+
+    <div id="diff-modal" class="template-modal diff-modal" role="dialog" aria-modal="true"
+         aria-labelledby="diff-modal-title" aria-hidden="true">
+        <header class="template-modal-header">
+            <h2 id="diff-modal-title">Prévia da versão</h2>
+            <button class="pm-close-btn" id="diff-close-btn" title="Fechar (Esc)" aria-label="Fechar prévia de versão">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+        <div class="diff-modal-body">
+            <div class="diff-canvas-wrap">
+                <img id="diff-canvas-img" alt="Prévia com diferenças destacadas">
+            </div>
+            <div class="diff-legend">
+                <span class="diff-legend-item"><i class="diff-swatch diff-swatch--red"></i> Será restaurado</span>
+                <span class="diff-legend-item"><i class="diff-swatch diff-swatch--green"></i> Será perdido</span>
+                <span class="diff-legend-item"><i class="diff-swatch diff-swatch--gray"></i> Igual nas duas</span>
+            </div>
+            <p class="diff-counts" id="diff-counts"></p>
+            <p class="diff-text-warning" id="diff-text-warning" hidden>⚠️ Os textos da página também serão alterados.</p>
+            <div class="diff-modal-actions mn-glass-dialog-actions">
+                <button class="mn-glass-dialog-btn mn-glass-dialog-btn--cancel" id="diff-cancel-btn">Cancelar</button>
+                <button class="mn-glass-dialog-btn mn-glass-dialog-btn--confirm" id="diff-restore-btn">Restaurar esta versão</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SHEET DE ATALHOS & GESTOS — Passo 19, Etapa 8.1
+    ════════════════════════════════════════════════════════════════ -->
+    <div id="shortcuts-overlay" class="page-manager-overlay mn-global-panel" aria-hidden="true"></div>
+
+    <aside id="shortcuts-sheet" class="shortcuts-sheet" role="dialog" aria-modal="true"
+           aria-labelledby="shortcuts-sheet-title" aria-hidden="true">
+        <div class="shortcuts-sheet-handle" id="shortcuts-sheet-handle" aria-hidden="true"></div>
+
+        <header class="shortcuts-sheet-header">
+            <h2 id="shortcuts-sheet-title">Atalhos e gestos</h2>
+            <button class="pm-close-btn" id="shortcuts-close-btn" title="Fechar (Esc)" aria-label="Fechar atalhos e gestos">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </header>
+
+        <div class="shortcuts-sheet-tabs" role="tablist">
+            <button class="shortcuts-tab" id="shortcuts-tab-gestures" role="tab" aria-selected="true" aria-controls="shortcuts-panel-gestures">Gestos</button>
+            <button class="shortcuts-tab" id="shortcuts-tab-keyboard" role="tab" aria-selected="false" aria-controls="shortcuts-panel-keyboard">Teclado</button>
+            <div class="shortcuts-tab-pill" id="shortcuts-tab-pill" aria-hidden="true"></div>
+        </div>
+
+        <div class="shortcuts-sheet-body">
+            <!-- ── Aba Gestos ── -->
+            <div class="shortcuts-panel" id="shortcuts-panel-gestures" role="tabpanel">
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--pinch">
+                        <span class="gesture-dot gesture-dot--a"></span>
+                        <span class="gesture-dot gesture-dot--b"></span>
+                    </div>
+                    <p class="gesture-label">Pinça para dar zoom</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--drag">
+                        <span class="gesture-dot gesture-dot--drag"></span>
+                    </div>
+                    <p class="gesture-label">Arraste com o dedo para mover · S-Pen desenha</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--peek">
+                        <span class="gesture-page gesture-page--a"></span>
+                        <span class="gesture-page gesture-page--b"></span>
+                    </div>
+                    <p class="gesture-label">Overscroll vertical troca de página</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--straight">
+                        <span class="gesture-line"></span>
+                    </div>
+                    <p class="gesture-label">Segure o marca-texto parado → linha reta</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--shape">
+                        <span class="gesture-shape"></span>
+                    </div>
+                    <p class="gesture-label">Desenhe uma forma e segure → assistente de forma</p>
+                </div>
+                <div class="gesture-card">
+                    <div class="gesture-demo gesture-demo--swipeup">
+                        <span class="gesture-swipe-arrow"></span>
+                    </div>
+                    <p class="gesture-label">Deslize de baixo para cima na borda → modo foco</p>
+                </div>
+            </div>
+
+            <!-- ── Aba Teclado ── -->
+            <div class="shortcuts-panel" id="shortcuts-panel-keyboard" role="tabpanel" hidden>
+                <div class="kbd-group">
+                    <h3>Ferramentas</h3>
+                    <div class="kbd-grid">
+                        <div class="kbd-row"><kbd>H</kbd><span>Mão (mover)</span></div>
+                        <div class="kbd-row"><kbd>P</kbd><span>Caneta</span></div>
+                        <div class="kbd-row"><kbd>E</kbd><span>Borracha</span></div>
+                        <div class="kbd-row"><kbd>L</kbd><span>Laço de seleção</span></div>
+                        <div class="kbd-row"><kbd>S</kbd><span>Formas</span></div>
+                        <div class="kbd-row"><kbd>R</kbd><span>Régua</span></div>
+                        <div class="kbd-row"><kbd>T</kbd><span>Texto</span></div>
+                        <div class="kbd-row"><kbd>Z</kbd><span>Laser</span></div>
+                    </div>
+                </div>
+                <div class="kbd-group">
+                    <h3>Ações</h3>
+                    <div class="kbd-grid">
+                        <div class="kbd-row"><kbd>Ctrl</kbd><kbd>Z</kbd><span>Desfazer</span></div>
+                        <div class="kbd-row"><kbd>Ctrl</kbd><kbd>Y</kbd><span>Refazer</span></div>
+                        <div class="kbd-row"><kbd>Ctrl</kbd><kbd>0</kbd><span>Resetar zoom</span></div>
+                        <div class="kbd-row"><kbd>Delete</kbd><span>Excluir seleção</span></div>
+                        <div class="kbd-row"><kbd>G</kbd><span>Gerenciador de páginas</span></div>
+                        <div class="kbd-row"><kbd>F</kbd><span>Modo foco</span></div>
+                        <div class="kbd-row"><kbd>?</kbd><span>Este painel</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
 
 </body>
 </html>

@@ -1,40 +1,41 @@
-# Graph Report - .  (2026-07-07)
+# Graph Report - C:\Users\User\Desktop\Programação\dazzling-hopper  (2026-07-11)
 
 ## Corpus Check
-- 66 files · ~53,500 words
+- 21 files · ~74,797 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 314 nodes · 679 edges · 25 communities (11 shown, 14 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.71)
-- Token cost: 130,973 input · 0 output
+- 294 nodes · 661 edges · 28 communities (19 shown, 9 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.62)
+- Token cost: 175,393 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Fishing Minigame & UI Aesthetics|Fishing Minigame & UI Aesthetics]]
-- [[_COMMUNITY_TaskPomodoroShop Core Logic|Task/Pomodoro/Shop Core Logic]]
-- [[_COMMUNITY_Cozy Gamification Design Docs|Cozy Gamification Design Docs]]
-- [[_COMMUNITY_anime.min.js Internals|anime.min.js Internals]]
-- [[_COMMUNITY_MedNotes Drawing Tools Plan|MedNotes Drawing Tools Plan]]
-- [[_COMMUNITY_Capacitor Build Config|Capacitor Build Config]]
-- [[_COMMUNITY_Daily Quests & Study Tools|Daily Quests & Study Tools]]
-- [[_COMMUNITY_Pet Care & Shop UI|Pet Care & Shop UI]]
-- [[_COMMUNITY_Termo Minigame Logic|Termo Minigame Logic]]
-- [[_COMMUNITY_MedNotes Sidebar & Folder Mockups|MedNotes Sidebar & Folder Mockups]]
-- [[_COMMUNITY_Dev Server|Dev Server]]
-- [[_COMMUNITY_Notebook Cover Mockups|Notebook Cover Mockups]]
-- [[_COMMUNITY_notes.js Module|notes.js Module]]
-- [[_COMMUNITY_File Organizer Principles|File Organizer Principles]]
-- [[_COMMUNITY_Coding Workflow Principles|Coding Workflow Principles]]
-- [[_COMMUNITY_Termo Word List|Termo Word List]]
-- [[_COMMUNITY_Asset Naming Conventions|Asset Naming Conventions]]
-- [[_COMMUNITY_File Organizer Skill|File Organizer Skill]]
-- [[_COMMUNITY_Naming Conventions Doc|Naming Conventions Doc]]
-- [[_COMMUNITY_CLAUDE.md Guidelines|CLAUDE.md Guidelines]]
-- [[_COMMUNITY_Aesthetic Asset Naming|Aesthetic Asset Naming]]
-- [[_COMMUNITY_Error Notebook Modal|Error Notebook Modal]]
-- [[_COMMUNITY_Pomodoro Focus Screen|Pomodoro Focus Screen]]
-- [[_COMMUNITY_Espiral Notebook Mockup|Espiral Notebook Mockup]]
-- [[_COMMUNITY_Cozy Folder Mockup|Cozy Folder Mockup]]
+- [[_COMMUNITY_Minigame de Pesca|Minigame de Pesca]]
+- [[_COMMUNITY_anime.js Internals Minificados|anime.js Internals Minificados]]
+- [[_COMMUNITY_App Shell e ClimaAmbiente|App Shell e Clima/Ambiente]]
+- [[_COMMUNITY_Planos Navegação e Ferramentas MedNotes|Planos: Navegação e Ferramentas MedNotes]]
+- [[_COMMUNITY_Economia Loja, Pet e Estética|Economia: Loja, Pet e Estética]]
+- [[_COMMUNITY_Config Capacitor (package.json)|Config Capacitor (package.json)]]
+- [[_COMMUNITY_Fluxo Pomodoro de Foco|Fluxo Pomodoro de Foco]]
+- [[_COMMUNITY_Minigame Termo|Minigame Termo]]
+- [[_COMMUNITY_Quests Diárias e Tarefas|Quests Diárias e Tarefas]]
+- [[_COMMUNITY_Conceitos de Features MedOrganize|Conceitos de Features MedOrganize]]
+- [[_COMMUNITY_Sintetizadores de Ambiência|Sintetizadores de Ambiência]]
+- [[_COMMUNITY_Modais e Estatísticas UI|Modais e Estatísticas UI]]
+- [[_COMMUNITY_Espiada + Snap de Páginas|Espiada + Snap de Páginas]]
+- [[_COMMUNITY_Design de Gamificação Cozy|Design de Gamificação Cozy]]
+- [[_COMMUNITY_Caderno de Erros e Áudio|Caderno de Erros e Áudio]]
+- [[_COMMUNITY_Diretrizes de Código LLM|Diretrizes de Código LLM]]
+- [[_COMMUNITY_Servidor Dev Python|Servidor Dev Python]]
+- [[_COMMUNITY_Player de Música e Estética|Player de Música e Estética]]
+- [[_COMMUNITY_Namespace Central MedNotes|Namespace Central MedNotes]]
+- [[_COMMUNITY_Lista de Palavras do Termo|Lista de Palavras do Termo]]
+- [[_COMMUNITY_Service Worker|Service Worker]]
+- [[_COMMUNITY_Detecção de Duplicatas|Detecção de Duplicatas]]
+- [[_COMMUNITY_Skill file-organizer|Skill file-organizer]]
+- [[_COMMUNITY_Convenções de Nomenclatura|Convenções de Nomenclatura]]
+- [[_COMMUNITY_Workflow de Organização|Workflow de Organização]]
+- [[_COMMUNITY_Moedas Gacha|Moedas Gacha]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `playAudio()` - 16 edges
@@ -44,95 +45,120 @@
 5. `Z()` - 12 edges
 6. `transitionToFoco()` - 11 edges
 7. `transitionToPausa()` - 11 edges
-8. `toggleTask()` - 10 edges
-9. `submitTermoGuess()` - 10 edges
-10. `o()` - 9 edges
+8. `MedOrganize Cozy Main Page` - 11 edges
+9. `toggleTask()` - 10 edges
+10. `submitTermoGuess()` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Folder Style V1 Kraft + Aba Colorida Mockup` --semantically_similar_to--> `Sidebar Tree (Pastas/Cadernos/Páginas Navigation)`  [INFERRED] [semantically similar]
-  .superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html → src/notes/notes.html
-- `Duplicate File Detection` --semantically_similar_to--> `Surgical Changes Principle`  [INFERRED] [semantically similar]
-  .agents/skills/file-organizer/SKILL.md → docs/CLAUDE.md
-- `Organization Plan Workflow` --semantically_similar_to--> `Think Before Coding Principle`  [INFERRED] [semantically similar]
-  .agents/skills/file-organizer/SKILL.md → docs/CLAUDE.md
-- `MedNotes Home Completa Mockup (Mini-rail + Grid de Pastas)` --semantically_similar_to--> `MedNotes App Shell (notes.html)`  [INFERRED] [semantically similar]
-  .superpowers/brainstorm/1273-1783394098/content/home-completa.html → src/notes/notes.html
-- `MedOrganize Cozy Main App (index.html)` --references--> `Cozy Pastel Ghibli-Lofi Design System`  [INFERRED]
-  src/main/index.html → docs/novas_instrucoes_gamificacao.md
+- `MedNotes Drawing Toolbar` --conceptually_related_to--> `Plano de Aprimoramento das Ferramentas MedNotes`  [INFERRED]
+  src/notes/notes.html → docs/plano_ferramentas.md
+- `Tool Popovers Markup (pen/highlighter/eraser/lasso/shapes)` --references--> `brushType Stroke Model`  [INFERRED]
+  src/notes/notes.html → docs/plano_ferramentas.md
+- `MedNotes Navigation Redesign Implementation Plan` --references--> `Page Manager Panel (Passo 10 thumbnails)`  [EXTRACTED]
+  docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md → src/notes/notes.html
+- `renderFishingCatalog()` --indirect_call--> `s()`  [INFERRED]
+  src/main/app.js → src/assets/anime.min.js
+- `updateTermoKeyboard()` --indirect_call--> `g()`  [INFERRED]
+  src/main/app.js → src/assets/anime.min.js
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
-- **MedNotes Drawing Toolbar + Popover System** — src_notes_notes_html_drawing_tools_toolbar, src_notes_notes_html_tool_pen, src_notes_notes_html_tool_highlighter, src_notes_notes_html_tool_eraser, src_notes_notes_html_tool_lasso, src_notes_notes_html_tool_shapes, src_notes_notes_html_popover_pen, src_notes_notes_html_popover_highlighter, src_notes_notes_html_popover_eraser, src_notes_notes_html_popover_lasso, src_notes_notes_html_popover_shapes, docs_plano_ferramentas_rich_popovers, docs_plano_ferramentas_toolsettings_state_model [INFERRED 0.85]
+- **MedNotes Navigation Redesign System** — docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router, docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail, docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_papelaria_cozy_identity, docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_data_migration, docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module, docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module, docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker, docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module, docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal, src_notes_notes_views_container_markup [EXTRACTED 1.00]
+- **Page Peek + Snap Scroll Flow** — docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap, docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug, docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll, docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page, docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek, docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation [EXTRACTED 1.00]
+- **MedOrganize Token/Gacha Gamification Economy** — src_main_index_pomodoro_focus_flow, src_main_index_gacha_shop, src_main_index_pet_care, src_main_index_termo_game, src_main_index_fishing_game [EXTRACTED 1.00]
 - **MedOrganize Cozy Gamification Currency & Rewards Loop** — docs_novas_instrucoes_gamificacao_medtokens, docs_novas_instrucoes_gamificacao_gacha_coins, docs_novas_instrucoes_gamificacao_pet_care_mechanic, docs_novas_instrucoes_gamificacao_termo_cozy_minigame, src_main_index_html_gamification_bar, src_main_index_html_shop_modal, src_main_index_html_gacha_machine_panel [INFERRED 0.85]
-- **Papelaria Cozy Visual Direction Brainstorm Set** — superpowers_brainstorm_1273_1783394098_content_estilo_pastas_fichario_aba, superpowers_brainstorm_1273_1783394098_content_estilo_pastas_envelope_kraft, superpowers_brainstorm_1273_1783394098_content_estilo_pastas_flat_cozy, superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba, superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_espiral, superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_moleskine, superpowers_brainstorm_1273_1783394098_content_home_completa_mockup [INFERRED 0.75]
 
-## Communities (25 total, 14 thin omitted)
+## Communities (28 total, 9 thin omitted)
 
-### Community 0 - "Fishing Minigame & UI Aesthetics"
-Cohesion: 0.06
-Nodes (64): applyAesthetics(), applyWeatherToUI(), buyRod(), cancelFishingLoop(), checkFishingMissions(), checkOverlap(), claimMission(), cleanSpotifyUrl() (+56 more)
+### Community 0 - "Minigame de Pesca"
+Cohesion: 0.09
+Nodes (37): addTokens(), buyRod(), cancelFishingLoop(), checkFishingMissions(), checkOverlap(), claimMission(), closeMinigames(), equipRod() (+29 more)
 
-### Community 1 - "Task/Pomodoro/Shop Core Logic"
-Cohesion: 0.11
-Nodes (40): addCompletedPomodoro(), addCompletedTask(), addError(), addTask(), addTokens(), buyAnimal(), buyBackground(), buyItem() (+32 more)
+### Community 1 - "anime.js Internals Minificados"
+Cohesion: 0.21
+Nodes (30): $(), a(), b(), c(), D(), E(), en(), f() (+22 more)
 
-### Community 2 - "Cozy Gamification Design Docs"
-Cohesion: 0.07
-Nodes (34): anime.js Animation Library, Cozy Pastel Ghibli-Lofi Design System, Moedas Gacha Currency, Game Loop & State Technical Spec, MedOrganize Cozy Gamification Plan, MedTokens Currency, Pet Care / Friendship Level Mechanic, Sidebar Menu Order Spec (+26 more)
+### Community 2 - "App Shell e Clima/Ambiente"
+Cohesion: 0.09
+Nodes (18): applyWeatherToUI(), closeQuests(), focusFocusDisplayColorReset(), freezeActiveElements(), freezeGifElement(), generateRaindrops(), getActiveAnimalImg(), getCurrentLocation() (+10 more)
 
-### Community 3 - "anime.min.js Internals"
-Cohesion: 0.19
-Nodes (32): $(), a(), b(), c(), D(), E(), en(), f() (+24 more)
+### Community 3 - "Planos: Navegação e Ferramentas MedNotes"
+Cohesion: 0.12
+Nodes (25): brushType Stroke Model, Plano de Aprimoramento das Ferramentas MedNotes, Rich Tool Popovers, Ruler Visibility + Snap Fix, Persisted Editable Text Elements, toolSettings Per-Tool State, MedNotes.Actions Shared Actions Module, MedNotes.EmojiPicker Curated Grid (+17 more)
 
-### Community 4 - "MedNotes Drawing Tools Plan"
+### Community 4 - "Economia: Loja, Pet e Estética"
 Cohesion: 0.14
-Nodes (25): Goal-Driven Execution Principle, Simplicity First Principle, brushType Stroke Rendering Model, Fases de Execução A-D, MedNotes Ferramentas de Desenho Plan, Extended Persistence (Strokes + Texts), Rich Tool Popovers (replace corner pickers), Régua (Ruler) Visibility + Snap Fix (+17 more)
+Nodes (24): addCompletedPomodoro(), addCompletedTask(), buyAnimal(), buyBackground(), buyItem(), getPetPts(), getRarityForPts(), openAesthetics() (+16 more)
 
-### Community 5 - "Capacitor Build Config"
+### Community 5 - "Config Capacitor (package.json)"
 Cohesion: 0.11
 Nodes (17): dependencies, @capacitor/android, @capacitor/core, @capacitor/haptics, @capacitor/local-notifications, @capacitor/status-bar, jsdom, description (+9 more)
 
-### Community 6 - "Daily Quests & Study Tools"
-Cohesion: 0.13
-Nodes (18): canEarnChecklistTokens(), claimQuestReward(), formatStudyTime(), getFormattedToday(), hideExplanation(), initDailyQuests(), openErrorNotebook(), openMinigames() (+10 more)
+### Community 6 - "Fluxo Pomodoro de Foco"
+Cohesion: 0.30
+Nodes (15): completeFocusTask(), exitFocusOverlay(), initPausaHoverControls(), playRetroChime(), setActiveView(), startActiveTimer(), stopActiveTimer(), stopAmbiance() (+7 more)
 
-### Community 7 - "Pet Care & Shop UI"
-Cohesion: 0.17
-Nodes (16): getPetPts(), getRarityForPts(), openAesthetics(), openShop(), renderAestheticsGrids(), renderPetCareUI(), renderShopAnimals(), renderShopBackgrounds() (+8 more)
-
-### Community 8 - "Termo Minigame Logic"
+### Community 7 - "Minigame Termo"
 Cohesion: 0.24
 Nodes (15): computeResult(), handleTermoInput(), handleTermoPhysicalKey(), initTermoGame(), removeAccents(), renderTermoBoard(), revealRow(), saveTermoState() (+7 more)
 
-### Community 9 - "MedNotes Sidebar & Folder Mockups"
-Cohesion: 0.22
-Nodes (9): MedNotes App Shell (notes.html), Page Manager Panel (Thumbnails), Sidebar Tree (Pastas/Cadernos/Páginas Navigation), Folder Style B Envelope Kraft Mockup, Folder Style A Fichário com Aba Mockup, Folder Style V1 Kraft + Aba Colorida Mockup, Folder Style V2 Kraft + Aba + Barbante Mockup, Mini-Rail Navigation Component (+1 more)
+### Community 8 - "Quests Diárias e Tarefas"
+Cohesion: 0.24
+Nodes (13): addTask(), canEarnChecklistTokens(), claimQuestReward(), createTaskRow(), deleteTask(), getFormattedToday(), initDailyQuests(), recordChecklistTokenEarned() (+5 more)
 
-### Community 11 - "Notebook Cover Mockups"
-Cohesion: 0.50
-Nodes (4): Notebook Style C Brochura de Fita Mockup, Notebook Style B Moleskine Mockup, Notebook Style C+ Brochura Deluxe Mockup, Notebook Style B+ Moleskine Deluxe Mockup
+### Community 9 - "Conceitos de Features MedOrganize"
+Cohesion: 0.24
+Nodes (12): Fixed Aesthetic Decorations Convention (popcat, cherry blossom), Animal Asset Naming Convention (animal_1..12), Tinder de Descobertas (asset discovery UI), Background Asset Naming Convention (bg_1..12), Caderno de Erros (Error Notebook), Fishing Minigame (Pesca Cozy), Cozy Shop & Gacha, Lofi Study Music Player Panel (+4 more)
+
+### Community 10 - "Sintetizadores de Ambiência"
+Cohesion: 0.18
+Nodes (11): initFogToggle(), startAmbiance(), startBreakAmbiance(), startBreakMode(), startBreathingAnimation(), startFireplaceSynth(), startOceanWavesSynth(), startRainSynth() (+3 more)
+
+### Community 11 - "Modais e Estatísticas UI"
+Cohesion: 0.20
+Nodes (10): formatStudyTime(), hideExplanation(), openErrorNotebook(), openMinigames(), openQuests(), openSettings(), openStats(), renderPrepEditorList() (+2 more)
+
+### Community 12 - "Espiada + Snap de Páginas"
+Cohesion: 0.44
+Nodes (9): Canvas._confirmPeek Threshold Commit, Elastic Overscroll (_clampPanWithPeek / _dampPeek), Canvas._getNeighborPage Helper, MedNotes Page Peek Scroll Implementation Plan, Snap-Through / Bounce-Back Animation (_animatePeekTo), Background Render Unification Fix, MedNotes.Canvas Single-Page Singleton Engine, Espiada + Snap (Peek then Commit) Approach (+1 more)
+
+### Community 13 - "Design de Gamificação Cozy"
+Cohesion: 0.36
+Nodes (8): anime.js Animation Library, Cozy Pastel Ghibli-Lofi Design System, Game Loop & State Technical Spec, MedOrganize Cozy Gamification Plan, MedTokens Currency, Pet Care / Friendship Level Mechanic, Sidebar Menu Order Spec, Termo Cozy Minigame (Wordle-like)
+
+### Community 14 - "Caderno de Erros e Áudio"
+Cohesion: 0.38
+Nodes (7): addError(), playAudio(), renderErrors(), resolveError(), showExplanation(), toggleTheme(), triggerCountdown()
+
+### Community 15 - "Diretrizes de Código LLM"
+Cohesion: 0.40
+Nodes (5): Behavioral Guidelines for LLM Coding, Goal-Driven Execution, Simplicity First, Surgical Changes, Think Before Coding
+
+### Community 17 - "Player de Música e Estética"
+Cohesion: 0.60
+Nodes (5): applyAesthetics(), cleanSpotifyUrl(), cleanYoutubeUrl(), showMusicTab(), startFocusSession()
 
 ## Knowledge Gaps
-- **41 isolated node(s):** `name`, `version`, `description`, `main`, `sync` (+36 more)
+- **29 isolated node(s):** `TERMO_VALIDATION_WORDS`, `file-organizer Skill`, `Folder/File Naming Conventions`, `Cozy Pastel Ghibli-Lofi Design System`, `Moedas Gacha Currency` (+24 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `updateTermoKeyboard()` connect `Termo Minigame Logic` to `Fishing Minigame & UI Aesthetics`, `anime.min.js Internals`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `g()` connect `anime.min.js Internals` to `Termo Minigame Logic`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `x()` connect `anime.min.js Internals` to `Fishing Minigame & UI Aesthetics`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `updateTermoKeyboard()` connect `Minigame Termo` to `anime.js Internals Minificados`, `App Shell e Clima/Ambiente`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `g()` connect `anime.js Internals Minificados` to `Minigame Termo`?**
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Why does `x()` connect `anime.js Internals Minificados` to `App Shell e Clima/Ambiente`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `g()` (e.g. with `a()` and `c()`) actually correct?**
   _`g()` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 5 inferred relationships involving `Z()` (e.g. with `a()` and `o()`) actually correct?**
   _`Z()` has 5 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `name`, `version`, `description` to the rest of the system?**
-  _50 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Fishing Minigame & UI Aesthetics` be split into smaller, more focused modules?**
-  _Cohesion score 0.05693693693693694 - nodes in this community are weakly interconnected._
+- **What connects `TERMO_VALIDATION_WORDS`, `file-organizer Skill`, `Duplicate File Detection` to the rest of the system?**
+  _36 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Minigame de Pesca` be split into smaller, more focused modules?**
+  _Cohesion score 0.0945945945945946 - nodes in this community are weakly interconnected._

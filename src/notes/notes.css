@@ -56,6 +56,28 @@
 
     /* Fonte */
     --mn-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    /* Motion tokens (Passo 19 - Etapa 1): vocabulario unico de animacao.
+       Duracao: micro (hover/press) ate large (flip/modo foco).
+       Easing: ease-out padrao; spring/spring-soft = curvas linear()
+       pre-calculadas (stiffness~320/damping~24, e uma versao mais suave
+       para elementos grandes). */
+    --mn-dur-micro:  150ms;
+    --mn-dur-small:  250ms;
+    --mn-dur-medium: 380ms;
+    --mn-dur-large:  600ms;
+
+    --mn-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+    --mn-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --mn-spring:      linear(0, 0.009, 0.035 2.1%, 0.141 4.4%, 0.723 12.9%,
+                             0.938 16.7%, 1.017, 1.077 20.4%, 1.121, 1.149 24.3%,
+                             1.159, 1.163 27%, 1.154, 1.129 32.8%, 1.051 39.6%,
+                             1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%,
+                             0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
+    --mn-spring-soft: linear(0, 0.014, 0.062 2.5%, 0.556 11.4%, 0.79 15.5%,
+                             0.898 18.2%, 0.985 21.1%, 1.05 24.4%, 1.075 27.2%,
+                             1.08 30.3%, 1.06 35.4%, 1.014 44%, 0.997 50.2%,
+                             0.992 58%, 1 81.4%, 1);
 }
 
 /* ── Tema Escuro (Passo 12) ──────────────────────────────────────── */
@@ -151,6 +173,78 @@ input, textarea {
     opacity: 0.8;
     transform: scale(0.98);
     transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* ── Overlay de saída (flip reverso) — Passo 19 Etapa 2 ──────────────
+   Espelha .mednotes-flip-overlay do MedOrganize (src/main/styles.css):
+   front = MedNotes fechando, back = MedOrganize revelado atrás. */
+.mednotes-flip-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    pointer-events: none;
+    perspective: 2000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    opacity: 0;
+}
+.mednotes-flip-overlay .flip-page {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+}
+.flip-page-front--notes {
+    background: linear-gradient(160deg, #5c6bc0 0%, #7c4dff 60%, #9c27b0 100%);
+    z-index: 2;
+}
+.flip-page-back--medorganize {
+    background: #FAF6E8;
+    z-index: 1;
+}
+
+/* Modo flip 3D: front (MedNotes) gira para revelar back (MedOrganize).
+   Origem à esquerda — mesmo eixo do flip de entrada, sensação de
+   fechar o mesmo "caderno" que abriu. */
+.mednotes-flip-overlay.mode-flip .flip-page {
+    transform-origin: left center;
+    transition: transform 0.6s cubic-bezier(0.36, 0.09, 0.2, 1.02);
+}
+.mednotes-flip-overlay.mode-flip .flip-page-front--notes { transform: rotateY(0deg); }
+.mednotes-flip-overlay.mode-flip .flip-page-back--medorganize { transform: rotateY(-180deg); }
+.mednotes-flip-overlay.mode-flip.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.mednotes-flip-overlay.mode-flip.active .flip-page-front--notes { transform: rotateY(180deg); }
+.mednotes-flip-overlay.mode-flip.active .flip-page-back--medorganize { transform: rotateY(0deg); }
+
+/* Modo slide (fallback 2D): mesmo efeito do overlay original, cobrindo
+   com o gradiente do MedNotes antes de navegar. */
+.mednotes-flip-overlay.mode-slide .flip-page-front--notes {
+    position: absolute; inset: 0; transform: none;
+}
+.mednotes-flip-overlay.mode-slide .flip-page-back--medorganize { display: none; }
+.mednotes-flip-overlay.mode-slide.active {
+    opacity: 1;
+    pointer-events: all;
+    animation: mnExitSlideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes mnExitSlideDown {
+    from { clip-path: inset(0 0 100% 0); }
+    to   { clip-path: inset(0 0 0% 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mednotes-flip-overlay.active {
+        opacity: 1; pointer-events: all;
+        animation: none !important;
+        transition: opacity 0.15s ease !important;
+    }
+    .mednotes-flip-overlay .flip-page { transition: none !important; transform: none !important; }
+    .mednotes-flip-overlay.active .flip-page-front--notes { display: flex; }
+    .mednotes-flip-overlay.active .flip-page-back--medorganize { display: none; }
 }
 
 /* â”€â”€ App Shell: Grid Principal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -306,6 +400,56 @@ input, textarea {
     cursor: not-allowed;
 }
 
+/* Undo/Redo vazio (Passo 19 — Etapa 4): visual de desabilitado sem usar
+   o atributo disabled nativo — precisa continuar clicável para que o
+   handler rode e dispare o shake de feedback. */
+.tool-btn--empty {
+    opacity: 0.35;
+    cursor: default;
+}
+.tool-btn--empty:hover {
+    background: transparent;
+    color: var(--mn-text-secondary);
+}
+
+/* ── Anel de cor viajante (Passo 19 — Etapa 4) ────────────────────── */
+.mn-color-fly {
+    position: fixed;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    pointer-events: none;
+    z-index: 10002;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+}
+
+/* ── Tooltip de hover (Passo 19 — Etapa 3): S-Pen pairando ou mouse ─── */
+.mn-hover-tooltip {
+    position: fixed;
+    transform: translate(-50%, 4px);
+    background: var(--mn-text-primary);
+    color: var(--mn-bg);
+    font-family: var(--mn-font);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: var(--mn-radius-sm);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 10001;
+    transition: opacity var(--mn-dur-micro) var(--mn-ease-out),
+                transform var(--mn-dur-micro) var(--mn-ease-out);
+    box-shadow: var(--mn-shadow-md);
+}
+.mn-hover-tooltip--show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
 
 /* â”€â”€ Status de Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .save-status {
@@ -372,6 +516,17 @@ input, textarea {
     padding: 40px;
     max-width: 360px;
 }
+
+/* Ícone flutua em loop lento (Etapa 6.4) — pausa fora da aba visível
+   (.mn-loop-paused, ver notes.js) e sob reduced-motion. */
+.canvas-empty-inner > svg {
+    animation: mn-float-y 3s ease-in-out infinite;
+}
+@keyframes mn-float-y {
+    0%, 100% { transform: translateY(-4px); }
+    50% { transform: translateY(4px); }
+}
+.mn-loop-paused .canvas-empty-inner > svg { animation-play-state: paused; }
 
 .canvas-empty-inner h2 {
     font-size: 1.35rem;
@@ -579,7 +734,7 @@ input, textarea {
     border-radius: 2px;
 }
 
-/* ── ZOOM BADGE (Passo 5) ──────────────────────────────────────────────── */
+/* ── ZOOM BADGE (Passo 5 / Passo 19 — Etapa 6.5) ─────────────────────── */
 .zoom-badge {
     position: absolute;
     bottom: 16px;
@@ -594,8 +749,104 @@ input, textarea {
     color: var(--mn-text-secondary);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity var(--mn-dur-small) ease;
+}
+.zoom-badge--visible { opacity: 1; }
+.zoom-badge--pop { animation: mn-icon-pop 320ms var(--mn-spring); }
+
+/* ── Indicador de página durante o peek (Passo 19 — Etapa 7.3) ──────── */
+.peek-page-indicator {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    z-index: 20;
+    transform: translateY(-50%);
+    background: rgba(26, 27, 46, 0.78);
+    color: #fff;
+    border-radius: var(--mn-radius-full);
+    padding: 6px 14px;
+    font-family: var(--mn-font);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--mn-dur-small) ease;
+}
+.peek-page-indicator--visible { opacity: 1; }
+
+/* ── Modo Foco (Passo 19 — Etapa 7.1) ────────────────────────────────
+   Header, toolbar, rail e minimap saem em direções naturais com
+   stagger; o canvas "respira" com leve scale. Tudo transform/opacity
+   apenas (princípio 1). */
+#btn-focus-mode.tool-btn--active { background: var(--mn-accent, #7c4dff); color: #fff; }
+
+.mn-focus-active #mn-rail {
+    transform: translateX(-100%);
+    opacity: 0;
     pointer-events: none;
 }
+.mn-focus-active #notes-toolbar {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+.mn-focus-active #canvas-minimap {
+    transform: translate(40px, 40px);
+    opacity: 0;
+    pointer-events: none;
+}
+#mn-rail, #notes-toolbar, #canvas-minimap {
+    transition: transform var(--mn-dur-medium) var(--mn-spring-soft), opacity var(--mn-dur-medium) ease;
+}
+
+.mn-focus-active #notes-canvas-area {
+    animation: mn-focus-canvas-breathe var(--mn-dur-medium) var(--mn-spring-soft);
+}
+@keyframes mn-focus-canvas-breathe {
+    0% { transform: scale(0.985); }
+    100% { transform: scale(1); }
+}
+
+/* Mini-toolbar flutuante (surge ~400ms após entrar no modo foco) */
+.focus-mini-toolbar {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    z-index: 500;
+    transform: translateX(-50%) translateY(24px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--mn-dur-medium) var(--mn-spring), opacity var(--mn-dur-medium) var(--mn-spring);
+}
+.focus-mini-toolbar--visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+/* Auto-hide: desliza para baixo deixando uma "aba" de 8px visível */
+.focus-mini-toolbar--collapsed {
+    transform: translateX(-50%) translateY(calc(100% - 8px));
+}
+.focus-mini-toolbar-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: var(--mn-radius-full);
+    background: rgba(26, 27, 46, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.focus-mini-toolbar-pill .tool-btn { color: rgba(255, 255, 255, 0.75); }
+.focus-mini-toolbar-pill .tool-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.focus-mini-toolbar-pill .tool-btn.tool-btn--active { background: var(--mn-accent, #7c4dff); color: #fff; }
+.focus-mini-toolbar-pill .tool-divider { background: rgba(255, 255, 255, 0.18); }
 
 /* â”€â”€ Scrollbar global do app â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .mednotes-app ::-webkit-scrollbar {
@@ -1136,6 +1387,43 @@ input, textarea {
     box-shadow: 0 0 10px rgba(124, 142, 240, 0.25);
 }
 
+/* Aperfeiçoar traço — 4 segmentos (Etapa 5, Passo 21) */
+.popover-smoothing-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 2px;
+}
+
+.popover-smoothing-btn {
+    padding: 7px 2px;
+    border-radius: 8px;
+    border: 1.5px solid transparent;
+    background: rgba(92, 107, 192, 0.08);
+    color: rgba(232, 234, 246, 0.75);
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 500;
+    transition: background 0.12s, color 0.12s, border-color 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.popover-smoothing-btn:hover {
+    background: rgba(92, 107, 192, 0.18);
+    color: #e8eaf6;
+}
+
+.popover-smoothing-btn:active {
+    transform: scale(0.96);
+}
+
+.popover-smoothing-btn.active {
+    border-color: rgba(124, 142, 240, 0.7);
+    background: rgba(92, 107, 192, 0.22);
+    color: #a5b4fc;
+    box-shadow: 0 0 10px rgba(124, 142, 240, 0.25);
+}
+
 /* Presets de tamanho (bolinhas) */
 .popover-size-presets {
     display: flex;
@@ -1185,6 +1473,24 @@ input, textarea {
     align-items: center;
     gap: 10px;
     padding: 4px 8px 2px;
+}
+
+/* Bolinha de preview físico do tamanho (Passo 19 — Etapa 4): cresce/
+   encolhe em tempo real ao arrastar o slider, some com spring ao soltar. */
+.popover-size-preview-dot {
+    flex-shrink: 0;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--mn-blue);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--mn-dur-small, 250ms) var(--mn-ease-out, ease),
+                transform var(--mn-dur-small, 250ms) var(--mn-ease-out, ease),
+                width 60ms linear, height 60ms linear, background 60ms linear;
+}
+.popover-size-preview-dot--active {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .popover-slider-row input[type="range"] {
@@ -1303,12 +1609,41 @@ input, textarea {
 }
 /* -- MICRO-ANIMATIONS: Tool Button Active (S-Pen haptic feel) -- */
 .tool-btn { transition: background 0.15s, color 0.15s, transform 0.1s, box-shadow 0.15s; }
-.tool-btn:active { transform: scale(0.92) !important; }
-.tool-btn--active { animation: tool-activate 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+.tool-btn:active { transform: scale(0.88) !important; transition: transform 0.08s ease; }
+.tool-btn--active { animation: tool-activate 0.3s var(--mn-spring, cubic-bezier(0.34,1.56,0.64,1)); }
 @keyframes tool-activate {
-    0%  { transform: scale(0.9); }
-    60% { transform: scale(1.08); }
+    0%  { transform: scale(0.85); }
+    60% { transform: scale(1.25); }
     100%{ transform: scale(1); }
+}
+
+/* Pill deslizante da ferramenta ativa (Passo 19 — Etapa 4). Posicionado
+   via JS (transform) a partir do botão ativo. .toolbar-group--center já
+   é position:absolute (centralizado na toolbar) — isso já serve de
+   contexto de posicionamento para o pill; NÃO sobrescrever para
+   position:relative aqui, ou o grupo central sai do fluxo absoluto e
+   passa a disputar espaço/empurrar o grupo direito da toolbar.
+   Squash & stretch sutil no trajeto (scaleX >1 no meio do movimento). */
+.tool-active-pill {
+    position: absolute;
+    top: 0; left: 0;
+    width: 36px; height: 36px;
+    border-radius: var(--mn-radius-sm);
+    background: linear-gradient(135deg, rgba(92,107,192,0.16) 0%, rgba(124,77,255,0.13) 100%);
+    box-shadow: inset 0 0 0 1.5px rgba(92,107,192,0.3);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: transform var(--mn-dur-medium, 380ms) var(--mn-spring, cubic-bezier(0.34,1.56,0.64,1)),
+                opacity var(--mn-dur-small, 250ms) ease;
+}
+.tool-active-pill--visible { opacity: 1; }
+/* Botões ficam acima do pill; o próprio .tool-btn--active fica sem
+   fundo/box-shadow próprio quando o pill está ativo (evita dupla camada). */
+.tool-btn { z-index: 1; }
+.tool-active-pill ~ .tool-btn.tool-btn--active {
+    background: transparent;
+    box-shadow: none;
 }
 
 /* -- CANVAS AREA: smooth transition when page changes -- */
@@ -1322,11 +1657,32 @@ input, textarea {
 /* -- RESPONSIVE: Tablet S6 Lite optimizations -- */
 @media (hover: none) and (pointer: coarse) {
     .tool-btn { min-width: 44px; min-height: 44px; }
+    .lasso-action-btn { min-height: 44px; }
+    .shortcuts-tab { min-height: 44px; }
 }
 /* -- SAVE STATUS (pulsing) -- */
 .save-status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #43a047; margin-right: 4px; }
 .save-status.saving .save-status-dot { background: #fb8c00; animation: pulse-dot 1s ease-in-out infinite; }
 .save-status.error .save-status-dot { background: #e53935; }
+
+/* Texto do save-status faz crossfade+scale via Motion (Etapa 6.2) —
+   inline-flex para o SVG do check ficar alinhado ao texto. */
+.save-status-text { display: inline-flex; align-items: center; gap: 3px; }
+.save-status-check {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    animation: mn-toast-draw 280ms ease-out 60ms forwards;
+}
+
+/* Shake curto ao entrar em erro — reforça o alerta sem persistir animando */
+.save-status--shake { animation: mn-save-shake 350ms ease-out; }
+@keyframes mn-save-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+}
 
 /* ====================================================================
    PASSO 10 — GERENCIADOR DE PÁGINAS (Thumbnails)
@@ -1366,7 +1722,8 @@ input, textarea {
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.32s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: transform var(--mn-dur-medium) var(--mn-spring-soft);
+    will-change: transform;
     z-index: 901;
     font-family: var(--mn-font);
 }
@@ -1532,8 +1889,38 @@ input, textarea {
 }
 
 /* Estados de drag & drop */
-.pm-card.dragging { opacity: 0.4; }
+.pm-card.dragging { opacity: 0.5; transform: scale(1.04) rotate(1.5deg); box-shadow: var(--mn-shadow-md); }
 .pm-card.drag-over { border-color: var(--mn-purple); box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.2); }
+
+/* Ripple ao tocar/clicar no card (Etapa 5) */
+.pm-card-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(124, 77, 255, 0.55);
+    box-shadow: 0 0 0 1px rgba(124, 77, 255, 0.3) inset;
+    transform: scale(0);
+    opacity: 0.9;
+    pointer-events: none;
+    animation: pm-ripple-expand 450ms ease-out forwards;
+}
+@keyframes pm-ripple-expand {
+    to { transform: scale(1); opacity: 0; }
+}
+
+/* Glow de celebração ao criar página (Etapa 5) */
+.pm-card--new::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--mn-radius-md);
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.5);
+    opacity: 1;
+    pointer-events: none;
+    animation: pm-glow-fade 900ms ease-out forwards;
+}
+@keyframes pm-glow-fade {
+    to { opacity: 0; box-shadow: 0 0 0 3px rgba(124, 77, 255, 0); }
+}
 
 /* -- Estado vazio -- */
 .pm-empty {
@@ -1623,6 +2010,12 @@ input, textarea {
     transition: var(--mn-transition);
 }
 .settings-option:hover { background: var(--mn-surface-hover); }
+.settings-option--full {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+    font-weight: 600;
+}
 .settings-option.active {
     border-color: var(--mn-blue);
     background: var(--mn-surface-active);
@@ -1650,11 +2043,22 @@ input, textarea {
     display: flex; align-items: center; justify-content: space-between;
     padding: 9px 12px; border: 1px solid var(--mn-border); border-radius: var(--mn-radius-md);
     background: var(--mn-surface); color: var(--mn-text-primary);
-    font-family: var(--mn-font); font-size: 12.5px; cursor: pointer;
+    font-family: var(--mn-font); font-size: 12.5px;
     transition: var(--mn-transition);
 }
 .settings-version-item:hover { background: var(--mn-surface-hover); border-color: var(--mn-blue); }
-.settings-version-restore { color: var(--mn-blue); font-weight: 600; }
+.settings-version-actions { display: flex; align-items: center; gap: 10px; }
+.settings-version-preview {
+    border: none; background: transparent; color: var(--mn-text-secondary);
+    font-family: var(--mn-font); font-size: 12px; cursor: pointer; padding: 4px 6px;
+    border-radius: var(--mn-radius-sm); transition: var(--mn-transition);
+}
+.settings-version-preview:hover { background: var(--mn-surface-hover); color: var(--mn-text-primary); }
+.settings-version-restore {
+    border: none; background: transparent; color: var(--mn-blue); font-weight: 600;
+    font-family: var(--mn-font); font-size: 12.5px; cursor: pointer; padding: 4px 6px;
+}
+.settings-version-restore:hover { text-decoration: underline; }
 
 /* ── Galeria de Templates (Passo 14) ─────────────────────────────── */
 .template-modal {
@@ -1698,6 +2102,30 @@ input, textarea {
 .template-card--custom:hover .template-card-delete { opacity: 1; }
 .template-card-delete:hover { background: rgba(229,57,53,0.12); color: #e53935; }
 
+/* ── Preview de versões com diff (Passo 21, Etapa 8) ─────────────── */
+.diff-modal { width: min(880px, 94vw); }
+.diff-modal-body { flex: 1; overflow-y: auto; padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+.diff-canvas-wrap {
+    border: 1px solid var(--mn-border); border-radius: var(--mn-radius-md);
+    overflow: hidden; background: #fff; max-height: 55vh; overflow-y: auto;
+}
+.diff-canvas-wrap img { display: block; width: 100%; height: auto; }
+.diff-legend { display: flex; flex-wrap: wrap; gap: 16px; }
+.diff-legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12.5px; color: var(--mn-text-secondary);
+}
+.diff-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.diff-swatch--red   { background: #e53935; }
+.diff-swatch--green { background: #43a047; }
+.diff-swatch--gray  { background: #9e9e9e; }
+.diff-counts { font-size: 13px; color: var(--mn-text-primary); margin: 0; }
+.diff-text-warning {
+    font-size: 12.5px; color: #f57c00; margin: 0;
+    background: rgba(245,124,0,0.1); border-radius: var(--mn-radius-sm); padding: 8px 10px;
+}
+.diff-modal-actions { margin-top: 4px; }
+
 /* ── Google Drive (Passo 15) ─────────────────────────────────────── */
 .drive-section { display: flex; flex-direction: column; gap: 10px; }
 .drive-section-hint { font-size: 12px; color: var(--mn-text-muted); line-height: 1.45; margin: 0; }
@@ -1730,12 +2158,20 @@ input, textarea {
 }
 .drive-sync-status:hover { background: var(--mn-surface-hover); }
 .drive-sync-status[hidden] { display: none; }
-.drive-sync-status--syncing .drive-sync-icon { animation: mn-spin 1s linear infinite; }
+/* Sincronizando: pulso suave de opacity — loop discreto, pausa fora da
+   viewport/aba oculta via .mn-loop-paused (Etapa 6.4 aplica a mesma regra). */
+.drive-sync-status--syncing .drive-sync-icon { animation: mn-icon-pulse 1.4s ease-in-out infinite; }
+.mn-loop-paused .drive-sync-status--syncing .drive-sync-icon { animation-play-state: paused; }
 .drive-sync-status--error { color: #e53935; }
 .drive-sync-status--idle { color: var(--mn-blue); }
 .drive-sync-status--disconnected { color: var(--mn-text-placeholder); }
 .drive-sync-status--disconnected .drive-sync-icon { filter: grayscale(1); opacity: 0.6; }
-@keyframes mn-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes mn-icon-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* Sincronizado: pop leve ao entrar no estado --ok (disparado via classe
+   mn-pop, ver notes-drive.js) */
+.drive-sync-status--ok .drive-sync-icon.mn-pop { animation: mn-icon-pop 380ms var(--mn-spring); }
+@keyframes mn-icon-pop { 0% { transform: scale(0.7); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
 
 /* ── Popover de sincronização (clique no indicador) ──────────────── */
 .drive-sync-popover {
@@ -1769,6 +2205,366 @@ input, textarea {
     display: flex; align-items: center; justify-content: center;
     padding: 8px 16px; font-family: var(--mn-font); font-size: 12.5px; font-weight: 600;
     background: #fb8c00; color: #fff; text-align: center;
+    transform: translateY(0);
+    transition: transform var(--mn-dur-small) var(--mn-spring-soft), opacity var(--mn-dur-small) ease;
 }
 .offline-banner[hidden] { display: none; }
+/* Entrada/saída com spring vertical em vez de aparecer seco (Etapa 6.3) —
+   [hidden] já tira do fluxo; a classe cobre o instante de transição JS-driven
+   quando o banner alterna (ver notes-drive.js). */
+.offline-banner--enter { transform: translateY(-100%); opacity: 0; }
+
+/* ── Toast 2.0 (Passo 19 — Etapa 6.1) ────────────────────────────────
+   Pilha física: até 3 toasts, entrada com spring, ícone animado por tipo,
+   ação inline com barra de progresso (transform: scaleX, nunca width). */
+.toast-container {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 8px;
+    z-index: 1200;
+    pointer-events: none;
+}
+
+.mn-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    min-width: 220px;
+    max-width: min(420px, 88vw);
+    padding: 12px 16px 14px;
+    border-radius: var(--mn-radius-md);
+    background: var(--mn-surface, #23243a);
+    color: var(--mn-text-primary, #fff);
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.16);
+    font-family: var(--mn-font);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow: hidden;
+    pointer-events: auto;
+    transform: translateY(80px) scale(0.9);
+    opacity: 0;
+    transition: transform var(--mn-dur-medium) var(--mn-spring), opacity var(--mn-dur-medium) var(--mn-spring),
+                margin var(--mn-dur-small) var(--mn-spring-soft);
+    will-change: transform, opacity;
+}
+.mn-toast--show { transform: translateY(0) scale(1); opacity: 1; }
+.mn-toast--hide { transform: translateY(20px) scale(0.96); opacity: 0; transition: transform 200ms ease, opacity 200ms ease; }
+
+.mn-toast-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+}
+.mn-toast--success .mn-toast-icon { background: rgba(76, 175, 80, 0.18); color: #66bb6a; }
+.mn-toast--error .mn-toast-icon,
+.mn-toast--danger .mn-toast-icon { background: rgba(229, 57, 53, 0.18); color: #ef5350; }
+.mn-toast--warn .mn-toast-icon,
+.mn-toast--warning .mn-toast-icon { background: rgba(251, 140, 0, 0.18); color: #ffa726; }
+.mn-toast--info .mn-toast-icon { background: rgba(92, 107, 192, 0.18); color: #7986cb; }
+
+/* Checkmark que se desenha via stroke-dashoffset animado */
+.mn-toast-check {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: mn-toast-draw 320ms ease-out 80ms forwards;
+}
+@keyframes mn-toast-draw { to { stroke-dashoffset: 0; } }
+
+/* X de erro com shake curto */
+.mn-toast-x { animation: mn-toast-shake 320ms ease-out; }
+@keyframes mn-toast-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+}
+
+/* Ponto de info que pulsa uma vez */
+.mn-toast-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: mn-toast-pulse-once 500ms ease-out;
+}
+@keyframes mn-toast-pulse-once {
+    0% { transform: scale(0.6); opacity: 0.5; }
+    50% { transform: scale(1.35); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.mn-toast-text { flex: 1; min-width: 0; }
+
+.mn-toast-action {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    border-radius: var(--mn-radius-sm);
+    background: rgba(255, 255, 255, 0.12);
+    color: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    transition: var(--mn-transition);
+}
+.mn-toast-action:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Barra de progresso do tempo restante — scaleX, nunca width */
+.mn-toast-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2.5px;
+    background: currentColor;
+    opacity: 0.35;
+    transform-origin: left center;
+    transform: scaleX(1);
+    animation: mn-toast-progress-shrink linear forwards;
+}
+@keyframes mn-toast-progress-shrink { to { transform: scaleX(0); } }
+
+/* ── Sheet de Atalhos & Gestos (Passo 19 — Etapa 8.1) ────────────────
+   Modal fullscreen-sheet: desliza de baixo com spring, arrasta para
+   fechar (dismissal físico via Motion.springValue, ver notes.js). */
+.shortcuts-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 950;
+    max-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--mn-surface);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.25);
+    transform: translateY(100%);
+    transition: transform var(--mn-dur-large) var(--mn-spring-soft);
+    will-change: transform;
+    font-family: var(--mn-font);
+}
+.shortcuts-sheet.open { transform: translateY(0); }
+.shortcuts-sheet.dragging { transition: none; }
+
+.shortcuts-sheet-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: var(--mn-radius-full);
+    background: var(--mn-border-strong);
+    margin: 10px auto 4px;
+    cursor: grab;
+    touch-action: none;
+}
+
+.shortcuts-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px 4px;
+    flex-shrink: 0;
+}
+.shortcuts-sheet-header h2 { font-size: 17px; font-weight: 700; color: var(--mn-text-primary); margin: 0; }
+
+.shortcuts-sheet-tabs {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    margin: 8px 20px 4px;
+    padding: 4px;
+    background: var(--mn-surface-hover);
+    border-radius: var(--mn-radius-md);
+    flex-shrink: 0;
+}
+.shortcuts-tab {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--mn-text-secondary);
+    font-family: var(--mn-font);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--mn-radius-sm);
+    cursor: pointer;
+    transition: color var(--mn-dur-micro) ease;
+}
+.shortcuts-tab[aria-selected="true"] { color: #fff; }
+.shortcuts-tab-pill {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    height: calc(100% - 8px);
+    width: calc(50% - 6px);
+    background: linear-gradient(135deg, var(--mn-blue), var(--mn-accent));
+    border-radius: var(--mn-radius-sm);
+    transition: transform var(--mn-dur-medium) var(--mn-spring);
+    will-change: transform;
+}
+.shortcuts-tab-pill--right { transform: translateX(calc(100% + 4px)); }
+
+.shortcuts-sheet-body {
+    overflow-y: auto;
+    padding: 16px 20px 28px;
+}
+
+.shortcuts-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+}
+.shortcuts-panel[hidden] { display: none; }
+
+/* ── Cards de gesto com micro-demos CSS puro ─────────────────────── */
+.gesture-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 10px;
+    border: 1px solid var(--mn-border);
+    border-radius: var(--mn-radius-md);
+    background: var(--mn-surface-hover);
+}
+.gesture-demo {
+    position: relative;
+    width: 72px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.gesture-label { font-size: 12px; color: var(--mn-text-secondary); text-align: center; line-height: 1.4; margin: 0; }
+
+/* Loops pausam fora da viewport (.mn-demo-paused, via IntersectionObserver
+   em notes.js) e sob reduced-motion (regra global já cobre). */
+.mn-demo-paused .gesture-demo * { animation-play-state: paused !important; }
+
+.gesture-dot {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--mn-blue);
+}
+.gesture-demo--pinch .gesture-dot--a { animation: mn-pinch-a 2.2s ease-in-out infinite; }
+.gesture-demo--pinch .gesture-dot--b { animation: mn-pinch-b 2.2s ease-in-out infinite; }
+@keyframes mn-pinch-a { 0%,100% { transform: translateX(-4px); } 50% { transform: translateX(-22px); } }
+@keyframes mn-pinch-b { 0%,100% { transform: translateX(4px); } 50% { transform: translateX(22px); } }
+
+.gesture-dot--drag { background: var(--mn-accent); animation: mn-drag 2.4s ease-in-out infinite; }
+@keyframes mn-drag {
+    0%, 100% { transform: translate(-20px, 10px); }
+    50% { transform: translate(20px, -10px); }
+}
+
+.gesture-page {
+    position: absolute;
+    width: 46px; height: 34px;
+    border-radius: 4px;
+    border: 1.5px solid var(--mn-blue);
+    background: var(--mn-surface);
+}
+.gesture-page--a { animation: mn-peek-a 2.4s ease-in-out infinite; }
+.gesture-page--b { background: var(--mn-surface-hover); animation: mn-peek-b 2.4s ease-in-out infinite; }
+@keyframes mn-peek-a { 0%, 20% { transform: translateY(0); } 60%, 100% { transform: translateY(-16px); } }
+@keyframes mn-peek-b { 0%, 20% { transform: translateY(20px); opacity: 0; } 60%, 100% { transform: translateY(4px); opacity: 1; } }
+
+.gesture-line {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #fb8c00;
+    box-shadow: 0 0 0 0 rgba(251,140,0,0.3);
+    animation: mn-straight-grow 2.4s ease-in-out infinite;
+}
+@keyframes mn-straight-grow {
+    0%, 15%   { width: 4px; box-shadow: 0 0 0 8px rgba(251,140,0,0.15); }
+    60%, 100% { width: 48px; box-shadow: 0 0 0 0 rgba(251,140,0,0); }
+}
+
+.gesture-shape {
+    width: 30px; height: 30px;
+    border: 2px solid var(--mn-purple, #9c27b0);
+    border-radius: 4px;
+    opacity: 0.5;
+    animation: mn-shape-snap 2.6s ease-in-out infinite;
+}
+@keyframes mn-shape-snap {
+    0%, 30%  { border-radius: 40% 60% 55% 45%; opacity: 0.5; transform: rotate(-4deg); }
+    55%, 100% { border-radius: 4px; opacity: 1; transform: rotate(0deg); }
+}
+
+.gesture-swipe-arrow {
+    width: 2px; height: 26px;
+    background: var(--mn-blue);
+    position: relative;
+    animation: mn-swipeup 1.8s ease-in-out infinite;
+}
+.gesture-swipe-arrow::before {
+    content: '';
+    position: absolute; top: -1px; left: 50%;
+    width: 8px; height: 8px;
+    border-left: 2px solid var(--mn-blue);
+    border-top: 2px solid var(--mn-blue);
+    transform: translateX(-50%) rotate(45deg);
+}
+@keyframes mn-swipeup {
+    0%, 100% { transform: translateY(6px); opacity: 0.4; }
+    50% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── Grade de teclas (aba Teclado) ───────────────────────────────── */
+.kbd-group { margin-bottom: 18px; }
+.kbd-group h3 {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--mn-text-muted); margin: 0 0 10px;
+}
+.kbd-grid { display: flex; flex-direction: column; gap: 8px; }
+.kbd-row { display: flex; align-items: center; gap: 8px; }
+.kbd-row span { font-size: 13px; color: var(--mn-text-secondary); }
+.kbd-row kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 26px; height: 26px; padding: 0 7px;
+    background: var(--mn-surface-hover);
+    border: 1px solid var(--mn-border-strong);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    font-family: var(--mn-font);
+    font-size: 12px; font-weight: 700;
+    color: var(--mn-text-primary);
+}
+
+/* ── Reduced motion (Passo 19 — Etapa 1) ─────────────────────────────
+   Duas portas para o mesmo efeito: preferência do sistema operacional
+   OU o toggle manual do usuário (classe aplicada por MedNotes.Motion).
+   Zera toda animação/transição decorativa; mantém apenas um fade curto
+   para que mudanças de estado continuem perceptíveis. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+html.mn-reduced-motion *,
+html.mn-reduced-motion *::before,
+html.mn-reduced-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
 

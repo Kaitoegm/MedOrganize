@@ -7,6 +7,9 @@ desktop.ini
 scratch/
 browser_recordings/
 
+# graphify cache (regenerável, não precisa versionar)
+graphify-out/cache/
+
 # Ignore root-level screenshots, but keep assets
 /*.png
 /*.jpg

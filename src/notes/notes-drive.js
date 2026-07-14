@@ -409,6 +409,7 @@ MedNotes.DriveSync = {
     },
 
     // ── UI ──
+    _lastState: null,
     _setStatus: function (state, icon, text) {
         const el = document.getElementById('drive-sync-status');
         const iconEl = document.getElementById('drive-sync-icon');
@@ -418,6 +419,15 @@ MedNotes.DriveSync = {
         el.className = 'drive-sync-status drive-sync-status--' + state;
         if (iconEl) iconEl.textContent = icon;
         if (textEl) textEl.textContent = text;
+
+        // Pop leve na nuvem ao TERMINAR uma sincronização (transição syncing → ok).
+        // Passo 19 — Etapa 6.3.
+        if (state === 'ok' && this._lastState === 'syncing' && iconEl && !MedNotes.Motion?.reduced) {
+            iconEl.classList.remove('mn-pop');
+            void iconEl.offsetWidth; // reinicia a animação se dois syncs ocorrerem em sequência
+            iconEl.classList.add('mn-pop');
+        }
+        this._lastState = state;
     },
 
     _updateStatusUI: function () {
@@ -541,14 +551,31 @@ MedNotes.DriveSync = {
     },
 
     // ── Offline (Passo 17) ──
+    // Entrada/saída com spring vertical em vez de aparecer/sumir seco via
+    // [hidden] (Etapa 6.3) — o banner some para fora da tela antes de
+    // receber [hidden], que só serve para tirá-lo do fluxo/leitura de tela.
     _onOffline: function () {
         const banner = document.getElementById('offline-banner');
-        if (banner) banner.hidden = false;
+        if (!banner) return;
+        clearTimeout(this._offlineHideTimer);
+        banner.hidden = false;
+        if (MedNotes.Motion?.reduced) return;
+        banner.classList.add('offline-banner--enter');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            banner.classList.remove('offline-banner--enter');
+        }));
     },
 
     _onOnline: function () {
         const banner = document.getElementById('offline-banner');
-        if (banner) banner.hidden = true;
+        if (banner) {
+            if (MedNotes.Motion?.reduced) {
+                banner.hidden = true;
+            } else {
+                banner.classList.add('offline-banner--enter');
+                this._offlineHideTimer = setTimeout(() => { banner.hidden = true; }, MedNotes.Motion.DUR.small);
+            }
+        }
         if (this.syncPending && MedNotes.DriveAuth.isConnected()) {
             this.syncNow().then(() => {
                 MedNotes.Actions?.showToast('✅ Sincronizado!', 'success');

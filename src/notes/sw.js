@@ -7,14 +7,15 @@
 
 'use strict';
 
-const CACHE_NAME = 'mednotes-shell-v1';
+const CACHE_NAME = 'mednotes-shell-v2';
 const SHELL_FILES = [
     'notes.html',
     'notes.css',
     'notes-views.css',
     'notes.js',
     'notes-views.js',
-    'notes-drive.js'
+    'notes-drive.js',
+    'notes-worker.js'
 ];
 
 self.addEventListener('install', (event) => {

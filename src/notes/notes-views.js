@@ -8,6 +8,19 @@
 // ── ACTIONS — ações compartilhadas (ex-Sidebar) ──────────────────────
 MedNotes.Actions = {
 
+    // Cascata de entrada dos textos de um estado vazio (Etapa 6.4) — chamada
+    // na primeira exibição real do #canvas-empty-state (ver DataStore.updateBreadcrumb).
+    animateEmptyStateEntry: function (emptyStateEl) {
+        if (MedNotes.Motion.reduced) return;
+        const inner = emptyStateEl.querySelector('.canvas-empty-inner');
+        if (!inner) return;
+        const targets = Array.from(inner.children).filter(el => el.tagName !== 'svg' && el.tagName !== 'SVG');
+        MedNotes.Motion.staggerIn(targets, [
+            { transform: 'translateY(10px)', opacity: 0 },
+            { transform: 'translateY(0)', opacity: 1 }
+        ], { gap: 60, max: targets.length, duration: MedNotes.Motion.DUR.small });
+    },
+
     // Re-renderiza a UI de navegação após mutações no DataStore.
     // No editor não há nada de navegação visível para atualizar.
     refreshUI: function () {
@@ -16,23 +29,91 @@ MedNotes.Actions = {
         MedNotes.Rail?.render?.();
     },
 
-    showToast: function (msg, type = 'info') {
+    // Toast 2.0 (Passo 19 — Etapa 6.1): entrada/saída com spring, pilha física
+    // (até 3, os antigos encolhem ao chegar um novo), ícone animado por tipo,
+    // e ação inline opcional com barra de progresso do tempo restante.
+    // API retrocompatível: showToast(msg, type) continua funcionando.
+    showToast: function (msg, type = 'info', { action, onAction } = {}) {
         let container = document.getElementById('toast-container');
-        if (!container) {                   // garante o container (bug antigo: não existia)
+        if (!container) {
             container = document.createElement('div');
             container.id = 'toast-container';
             container.className = 'toast-container';
             document.body.appendChild(container);
         }
+
+        // Pilha física: toasts existentes sobem e encolhem levemente.
+        const existing = Array.from(container.querySelectorAll('.mn-toast'));
+        existing.slice(0, 2).forEach((t, i) => {
+            t.style.transform = `translateY(${-(i + 1) * 6}px) scale(${1 - (i + 1) * 0.05})`;
+            t.style.opacity = '0.7';
+        });
+        // Mantém no máximo 3 na tela — remove o mais antigo além disso.
+        existing.slice(2).forEach(t => t.remove());
+
         const toast = document.createElement('div');
         toast.className = `mn-toast mn-toast--${type}`;
-        toast.textContent = msg;
-        container.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.add('mn-toast--show'));
-        setTimeout(() => {
-            toast.classList.remove('mn-toast--show');
-            setTimeout(() => toast.remove(), 400);
-        }, 2800);
+
+        const icon = document.createElement('span');
+        icon.className = 'mn-toast-icon';
+        icon.innerHTML = this._toastIconSvg(type);
+
+        const text = document.createElement('span');
+        text.className = 'mn-toast-text';
+        text.textContent = msg;
+
+        toast.appendChild(icon);
+        toast.appendChild(text);
+
+        if (action) {
+            const btn = document.createElement('button');
+            btn.className = 'mn-toast-action';
+            btn.textContent = action;
+            btn.addEventListener('click', () => {
+                onAction?.();
+                this._dismissToast(toast);
+            });
+            toast.appendChild(btn);
+        }
+
+        const DURATION = 2800;
+        const bar = document.createElement('span');
+        bar.className = 'mn-toast-progress';
+        bar.style.animationDuration = DURATION + 'ms';
+        toast.appendChild(bar);
+
+        container.insertBefore(toast, container.firstChild);
+
+        const reduced = MedNotes.Motion?.reduced;
+        if (reduced) {
+            toast.classList.add('mn-toast--show');
+        } else {
+            requestAnimationFrame(() => toast.classList.add('mn-toast--show'));
+        }
+
+        const hideTimer = setTimeout(() => this._dismissToast(toast), DURATION);
+        toast._hideTimer = hideTimer;
+    },
+
+    _dismissToast: function (toast) {
+        if (!toast || !toast.isConnected) return;
+        clearTimeout(toast._hideTimer);
+        toast.classList.remove('mn-toast--show');
+        toast.classList.add('mn-toast--hide');
+        setTimeout(() => toast.remove(), 220);
+    },
+
+    _toastIconSvg: function (type) {
+        if (type === 'success') {
+            return '<svg class="mn-toast-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 9 17 20 6"/></svg>';
+        }
+        if (type === 'error' || type === 'danger') {
+            return '<svg class="mn-toast-x" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        }
+        if (type === 'warn' || type === 'warning') {
+            return '<svg class="mn-toast-x" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>';
+        }
+        return '<span class="mn-toast-dot"></span>';
     },
 
     promptCreate: async function (type, folderId, notebookId) {
@@ -40,7 +121,10 @@ MedNotes.Actions = {
         // Galeria de templates (Passo 14) temporariamente desativada — ver MedNotes.TemplateGallery.
         if (type === 'page') {
             const id = MedNotes.DataStore.createPage(folderId, notebookId);
-            if (id) MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
+            if (id) {
+                MedNotes.DataStore.setActiveSelection(folderId, notebookId, id);
+                MedNotes.Haptics.success();
+            }
             this.refreshUI();
             return id;
         }
@@ -94,6 +178,7 @@ MedNotes.Actions = {
 
         const confirmed = await MedNotes.Dialog.confirm('Excluir Item', `Tem certeza que deseja excluir ${typeNames[ctx]}? Esta ação não pode ser desfeita.`, true);
         if (!confirmed) return;
+        MedNotes.Haptics.warning();
 
         if (ctx === 'folder') {
             DS.deleteFolder(folderId);
@@ -276,7 +361,16 @@ MedNotes.Views = {
         if (DS.getUsername() || this._nameAsked) return;
         this._nameAsked = true;
         const name = await MedNotes.Dialog.prompt('Bem-vindo ao MedNotes! 👋', 'Como você se chama? (usamos na saudação da tela inicial)', '');
-        if (name && name.trim()) { DS.setUsername(name.trim()); this.refresh(); }
+        if (name && name.trim()) {
+            DS.setUsername(name.trim());
+            this.refresh();
+            // Primeira visita (Etapa 8.1): convite discreto para conhecer
+            // os atalhos e gestos, com ação inline no toast.
+            MedNotes.Actions.showToast('Dica: veja os atalhos e gestos do app', 'info', {
+                action: 'Ver gestos',
+                onAction: () => MedNotes.ShortcutsSheet?.open()
+            });
+        }
     },
 
     _folderCardHTML: function (f) {
@@ -836,12 +930,18 @@ MedNotes.PageSettings = {
         }
 
         wrap.innerHTML = versions.map((v, i) => `
-            <button class="settings-version-item" data-idx="${i}">
+            <div class="settings-version-item" data-idx="${i}">
                 <span>${Utils.timeAgo(v.savedAt)}</span>
-                <span class="settings-version-restore">Restaurar</span>
-            </button>`).join('');
+                <span class="settings-version-actions">
+                    <button class="settings-version-preview" data-idx="${i}" title="Ver diferenças antes de restaurar">👁 Prever</button>
+                    <button class="settings-version-restore" data-idx="${i}">Restaurar</button>
+                </span>
+            </div>`).join('');
 
-        wrap.querySelectorAll('.settings-version-item').forEach(btn => {
+        wrap.querySelectorAll('.settings-version-preview').forEach(btn => {
+            btn.addEventListener('click', () => MedNotes.DiffPreview.open(parseInt(btn.dataset.idx, 10)));
+        });
+        wrap.querySelectorAll('.settings-version-restore').forEach(btn => {
             btn.addEventListener('click', () => this._restoreVersion(parseInt(btn.dataset.idx, 10)));
         });
     },
@@ -856,7 +956,42 @@ MedNotes.PageSettings = {
         );
         if (!confirmed) return;
 
-        MedNotes.Versions.restore(folderId, notebookId, pageId, idx);
+        // Captura o snapshot ALVO antes de mexer na lista — empurrar o
+        // snapshot do estado atual (linha abaixo) desloca os índices de
+        // list() porque o mais recente vai para o topo. Restaurar por
+        // dados capturados evita restaurar a versão errada.
+        const targetSnap = MedNotes.Versions.list(pageId)[idx];
+        if (!targetSnap) return;
+
+        // Bônus de segurança (Etapa 8, Passo 21): empurra o estado ATUAL
+        // para o histórico antes de sobrescrever — restaurar deixa de ser
+        // destrutivo sem volta, já que o estado moderno vira uma versão
+        // disponível para desfazer a restauração depois.
+        const currentPage = this._activePage();
+        if (currentPage) {
+            MedNotes.Versions._pushSnapshot(pageId, {
+                savedAt: new Date().toISOString(),
+                canvasData: currentPage.canvasData,
+                textData: currentPage.textData,
+                background: currentPage.background,
+                bgColor: currentPage.bgColor,
+                canvasW: currentPage.canvasW,
+                canvasH: currentPage.canvasH
+            });
+        }
+
+        MedNotes.DataStore.updatePageData(folderId, notebookId, pageId, {
+            canvasData: targetSnap.canvasData,
+            textData:   targetSnap.textData,
+            background: targetSnap.background,
+            bgColor:    targetSnap.bgColor,
+            canvasW:    targetSnap.canvasW,
+            canvasH:    targetSnap.canvasH
+        });
+        if (MedNotes.Canvas && DS.active.pageId === pageId) {
+            try { MedNotes.Canvas.loadActivePage(); } catch (e) { /* sem página ativa */ }
+        }
+
         const page = this._activePage();
         this._syncUI(page);
         MedNotes.Actions.showToast('✅ Versão restaurada!', 'success');
@@ -941,6 +1076,28 @@ MedNotes.AppSettings = {
             btn.addEventListener('click', () => { this.setTheme(btn.dataset.value); this._syncTheme(); });
         });
 
+        this.panel.querySelectorAll('#as-haptics .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                MedNotes.Haptics.setEnabled(btn.dataset.value === 'on');
+                this._syncMotionToggles();
+                if (btn.dataset.value === 'on') MedNotes.Haptics.tap(); // feedback imediato ao ligar
+            });
+        });
+
+        this.panel.querySelectorAll('#as-reduced-motion .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                MedNotes.Motion.setReduced(btn.dataset.value === 'on');
+                this._syncMotionToggles();
+            });
+        });
+
+        this.panel.querySelectorAll('#as-entry-anim .settings-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                localStorage.setItem('mednotes_entry_anim', btn.dataset.value);
+                this._syncMotionToggles();
+            });
+        });
+
         const cursorSlider = document.getElementById('as-cursor-slider');
         cursorSlider.addEventListener('input', () => {
             this.setCursorScale(parseFloat(cursorSlider.value));
@@ -968,6 +1125,7 @@ MedNotes.AppSettings = {
         this.panel.setAttribute('aria-hidden', 'false');
         this._syncTheme();
         this._syncCursor();
+        this._syncMotionToggles();
         this._renderFavColors();
     },
 
@@ -993,6 +1151,30 @@ MedNotes.AppSettings = {
         const theme = this.getTheme();
         this.panel.querySelectorAll('#as-theme .settings-option').forEach(btn => {
             const active = btn.dataset.value === theme;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+    },
+
+    // ── Motion (Passo 19 — Etapa 1): vibração + reduzir animações ──
+    _syncMotionToggles: function () {
+        const hapticsOn = MedNotes.Haptics.enabled();
+        this.panel.querySelectorAll('#as-haptics .settings-option').forEach(btn => {
+            const active = (btn.dataset.value === 'on') === hapticsOn;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+
+        const reduced = MedNotes.Motion.reduced;
+        this.panel.querySelectorAll('#as-reduced-motion .settings-option').forEach(btn => {
+            const active = (btn.dataset.value === 'on') === reduced;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-checked', String(active));
+        });
+
+        const entryAnim = localStorage.getItem('mednotes_entry_anim') || 'flip';
+        this.panel.querySelectorAll('#as-entry-anim .settings-option').forEach(btn => {
+            const active = btn.dataset.value === entryAnim;
             btn.classList.toggle('active', active);
             btn.setAttribute('aria-checked', String(active));
         });
@@ -1053,6 +1235,17 @@ MedNotes.AppSettings = {
             btn.addEventListener('click', () => {
                 MedNotes.Canvas.toolSettings.pen.color = c;
                 MedNotes.Canvas._syncPopoverUI(document.getElementById('popover-pen'), 'pen');
+                // Mesmo feedback dos swatches estáticos (Passo 19 — Etapa 4):
+                // pulso local + anel viajante + háptica. Estes swatches são
+                // recriados dinamicamente a partir da paleta favorita, por
+                // isso o listener replica o comportamento em vez de herdá-lo.
+                MedNotes.Motion.spring(btn, [
+                    { transform: 'scale(1)' },
+                    { transform: 'scale(1.3)' },
+                    { transform: 'scale(1)' }
+                ], { duration: MedNotes.Motion.DUR.small });
+                MedNotes.Haptics.light();
+                MedNotes.Canvas._flyColorToToolbar(btn, 'pen');
             });
             grid.insertBefore(btn, customInput);
         });
@@ -1149,5 +1342,70 @@ MedNotes.TemplateGallery = {
             DS.setActiveSelection(this._folderId, this._notebookId, id);
         }
         this.close();
+    }
+};
+
+// ────────────────────────────────────────────────────────────────
+// DiffPreview — modal de prévia de versão com diff colorido
+// (Passo 21, Etapa 8). Mesmo padrão de abertura/fechamento do
+// TemplateGallery; o conteúdo é uma imagem gerada por
+// MedNotes.Versions.renderDiffCanvas.
+// ────────────────────────────────────────────────────────────────
+MedNotes.DiffPreview = {
+    isOpen: false,
+    _versionIdx: null,
+
+    init: function () {
+        this.overlay = document.getElementById('diff-overlay');
+        this.modal   = document.getElementById('diff-modal');
+        this.img     = document.getElementById('diff-canvas-img');
+        this.counts  = document.getElementById('diff-counts');
+        this.textWarning = document.getElementById('diff-text-warning');
+
+        document.getElementById('diff-close-btn').addEventListener('click', () => this.close());
+        document.getElementById('diff-cancel-btn').addEventListener('click', () => this.close());
+        document.getElementById('diff-restore-btn').addEventListener('click', () => this._confirmRestore());
+        this.overlay.addEventListener('click', () => this.close());
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    },
+
+    open: function (versionIdx) {
+        const DS = MedNotes.DataStore;
+        const { folderId, notebookId, pageId } = DS.active;
+        const page = DS.getPage(folderId, notebookId, pageId);
+        const versions = MedNotes.Versions.list(pageId);
+        const snapshot = versions[versionIdx];
+        if (!page || !snapshot) return;
+
+        this._versionIdx = versionIdx;
+
+        const diff = MedNotes.Versions.buildDiff(page, snapshot);
+        const dataUrl = MedNotes.Versions.renderDiffCanvas(page, diff, 800);
+
+        this.img.src = dataUrl;
+        this.counts.textContent = `${diff.soAntiga.length} traço(s) voltam · ${diff.soAtual.length} traço(s) serão perdidos · ${diff.comuns.length} iguais`;
+        this.textWarning.hidden = !diff.textDiffers;
+
+        this.isOpen = true;
+        this.overlay.classList.add('open');
+        this.modal.classList.add('open');
+        this.overlay.setAttribute('aria-hidden', 'false');
+        this.modal.setAttribute('aria-hidden', 'false');
+    },
+
+    close: function () {
+        this.isOpen = false;
+        this.overlay.classList.remove('open');
+        this.modal.classList.remove('open');
+        this.overlay.setAttribute('aria-hidden', 'true');
+        this.modal.setAttribute('aria-hidden', 'true');
+    },
+
+    _confirmRestore: async function () {
+        const idx = this._versionIdx;
+        this.close();
+        await MedNotes.PageSettings._restoreVersion(idx);
     }
 };

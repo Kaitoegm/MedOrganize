@@ -223,19 +223,44 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('med_cozy_completed_tasks', '0');
     }
 
+    // Migrate stale asset urls saved by older app.js versions (absolute "/src/assets/..."
+    // or root-relative "assets/..." without the "../" needed from src/main/) to the
+    // current correct form "../assets/...".
+    function fixStoredAssetUrl(url) {
+        if (typeof url !== 'string') return url;
+        if (url.startsWith('/src/assets/')) {
+            return url.replace('/src/assets/', '../assets/');
+        }
+        if (url.startsWith('assets/')) {
+            return '../' + url;
+        }
+        return url;
+    }
+
     // Load custom collections from LocalStorage to persist approved discovery cards
     const customBgs = JSON.parse(localStorage.getItem('med_cozy_custom_bgs')) || {};
     const customAnimals = JSON.parse(localStorage.getItem('med_cozy_custom_animals')) || {};
 
     const backgroundsCatalog = new Map([]);
     Object.entries(customBgs).forEach(([k, v]) => {
-        if (isSafeKey(k)) backgroundsCatalog.set(k, v);
+        if (isSafeKey(k)) backgroundsCatalog.set(k, { ...v, url: fixStoredAssetUrl(v.url) });
     });
 
     const animalsCatalog = new Map([]);
     Object.entries(customAnimals).forEach(([k, v]) => {
-        if (isSafeKey(k)) animalsCatalog.set(k, v);
+        if (isSafeKey(k)) animalsCatalog.set(k, { ...v, url: fixStoredAssetUrl(v.url) });
     });
+
+    // Persist the migrated urls so this doesn't need to re-run every load
+    (function persistMigratedCatalogs() {
+        const bgObj = {};
+        backgroundsCatalog.forEach((v, k) => { bgObj[k] = v; });
+        localStorage.setItem('med_cozy_custom_bgs', JSON.stringify(bgObj));
+
+        const animObj = {};
+        animalsCatalog.forEach((v, k) => { animObj[k] = v; });
+        localStorage.setItem('med_cozy_custom_animals', JSON.stringify(animObj));
+    })();
 
     // Cozy shop currencies and stats state loaded from LocalStorage
     let tokens = parseInt(localStorage.getItem('med_cozy_tokens')) || 0;

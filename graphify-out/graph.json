@@ -4,27 +4,55 @@
   "graph": {
     "hyperedges": [
       {
-        "id": "hyperedge_mednotes_drawing_toolbar_popovers",
-        "label": "MedNotes Drawing Toolbar + Popover System",
+        "id": "mednotes_navigation_redesign_system",
+        "label": "MedNotes Navigation Redesign System",
         "nodes": [
-          "src_notes_notes_html_drawing_tools_toolbar",
-          "src_notes_notes_html_tool_pen",
-          "src_notes_notes_html_tool_highlighter",
-          "src_notes_notes_html_tool_eraser",
-          "src_notes_notes_html_tool_lasso",
-          "src_notes_notes_html_tool_shapes",
-          "src_notes_notes_html_popover_pen",
-          "src_notes_notes_html_popover_highlighter",
-          "src_notes_notes_html_popover_eraser",
-          "src_notes_notes_html_popover_lasso",
-          "src_notes_notes_html_popover_shapes",
-          "docs_plano_ferramentas_rich_popovers",
-          "docs_plano_ferramentas_toolsettings_state_model"
+          "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router",
+          "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail",
+          "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_papelaria_cozy_identity",
+          "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_data_migration",
+          "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module",
+          "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module",
+          "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker",
+          "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module",
+          "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal",
+          "src_notes_notes_views_container_markup"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md"
+      },
+      {
+        "id": "mednotes_page_peek_scroll_flow",
+        "label": "Page Peek + Snap Scroll Flow",
+        "nodes": [
+          "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap",
+          "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug",
+          "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll",
+          "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page",
+          "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek",
+          "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation"
         ],
         "relation": "participate_in",
-        "confidence": "INFERRED",
-        "confidence_score": 0.85,
-        "source_file": "src/notes/notes.html"
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md"
+      },
+      {
+        "id": "medorganize_gamification_economy",
+        "label": "MedOrganize Token/Gacha Gamification Economy",
+        "nodes": [
+          "src_main_index_pomodoro_focus_flow",
+          "src_main_index_gacha_shop",
+          "src_main_index_pet_care",
+          "src_main_index_termo_game",
+          "src_main_index_fishing_game"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "src/main/index.html"
       },
       {
         "id": "hyperedge_medorganize_gamification_currencies",
@@ -42,27 +70,205 @@
         "confidence": "INFERRED",
         "confidence_score": 0.85,
         "source_file": "docs/novas_instrucoes_gamificacao.md"
-      },
-      {
-        "id": "hyperedge_papelaria_cozy_brainstorm_mockups",
-        "label": "Papelaria Cozy Visual Direction Brainstorm Set",
-        "nodes": [
-          "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_fichario_aba",
-          "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_envelope_kraft",
-          "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_flat_cozy",
-          "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba",
-          "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_espiral",
-          "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_moleskine",
-          "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup"
-        ],
-        "relation": "form",
-        "confidence": "INFERRED",
-        "confidence_score": 0.75,
-        "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html"
       }
     ]
   },
   "nodes": [
+    {
+      "label": "termo_validation_words.js",
+      "file_type": "code",
+      "source_file": "data/termo_validation_words.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "termo_validation_words.js",
+      "id": "data_termo_validation_words"
+    },
+    {
+      "label": "TERMO_VALIDATION_WORDS",
+      "file_type": "code",
+      "source_file": "data/termo_validation_words.js",
+      "source_location": "L2",
+      "_origin": "ast",
+      "community": 19,
+      "norm_label": "termo_validation_words",
+      "id": "data_termo_validation_words_termo_validation_words"
+    },
+    {
+      "label": "file-organizer Skill",
+      "file_type": "document",
+      "source_file": ".agents/skills/file-organizer/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 22,
+      "norm_label": "file-organizer skill",
+      "id": "agents_skills_file_organizer_skill_file_organizer_skill"
+    },
+    {
+      "label": "Duplicate File Detection",
+      "file_type": "rationale",
+      "source_file": ".agents/skills/file-organizer/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Finds duplicates via md5 hash, filename, and size comparisons; always asks for confirmation before deleting to avoid destructive mistakes.",
+      "community": 21,
+      "norm_label": "duplicate file detection",
+      "id": "agents_skills_file_organizer_skill_duplicate_detection"
+    },
+    {
+      "label": "Organization Plan Workflow",
+      "file_type": "rationale",
+      "source_file": ".agents/skills/file-organizer/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Propose a plan (current state, proposed structure, changes) before executing, so user can approve/modify rather than have files moved without consent.",
+      "community": 24,
+      "norm_label": "organization plan workflow",
+      "id": "agents_skills_file_organizer_skill_organization_plan_workflow"
+    },
+    {
+      "label": "Folder/File Naming Conventions",
+      "file_type": "concept",
+      "source_file": ".agents/skills/file-organizer/SKILL.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 23,
+      "norm_label": "folder/file naming conventions",
+      "id": "agents_skills_file_organizer_skill_folder_naming_convention"
+    },
+    {
+      "label": "MedOrganize Cozy Gamification Plan",
+      "file_type": "document",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 13,
+      "norm_label": "medorganize cozy gamification plan",
+      "id": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan"
+    },
+    {
+      "label": "Cozy Pastel Ghibli-Lofi Design System",
+      "file_type": "concept",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 13,
+      "norm_label": "cozy pastel ghibli-lofi design system",
+      "id": "docs_novas_instrucoes_gamificacao_design_system"
+    },
+    {
+      "label": "Sidebar Menu Order Spec",
+      "file_type": "rationale",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Defines the exact required order of sidebar buttons: Loja Cozy & Gacha, Apar\u00eancia & Bichinhos, Minijogos, Miss\u00f5es Di\u00e1rias, Configura\u00e7\u00f5es, Estat\u00edsticas de Estudo.",
+      "community": 13,
+      "norm_label": "sidebar menu order spec",
+      "id": "docs_novas_instrucoes_gamificacao_sidebar_menu_order"
+    },
+    {
+      "label": "Pet Care / Friendship Level Mechanic",
+      "file_type": "rationale",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Each pet has a friendship XP bar leveled up via feeding/playing with purchased items (Lanchinhos, Brinquedos) using MedTokens, unlocking bonuses/cosmetics to encourage engagement.",
+      "community": 13,
+      "norm_label": "pet care / friendship level mechanic",
+      "id": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
+    },
+    {
+      "label": "Termo Cozy Minigame (Wordle-like)",
+      "file_type": "rationale",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "5-letter word guessing game in 6 tries modeled on term.ooo, rewarding MedTokens once per day free, extra plays cost tokens, to gamify study breaks.",
+      "community": 13,
+      "norm_label": "termo cozy minigame (wordle-like)",
+      "id": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
+    },
+    {
+      "label": "Game Loop & State Technical Spec",
+      "file_type": "rationale",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Keep game state (Termo match, pet XP, food stock) in localStorage, use anime.js for animations, and validate guessed words (accent-insensitive) for a smoother UX.",
+      "community": 13,
+      "norm_label": "game loop & state technical spec",
+      "id": "docs_novas_instrucoes_gamificacao_game_loop_state_spec"
+    },
+    {
+      "label": "MedTokens Currency",
+      "file_type": "concept",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 13,
+      "norm_label": "medtokens currency",
+      "id": "docs_novas_instrucoes_gamificacao_medtokens"
+    },
+    {
+      "label": "Moedas Gacha Currency",
+      "file_type": "concept",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 25,
+      "norm_label": "moedas gacha currency",
+      "id": "docs_novas_instrucoes_gamificacao_gacha_coins"
+    },
+    {
+      "label": "anime.js Animation Library",
+      "file_type": "concept",
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "community": 13,
+      "norm_label": "anime.js animation library",
+      "id": "docs_novas_instrucoes_gamificacao_anime_js"
+    },
     {
       "label": "package.json",
       "file_type": "code",
@@ -244,33 +450,13 @@
       "norm_label": "@capacitor/cli"
     },
     {
-      "label": "termo_validation_words.js",
-      "file_type": "code",
-      "source_file": "data/termo_validation_words.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "data_termo_validation_words",
-      "community": 15,
-      "norm_label": "termo_validation_words.js"
-    },
-    {
-      "label": "TERMO_VALIDATION_WORDS",
-      "file_type": "code",
-      "source_file": "data/termo_validation_words.js",
-      "source_location": "L2",
-      "_origin": "ast",
-      "id": "data_termo_validation_words_termo_validation_words",
-      "community": 15,
-      "norm_label": "termo_validation_words"
-    },
-    {
       "label": "server.py",
       "file_type": "code",
       "source_file": "scripts/server.py",
       "source_location": "L1",
       "_origin": "ast",
       "id": "scripts_server",
-      "community": 10,
+      "community": 16,
       "norm_label": "server.py"
     },
     {
@@ -280,7 +466,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "scripts_server_nocachehttprequesthandler",
-      "community": 10,
+      "community": 16,
       "norm_label": "nocachehttprequesthandler"
     },
     {
@@ -290,7 +476,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "scripts_server_nocachehttprequesthandler_end_headers",
-      "community": 10,
+      "community": 16,
       "norm_label": ".end_headers()"
     },
     {
@@ -300,7 +486,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "scripts_server_start_server",
-      "community": 10,
+      "community": 16,
       "norm_label": "start_server()"
     },
     {
@@ -310,7 +496,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "scripts_server_open_browser",
-      "community": 10,
+      "community": 16,
       "norm_label": "open_browser()"
     },
     {
@@ -320,7 +506,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_assets_anime_min",
-      "community": 3,
+      "community": 1,
       "norm_label": "anime.min.js"
     },
     {
@@ -330,7 +516,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_a",
-      "community": 3,
+      "community": 1,
       "norm_label": "a()"
     },
     {
@@ -340,7 +526,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_o",
-      "community": 3,
+      "community": 1,
       "norm_label": "o()"
     },
     {
@@ -350,7 +536,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_u",
-      "community": 3,
+      "community": 1,
       "norm_label": "u()"
     },
     {
@@ -360,7 +546,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_c",
-      "community": 3,
+      "community": 1,
       "norm_label": "c()"
     },
     {
@@ -370,7 +556,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_s",
-      "community": 3,
+      "community": 1,
       "norm_label": "s()"
     },
     {
@@ -380,7 +566,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_f",
-      "community": 3,
+      "community": 1,
       "norm_label": "f()"
     },
     {
@@ -390,7 +576,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_t",
-      "community": 3,
+      "community": 1,
       "norm_label": "t()"
     },
     {
@@ -400,7 +586,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_r",
-      "community": 3,
+      "community": 1,
       "norm_label": "r()"
     },
     {
@@ -410,7 +596,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_h",
-      "community": 3,
+      "community": 1,
       "norm_label": "h()"
     },
     {
@@ -420,7 +606,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_g",
-      "community": 3,
+      "community": 1,
       "norm_label": "g()"
     },
     {
@@ -430,7 +616,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_m",
-      "community": 3,
+      "community": 1,
       "norm_label": "m()"
     },
     {
@@ -440,7 +626,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_y",
-      "community": 3,
+      "community": 1,
       "norm_label": "y()"
     },
     {
@@ -450,7 +636,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_b",
-      "community": 3,
+      "community": 1,
       "norm_label": "b()"
     },
     {
@@ -460,7 +646,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_x",
-      "community": 3,
+      "community": 1,
       "norm_label": "x()"
     },
     {
@@ -470,7 +656,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_w",
-      "community": 3,
+      "community": 1,
       "norm_label": "w()"
     },
     {
@@ -480,7 +666,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_k",
-      "community": 3,
+      "community": 1,
       "norm_label": "k()"
     },
     {
@@ -490,7 +676,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_p",
-      "community": 3,
+      "community": 1,
       "norm_label": "p()"
     },
     {
@@ -500,7 +686,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_i",
-      "community": 3,
+      "community": 1,
       "norm_label": "i()"
     },
     {
@@ -510,7 +696,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_d",
-      "community": 3,
+      "community": 1,
       "norm_label": "d()"
     },
     {
@@ -520,7 +706,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_e",
-      "community": 3,
+      "community": 1,
       "norm_label": "e()"
     },
     {
@@ -530,7 +716,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_n",
-      "community": 3,
+      "community": 1,
       "norm_label": "n()"
     },
     {
@@ -540,7 +726,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_l",
-      "community": 3,
+      "community": 1,
       "norm_label": "l()"
     },
     {
@@ -550,7 +736,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_j",
-      "community": 3,
+      "community": 1,
       "norm_label": "j()"
     },
     {
@@ -560,7 +746,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_q",
-      "community": 3,
+      "community": 1,
       "norm_label": "q()"
     },
     {
@@ -570,7 +756,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_v",
-      "community": 3,
+      "community": 1,
       "norm_label": "v()"
     },
     {
@@ -580,7 +766,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "c_users_user_desktop_programa\u00e7\u00e3o_dazzling_hopper_src_assets_anime_min",
-      "community": 3,
+      "community": 1,
       "norm_label": "$()"
     },
     {
@@ -590,7 +776,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_z",
-      "community": 3,
+      "community": 1,
       "norm_label": "z()"
     },
     {
@@ -600,7 +786,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_nn",
-      "community": 3,
+      "community": 1,
       "norm_label": "nn()"
     },
     {
@@ -610,7 +796,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_en",
-      "community": 3,
+      "community": 1,
       "norm_label": "en()"
     },
     {
@@ -620,7 +806,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_tn",
-      "community": 3,
+      "community": 1,
       "norm_label": "tn()"
     },
     {
@@ -630,7 +816,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_assets_anime_min_rn",
-      "community": 3,
+      "community": 1,
       "norm_label": "rn()"
     },
     {
@@ -640,7 +826,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_main_app",
-      "community": 0,
+      "community": 2,
       "norm_label": "app.js"
     },
     {
@@ -650,7 +836,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_main_app_issafekey",
-      "community": 0,
+      "community": 2,
       "norm_label": "issafekey()"
     },
     {
@@ -660,7 +846,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_main_app_safeurl",
-      "community": 7,
+      "community": 4,
       "norm_label": "safeurl()"
     },
     {
@@ -670,7 +856,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_main_app_playaudio",
-      "community": 1,
+      "community": 14,
       "norm_label": "playaudio()"
     },
     {
@@ -680,7 +866,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_main_app_showcozyalert",
-      "community": 1,
+      "community": 4,
       "norm_label": "showcozyalert()"
     },
     {
@@ -690,7 +876,7 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "src_main_app_canearnchecklisttokens",
-      "community": 6,
+      "community": 8,
       "norm_label": "canearnchecklisttokens()"
     },
     {
@@ -700,7 +886,7 @@
       "source_location": "L106",
       "_origin": "ast",
       "id": "src_main_app_recordchecklisttokenearned",
-      "community": 6,
+      "community": 8,
       "norm_label": "recordchecklisttokenearned()"
     },
     {
@@ -710,7 +896,7 @@
       "source_location": "L121",
       "_origin": "ast",
       "id": "src_main_app_pulsebadge",
-      "community": 1,
+      "community": 4,
       "norm_label": "pulsebadge()"
     },
     {
@@ -720,7 +906,7 @@
       "source_location": "L132",
       "_origin": "ast",
       "id": "src_main_app_spawnfloatingtext",
-      "community": 1,
+      "community": 0,
       "norm_label": "spawnfloatingtext()"
     },
     {
@@ -730,7 +916,7 @@
       "source_location": "L249",
       "_origin": "ast",
       "id": "src_main_app_saveinventory",
-      "community": 7,
+      "community": 4,
       "norm_label": "saveinventory()"
     },
     {
@@ -740,7 +926,7 @@
       "source_location": "L263",
       "_origin": "ast",
       "id": "src_main_app_getrarityforpts",
-      "community": 7,
+      "community": 4,
       "norm_label": "getrarityforpts()"
     },
     {
@@ -750,7 +936,7 @@
       "source_location": "L269",
       "_origin": "ast",
       "id": "src_main_app_getpetpts",
-      "community": 7,
+      "community": 4,
       "norm_label": "getpetpts()"
     },
     {
@@ -760,7 +946,7 @@
       "source_location": "L274",
       "_origin": "ast",
       "id": "src_main_app_setpetpts",
-      "community": 7,
+      "community": 4,
       "norm_label": "setpetpts()"
     },
     {
@@ -770,7 +956,7 @@
       "source_location": "L486",
       "_origin": "ast",
       "id": "src_main_app_initdate",
-      "community": 0,
+      "community": 2,
       "norm_label": "initdate()"
     },
     {
@@ -780,7 +966,7 @@
       "source_location": "L496",
       "_origin": "ast",
       "id": "src_main_app_rendertasks",
-      "community": 1,
+      "community": 8,
       "norm_label": "rendertasks()"
     },
     {
@@ -790,7 +976,7 @@
       "source_location": "L525",
       "_origin": "ast",
       "id": "src_main_app_createtaskrow",
-      "community": 1,
+      "community": 8,
       "norm_label": "createtaskrow()"
     },
     {
@@ -800,7 +986,7 @@
       "source_location": "L576",
       "_origin": "ast",
       "id": "src_main_app_addtask",
-      "community": 1,
+      "community": 8,
       "norm_label": "addtask()"
     },
     {
@@ -810,7 +996,7 @@
       "source_location": "L590",
       "_origin": "ast",
       "id": "src_main_app_toggletask",
-      "community": 1,
+      "community": 8,
       "norm_label": "toggletask()"
     },
     {
@@ -820,7 +1006,7 @@
       "source_location": "L624",
       "_origin": "ast",
       "id": "src_main_app_deletetask",
-      "community": 1,
+      "community": 8,
       "norm_label": "deletetask()"
     },
     {
@@ -830,7 +1016,7 @@
       "source_location": "L637",
       "_origin": "ast",
       "id": "src_main_app_opensettings",
-      "community": 6,
+      "community": 11,
       "norm_label": "opensettings()"
     },
     {
@@ -840,7 +1026,7 @@
       "source_location": "L657",
       "_origin": "ast",
       "id": "src_main_app_closesettings",
-      "community": 0,
+      "community": 2,
       "norm_label": "closesettings()"
     },
     {
@@ -850,7 +1036,7 @@
       "source_location": "L676",
       "_origin": "ast",
       "id": "src_main_app_renderprepeditorlist",
-      "community": 6,
+      "community": 11,
       "norm_label": "renderprepeditorlist()"
     },
     {
@@ -860,7 +1046,7 @@
       "source_location": "L729",
       "_origin": "ast",
       "id": "src_main_app_cleanspotifyurl",
-      "community": 0,
+      "community": 17,
       "norm_label": "cleanspotifyurl()"
     },
     {
@@ -870,7 +1056,7 @@
       "source_location": "L743",
       "_origin": "ast",
       "id": "src_main_app_cleanyoutubeurl",
-      "community": 0,
+      "community": 17,
       "norm_label": "cleanyoutubeurl()"
     },
     {
@@ -880,7 +1066,7 @@
       "source_location": "L791",
       "_origin": "ast",
       "id": "src_main_app_renderpetcareui",
-      "community": 7,
+      "community": 4,
       "norm_label": "renderpetcareui()"
     },
     {
@@ -890,7 +1076,7 @@
       "source_location": "L818",
       "_origin": "ast",
       "id": "src_main_app_usepetitem",
-      "community": 7,
+      "community": 4,
       "norm_label": "usepetitem()"
     },
     {
@@ -900,7 +1086,7 @@
       "source_location": "L847",
       "_origin": "ast",
       "id": "src_main_app_openaesthetics",
-      "community": 7,
+      "community": 4,
       "norm_label": "openaesthetics()"
     },
     {
@@ -910,7 +1096,7 @@
       "source_location": "L867",
       "_origin": "ast",
       "id": "src_main_app_closeaesthetics",
-      "community": 0,
+      "community": 2,
       "norm_label": "closeaesthetics()"
     },
     {
@@ -920,7 +1106,7 @@
       "source_location": "L879",
       "_origin": "ast",
       "id": "src_main_app_updateaestheticsmodebuttons",
-      "community": 7,
+      "community": 4,
       "norm_label": "updateaestheticsmodebuttons()"
     },
     {
@@ -930,7 +1116,7 @@
       "source_location": "L901",
       "_origin": "ast",
       "id": "src_main_app_renderaestheticsgrids",
-      "community": 7,
+      "community": 4,
       "norm_label": "renderaestheticsgrids()"
     },
     {
@@ -940,7 +1126,7 @@
       "source_location": "L962",
       "_origin": "ast",
       "id": "src_main_app_applyaesthetics",
-      "community": 0,
+      "community": 17,
       "norm_label": "applyaesthetics()"
     },
     {
@@ -950,7 +1136,7 @@
       "source_location": "L1033",
       "_origin": "ast",
       "id": "src_main_app_setupfocustrap",
-      "community": 6,
+      "community": 11,
       "norm_label": "setupfocustrap()"
     },
     {
@@ -960,7 +1146,7 @@
       "source_location": "L1129",
       "_origin": "ast",
       "id": "src_main_app_openstats",
-      "community": 6,
+      "community": 11,
       "norm_label": "openstats()"
     },
     {
@@ -970,7 +1156,7 @@
       "source_location": "L1138",
       "_origin": "ast",
       "id": "src_main_app_closestats",
-      "community": 0,
+      "community": 2,
       "norm_label": "closestats()"
     },
     {
@@ -980,7 +1166,7 @@
       "source_location": "L1153",
       "_origin": "ast",
       "id": "src_main_app_openerrornotebook",
-      "community": 6,
+      "community": 11,
       "norm_label": "openerrornotebook()"
     },
     {
@@ -990,7 +1176,7 @@
       "source_location": "L1163",
       "_origin": "ast",
       "id": "src_main_app_closeerrornotebook",
-      "community": 0,
+      "community": 2,
       "norm_label": "closeerrornotebook()"
     },
     {
@@ -1000,7 +1186,7 @@
       "source_location": "L1207",
       "_origin": "ast",
       "id": "src_main_app_showexplanation",
-      "community": 1,
+      "community": 14,
       "norm_label": "showexplanation()"
     },
     {
@@ -1010,7 +1196,7 @@
       "source_location": "L1218",
       "_origin": "ast",
       "id": "src_main_app_hideexplanation",
-      "community": 6,
+      "community": 11,
       "norm_label": "hideexplanation()"
     },
     {
@@ -1020,7 +1206,7 @@
       "source_location": "L1232",
       "_origin": "ast",
       "id": "src_main_app_rendererrors",
-      "community": 1,
+      "community": 14,
       "norm_label": "rendererrors()"
     },
     {
@@ -1030,7 +1216,7 @@
       "source_location": "L1335",
       "_origin": "ast",
       "id": "src_main_app_adderror",
-      "community": 1,
+      "community": 14,
       "norm_label": "adderror()"
     },
     {
@@ -1040,7 +1226,7 @@
       "source_location": "L1355",
       "_origin": "ast",
       "id": "src_main_app_resolveerror",
-      "community": 1,
+      "community": 14,
       "norm_label": "resolveerror()"
     },
     {
@@ -1050,7 +1236,7 @@
       "source_location": "L1375",
       "_origin": "ast",
       "id": "src_main_app_startfocussession",
-      "community": 0,
+      "community": 17,
       "norm_label": "startfocussession()"
     },
     {
@@ -1060,7 +1246,7 @@
       "source_location": "L1397",
       "_origin": "ast",
       "id": "src_main_app_updatefocustimerdisplay",
-      "community": 1,
+      "community": 6,
       "norm_label": "updatefocustimerdisplay()"
     },
     {
@@ -1070,7 +1256,7 @@
       "source_location": "L1412",
       "_origin": "ast",
       "id": "src_main_app_focusfocusdisplaycolorreset",
-      "community": 1,
+      "community": 2,
       "norm_label": "focusfocusdisplaycolorreset()"
     },
     {
@@ -1080,7 +1266,7 @@
       "source_location": "L1418",
       "_origin": "ast",
       "id": "src_main_app_stopactivetimer",
-      "community": 1,
+      "community": 6,
       "norm_label": "stopactivetimer()"
     },
     {
@@ -1090,7 +1276,7 @@
       "source_location": "L1430",
       "_origin": "ast",
       "id": "src_main_app_startactivetimer",
-      "community": 1,
+      "community": 6,
       "norm_label": "startactivetimer()"
     },
     {
@@ -1100,7 +1286,7 @@
       "source_location": "L1503",
       "_origin": "ast",
       "id": "src_main_app_triggercountdown",
-      "community": 1,
+      "community": 14,
       "norm_label": "triggercountdown()"
     },
     {
@@ -1110,7 +1296,7 @@
       "source_location": "L1515",
       "_origin": "ast",
       "id": "src_main_app_transitiontopreparo",
-      "community": 1,
+      "community": 6,
       "norm_label": "transitiontopreparo()"
     },
     {
@@ -1120,7 +1306,7 @@
       "source_location": "L1549",
       "_origin": "ast",
       "id": "src_main_app_renderprepballoons",
-      "community": 0,
+      "community": 2,
       "norm_label": "renderprepballoons()"
     },
     {
@@ -1130,7 +1316,7 @@
       "source_location": "L1629",
       "_origin": "ast",
       "id": "src_main_app_startprepphysicsloop",
-      "community": 0,
+      "community": 2,
       "norm_label": "startprepphysicsloop()"
     },
     {
@@ -1140,7 +1326,7 @@
       "source_location": "L1736",
       "_origin": "ast",
       "id": "src_main_app_transitiontofoco",
-      "community": 1,
+      "community": 6,
       "norm_label": "transitiontofoco()"
     },
     {
@@ -1150,7 +1336,7 @@
       "source_location": "L1773",
       "_origin": "ast",
       "id": "src_main_app_transitiontopausa",
-      "community": 1,
+      "community": 6,
       "norm_label": "transitiontopausa()"
     },
     {
@@ -1160,7 +1346,7 @@
       "source_location": "L1811",
       "_origin": "ast",
       "id": "src_main_app_setactiveview",
-      "community": 1,
+      "community": 6,
       "norm_label": "setactiveview()"
     },
     {
@@ -1170,7 +1356,7 @@
       "source_location": "L1892",
       "_origin": "ast",
       "id": "src_main_app_exitfocusoverlay",
-      "community": 1,
+      "community": 6,
       "norm_label": "exitfocusoverlay()"
     },
     {
@@ -1180,7 +1366,7 @@
       "source_location": "L1907",
       "_origin": "ast",
       "id": "src_main_app_completefocustask",
-      "community": 1,
+      "community": 6,
       "norm_label": "completefocustask()"
     },
     {
@@ -1190,7 +1376,7 @@
       "source_location": "L1951",
       "_origin": "ast",
       "id": "src_main_app_showmusictab",
-      "community": 0,
+      "community": 17,
       "norm_label": "showmusictab()"
     },
     {
@@ -1210,7 +1396,7 @@
       "source_location": "L2009",
       "_origin": "ast",
       "id": "src_main_app_playretrochime",
-      "community": 1,
+      "community": 6,
       "norm_label": "playretrochime()"
     },
     {
@@ -1220,7 +1406,7 @@
       "source_location": "L2039",
       "_origin": "ast",
       "id": "src_main_app_playfocusendalarm",
-      "community": 0,
+      "community": 2,
       "norm_label": "playfocusendalarm()"
     },
     {
@@ -1230,7 +1416,7 @@
       "source_location": "L2081",
       "_origin": "ast",
       "id": "src_main_app_startrainsynth",
-      "community": 0,
+      "community": 10,
       "norm_label": "startrainsynth()"
     },
     {
@@ -1240,7 +1426,7 @@
       "source_location": "L2112",
       "_origin": "ast",
       "id": "src_main_app_startfireplacesynth",
-      "community": 0,
+      "community": 10,
       "norm_label": "startfireplacesynth()"
     },
     {
@@ -1250,7 +1436,7 @@
       "source_location": "L2165",
       "_origin": "ast",
       "id": "src_main_app_startwindchimessynth",
-      "community": 0,
+      "community": 10,
       "norm_label": "startwindchimessynth()"
     },
     {
@@ -1260,7 +1446,7 @@
       "source_location": "L2208",
       "_origin": "ast",
       "id": "src_main_app_startoceanwavessynth",
-      "community": 0,
+      "community": 10,
       "norm_label": "startoceanwavessynth()"
     },
     {
@@ -1270,7 +1456,7 @@
       "source_location": "L2252",
       "_origin": "ast",
       "id": "src_main_app_stopambiance",
-      "community": 0,
+      "community": 6,
       "norm_label": "stopambiance()"
     },
     {
@@ -1280,7 +1466,7 @@
       "source_location": "L2264",
       "_origin": "ast",
       "id": "src_main_app_startambiance",
-      "community": 0,
+      "community": 10,
       "norm_label": "startambiance()"
     },
     {
@@ -1290,7 +1476,7 @@
       "source_location": "L2327",
       "_origin": "ast",
       "id": "src_main_app_generateraindrops",
-      "community": 1,
+      "community": 2,
       "norm_label": "generateraindrops()"
     },
     {
@@ -1300,7 +1486,7 @@
       "source_location": "L2340",
       "_origin": "ast",
       "id": "src_main_app_triggercelebration",
-      "community": 1,
+      "community": 2,
       "norm_label": "triggercelebration()"
     },
     {
@@ -1310,7 +1496,7 @@
       "source_location": "L2558",
       "_origin": "ast",
       "id": "src_main_app_freezeactiveelements",
-      "community": 0,
+      "community": 2,
       "norm_label": "freezeactiveelements()"
     },
     {
@@ -1320,7 +1506,7 @@
       "source_location": "L2566",
       "_origin": "ast",
       "id": "src_main_app_unfreezeactiveelements",
-      "community": 1,
+      "community": 6,
       "norm_label": "unfreezeactiveelements()"
     },
     {
@@ -1330,7 +1516,7 @@
       "source_location": "L2573",
       "_origin": "ast",
       "id": "src_main_app_getactiveanimalimg",
-      "community": 0,
+      "community": 2,
       "norm_label": "getactiveanimalimg()"
     },
     {
@@ -1340,7 +1526,7 @@
       "source_location": "L2580",
       "_origin": "ast",
       "id": "src_main_app_freezegifelement",
-      "community": 0,
+      "community": 2,
       "norm_label": "freezegifelement()"
     },
     {
@@ -1350,7 +1536,7 @@
       "source_location": "L2604",
       "_origin": "ast",
       "id": "src_main_app_unfreezegifelement",
-      "community": 1,
+      "community": 2,
       "norm_label": "unfreezegifelement()"
     },
     {
@@ -1360,7 +1546,7 @@
       "source_location": "L2692",
       "_origin": "ast",
       "id": "src_main_app_updategamificationstats",
-      "community": 1,
+      "community": 4,
       "norm_label": "updategamificationstats()"
     },
     {
@@ -1370,7 +1556,7 @@
       "source_location": "L2708",
       "_origin": "ast",
       "id": "src_main_app_addtokens",
-      "community": 1,
+      "community": 0,
       "norm_label": "addtokens()"
     },
     {
@@ -1380,7 +1566,7 @@
       "source_location": "L2731",
       "_origin": "ast",
       "id": "src_main_app_addcompletedpomodoro",
-      "community": 1,
+      "community": 4,
       "norm_label": "addcompletedpomodoro()"
     },
     {
@@ -1390,7 +1576,7 @@
       "source_location": "L2740",
       "_origin": "ast",
       "id": "src_main_app_addcompletedtask",
-      "community": 1,
+      "community": 4,
       "norm_label": "addcompletedtask()"
     },
     {
@@ -1400,7 +1586,7 @@
       "source_location": "L2747",
       "_origin": "ast",
       "id": "src_main_app_openshop",
-      "community": 7,
+      "community": 4,
       "norm_label": "openshop()"
     },
     {
@@ -1410,7 +1596,7 @@
       "source_location": "L2756",
       "_origin": "ast",
       "id": "src_main_app_closeshop",
-      "community": 0,
+      "community": 2,
       "norm_label": "closeshop()"
     },
     {
@@ -1420,7 +1606,7 @@
       "source_location": "L2773",
       "_origin": "ast",
       "id": "src_main_app_syncinventoryui",
-      "community": 7,
+      "community": 4,
       "norm_label": "syncinventoryui()"
     },
     {
@@ -1430,7 +1616,7 @@
       "source_location": "L2784",
       "_origin": "ast",
       "id": "src_main_app_buyitem",
-      "community": 1,
+      "community": 4,
       "norm_label": "buyitem()"
     },
     {
@@ -1440,7 +1626,7 @@
       "source_location": "L2800",
       "_origin": "ast",
       "id": "src_main_app_switchshoptab",
-      "community": 7,
+      "community": 4,
       "norm_label": "switchshoptab()"
     },
     {
@@ -1450,7 +1636,7 @@
       "source_location": "L2837",
       "_origin": "ast",
       "id": "src_main_app_rendershopbackgrounds",
-      "community": 7,
+      "community": 4,
       "norm_label": "rendershopbackgrounds()"
     },
     {
@@ -1460,7 +1646,7 @@
       "source_location": "L2872",
       "_origin": "ast",
       "id": "src_main_app_rendershopanimals",
-      "community": 7,
+      "community": 4,
       "norm_label": "rendershopanimals()"
     },
     {
@@ -1470,7 +1656,7 @@
       "source_location": "L2926",
       "_origin": "ast",
       "id": "src_main_app_rendergachacapsules",
-      "community": 3,
+      "community": 2,
       "norm_label": "rendergachacapsules()"
     },
     {
@@ -1480,7 +1666,7 @@
       "source_location": "L2980",
       "_origin": "ast",
       "id": "src_main_app_updategachaphysics",
-      "community": 3,
+      "community": 2,
       "norm_label": "updategachaphysics()"
     },
     {
@@ -1490,7 +1676,7 @@
       "source_location": "L3070",
       "_origin": "ast",
       "id": "src_main_app_buybackground",
-      "community": 1,
+      "community": 4,
       "norm_label": "buybackground()"
     },
     {
@@ -1500,7 +1686,7 @@
       "source_location": "L3093",
       "_origin": "ast",
       "id": "src_main_app_buyanimal",
-      "community": 1,
+      "community": 4,
       "norm_label": "buyanimal()"
     },
     {
@@ -1510,7 +1696,7 @@
       "source_location": "L3290",
       "_origin": "ast",
       "id": "src_main_app_triggercinematicreveal",
-      "community": 7,
+      "community": 4,
       "norm_label": "triggercinematicreveal()"
     },
     {
@@ -1520,7 +1706,7 @@
       "source_location": "L3444",
       "_origin": "ast",
       "id": "src_main_app_getformattedtoday",
-      "community": 6,
+      "community": 8,
       "norm_label": "getformattedtoday()"
     },
     {
@@ -1530,7 +1716,7 @@
       "source_location": "L3452",
       "_origin": "ast",
       "id": "src_main_app_initdailyquests",
-      "community": 6,
+      "community": 8,
       "norm_label": "initdailyquests()"
     },
     {
@@ -1540,7 +1726,7 @@
       "source_location": "L3478",
       "_origin": "ast",
       "id": "src_main_app_renderquests",
-      "community": 6,
+      "community": 8,
       "norm_label": "renderquests()"
     },
     {
@@ -1550,7 +1736,7 @@
       "source_location": "L3545",
       "_origin": "ast",
       "id": "src_main_app_updatequestprogress",
-      "community": 6,
+      "community": 8,
       "norm_label": "updatequestprogress()"
     },
     {
@@ -1560,7 +1746,7 @@
       "source_location": "L3561",
       "_origin": "ast",
       "id": "src_main_app_claimquestreward",
-      "community": 6,
+      "community": 8,
       "norm_label": "claimquestreward()"
     },
     {
@@ -1570,7 +1756,7 @@
       "source_location": "L3582",
       "_origin": "ast",
       "id": "src_main_app_updatequestsbadge",
-      "community": 6,
+      "community": 8,
       "norm_label": "updatequestsbadge()"
     },
     {
@@ -1580,7 +1766,7 @@
       "source_location": "L3592",
       "_origin": "ast",
       "id": "src_main_app_openquests",
-      "community": 6,
+      "community": 11,
       "norm_label": "openquests()"
     },
     {
@@ -1590,7 +1776,7 @@
       "source_location": "L3602",
       "_origin": "ast",
       "id": "src_main_app_closequests",
-      "community": 0,
+      "community": 2,
       "norm_label": "closequests()"
     },
     {
@@ -1600,7 +1786,7 @@
       "source_location": "L3651",
       "_origin": "ast",
       "id": "src_main_app_handleswipe",
-      "community": 0,
+      "community": 2,
       "norm_label": "handleswipe()"
     },
     {
@@ -1610,7 +1796,7 @@
       "source_location": "L3664",
       "_origin": "ast",
       "id": "src_main_app_formatstudytime",
-      "community": 6,
+      "community": 11,
       "norm_label": "formatstudytime()"
     },
     {
@@ -1620,7 +1806,7 @@
       "source_location": "L3671",
       "_origin": "ast",
       "id": "src_main_app_renderweeklychart",
-      "community": 6,
+      "community": 11,
       "norm_label": "renderweeklychart()"
     },
     {
@@ -1630,7 +1816,7 @@
       "source_location": "L3763",
       "_origin": "ast",
       "id": "src_main_app_inittheme",
-      "community": 0,
+      "community": 2,
       "norm_label": "inittheme()"
     },
     {
@@ -1640,7 +1826,7 @@
       "source_location": "L3776",
       "_origin": "ast",
       "id": "src_main_app_toggletheme",
-      "community": 1,
+      "community": 14,
       "norm_label": "toggletheme()"
     },
     {
@@ -1650,7 +1836,7 @@
       "source_location": "L3812",
       "_origin": "ast",
       "id": "src_main_app_openminigames",
-      "community": 6,
+      "community": 11,
       "norm_label": "openminigames()"
     },
     {
@@ -1670,7 +1856,7 @@
       "source_location": "L3913",
       "_origin": "ast",
       "id": "src_main_app_termopickword",
-      "community": 8,
+      "community": 7,
       "norm_label": "termopickword()"
     },
     {
@@ -1680,7 +1866,7 @@
       "source_location": "L3918",
       "_origin": "ast",
       "id": "src_main_app_removeaccents",
-      "community": 8,
+      "community": 7,
       "norm_label": "removeaccents()"
     },
     {
@@ -1690,7 +1876,7 @@
       "source_location": "L3922",
       "_origin": "ast",
       "id": "src_main_app_inittermogame",
-      "community": 8,
+      "community": 7,
       "norm_label": "inittermogame()"
     },
     {
@@ -1700,7 +1886,7 @@
       "source_location": "L3978",
       "_origin": "ast",
       "id": "src_main_app_savetermostate",
-      "community": 8,
+      "community": 7,
       "norm_label": "savetermostate()"
     },
     {
@@ -1710,7 +1896,7 @@
       "source_location": "L3982",
       "_origin": "ast",
       "id": "src_main_app_rendertermoboard",
-      "community": 8,
+      "community": 7,
       "norm_label": "rendertermoboard()"
     },
     {
@@ -1720,7 +1906,7 @@
       "source_location": "L4030",
       "_origin": "ast",
       "id": "src_main_app_revealrow",
-      "community": 8,
+      "community": 7,
       "norm_label": "revealrow()"
     },
     {
@@ -1730,7 +1916,7 @@
       "source_location": "L4055",
       "_origin": "ast",
       "id": "src_main_app_computeresult",
-      "community": 8,
+      "community": 7,
       "norm_label": "computeresult()"
     },
     {
@@ -1740,7 +1926,7 @@
       "source_location": "L4074",
       "_origin": "ast",
       "id": "src_main_app_updatetermokeyboard",
-      "community": 8,
+      "community": 7,
       "norm_label": "updatetermokeyboard()"
     },
     {
@@ -1750,7 +1936,7 @@
       "source_location": "L4094",
       "_origin": "ast",
       "id": "src_main_app_handletermophysicalkey",
-      "community": 8,
+      "community": 7,
       "norm_label": "handletermophysicalkey()"
     },
     {
@@ -1760,7 +1946,7 @@
       "source_location": "L4103",
       "_origin": "ast",
       "id": "src_main_app_handletermoinput",
-      "community": 8,
+      "community": 7,
       "norm_label": "handletermoinput()"
     },
     {
@@ -1770,7 +1956,7 @@
       "source_location": "L4157",
       "_origin": "ast",
       "id": "src_main_app_updatecurrentrowdisplay",
-      "community": 8,
+      "community": 7,
       "norm_label": "updatecurrentrowdisplay()"
     },
     {
@@ -1780,7 +1966,7 @@
       "source_location": "L4174",
       "_origin": "ast",
       "id": "src_main_app_submittermoguess",
-      "community": 8,
+      "community": 7,
       "norm_label": "submittermoguess()"
     },
     {
@@ -1790,7 +1976,7 @@
       "source_location": "L4239",
       "_origin": "ast",
       "id": "src_main_app_showtermomessage",
-      "community": 8,
+      "community": 7,
       "norm_label": "showtermomessage()"
     },
     {
@@ -1800,7 +1986,7 @@
       "source_location": "L4246",
       "_origin": "ast",
       "id": "src_main_app_showtermoendbtns",
-      "community": 8,
+      "community": 7,
       "norm_label": "showtermoendbtns()"
     },
     {
@@ -1810,7 +1996,7 @@
       "source_location": "L4253",
       "_origin": "ast",
       "id": "src_main_app_updatetermonewgamebtn",
-      "community": 8,
+      "community": 7,
       "norm_label": "updatetermonewgamebtn()"
     },
     {
@@ -1840,7 +2026,7 @@
       "source_location": "L5246",
       "_origin": "ast",
       "id": "src_main_app_getcurrentseason",
-      "community": 0,
+      "community": 2,
       "norm_label": "getcurrentseason()"
     },
     {
@@ -1870,7 +2056,7 @@
       "source_location": "L5311",
       "_origin": "ast",
       "id": "src_main_app_getcurrentlocation",
-      "community": 0,
+      "community": 2,
       "norm_label": "getcurrentlocation()"
     },
     {
@@ -1880,7 +2066,7 @@
       "source_location": "L5381",
       "_origin": "ast",
       "id": "src_main_app_applyweathertoui",
-      "community": 0,
+      "community": 2,
       "norm_label": "applyweathertoui()"
     },
     {
@@ -1940,7 +2126,7 @@
       "source_location": "L5462",
       "_origin": "ast",
       "id": "src_main_app_selectrandomfish",
-      "community": 0,
+      "community": 2,
       "norm_label": "selectrandomfish()"
     },
     {
@@ -2060,7 +2246,7 @@
       "source_location": "L5842",
       "_origin": "ast",
       "id": "src_main_app_drawcanvas",
-      "community": 0,
+      "community": 2,
       "norm_label": "drawcanvas()"
     },
     {
@@ -2200,7 +2386,7 @@
       "source_location": "L6490",
       "_origin": "ast",
       "id": "src_main_app_startbreakmode",
-      "community": 0,
+      "community": 10,
       "norm_label": "startbreakmode()"
     },
     {
@@ -2210,7 +2396,7 @@
       "source_location": "L6497",
       "_origin": "ast",
       "id": "src_main_app_stopbreakmode",
-      "community": 1,
+      "community": 6,
       "norm_label": "stopbreakmode()"
     },
     {
@@ -2220,7 +2406,7 @@
       "source_location": "L6512",
       "_origin": "ast",
       "id": "src_main_app_startrotatingsuggestions",
-      "community": 0,
+      "community": 10,
       "norm_label": "startrotatingsuggestions()"
     },
     {
@@ -2230,7 +2416,7 @@
       "source_location": "L6532",
       "_origin": "ast",
       "id": "src_main_app_stoprotatingsuggestions",
-      "community": 1,
+      "community": 2,
       "norm_label": "stoprotatingsuggestions()"
     },
     {
@@ -2240,7 +2426,7 @@
       "source_location": "L6537",
       "_origin": "ast",
       "id": "src_main_app_startbreakambiance",
-      "community": 0,
+      "community": 10,
       "norm_label": "startbreakambiance()"
     },
     {
@@ -2250,7 +2436,7 @@
       "source_location": "L6564",
       "_origin": "ast",
       "id": "src_main_app_stopbreakambiance",
-      "community": 0,
+      "community": 6,
       "norm_label": "stopbreakambiance()"
     },
     {
@@ -2260,7 +2446,7 @@
       "source_location": "L6588",
       "_origin": "ast",
       "id": "src_main_app_initfogtoggle",
-      "community": 0,
+      "community": 10,
       "norm_label": "initfogtoggle()"
     },
     {
@@ -2270,7 +2456,7 @@
       "source_location": "L6623",
       "_origin": "ast",
       "id": "src_main_app_startbreathinganimation",
-      "community": 0,
+      "community": 10,
       "norm_label": "startbreathinganimation()"
     },
     {
@@ -2280,7 +2466,7 @@
       "source_location": "L6639",
       "_origin": "ast",
       "id": "src_main_app_stopbreathinganimation",
-      "community": 0,
+      "community": 10,
       "norm_label": "stopbreathinganimation()"
     },
     {
@@ -2290,8 +2476,28 @@
       "source_location": "L6644",
       "_origin": "ast",
       "id": "src_main_app_initpausahovercontrols",
-      "community": 1,
+      "community": 6,
       "norm_label": "initpausahovercontrols()"
+    },
+    {
+      "label": "notes-drive.js",
+      "file_type": "code",
+      "source_file": "src/notes/notes-drive.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_notes_notes_drive",
+      "community": 26,
+      "norm_label": "notes-drive.js"
+    },
+    {
+      "label": "notes-views.js",
+      "file_type": "code",
+      "source_file": "src/notes/notes-views.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_notes_notes_views",
+      "community": 27,
+      "norm_label": "notes-views.js"
     },
     {
       "label": "notes.js",
@@ -2300,7 +2506,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_notes_notes",
-      "community": 12,
+      "community": 18,
       "norm_label": "notes.js"
     },
     {
@@ -2310,430 +2516,503 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_notes_notes_utils",
-      "community": 12,
+      "community": 18,
       "norm_label": "utils"
     },
     {
       "label": "MedNotes",
       "file_type": "code",
       "source_file": "src/notes/notes.js",
-      "source_location": "L18",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "src_notes_notes_mednotes",
-      "community": 12,
+      "community": 18,
       "norm_label": "mednotes"
     },
     {
-      "label": "file-organizer Skill",
-      "file_type": "document",
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "agents_skills_file_organizer_skill_file_organizer_skill",
-      "community": 17,
-      "norm_label": "file-organizer skill"
-    },
-    {
-      "label": "Duplicate File Detection",
-      "file_type": "rationale",
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Finds duplicates via md5 hash, filename, and size comparisons; always asks for confirmation before deleting to avoid destructive mistakes.",
-      "id": "agents_skills_file_organizer_skill_duplicate_detection",
-      "community": 13,
-      "norm_label": "duplicate file detection"
-    },
-    {
-      "label": "Organization Plan Workflow",
-      "file_type": "rationale",
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Propose a plan (current state, proposed structure, changes) before executing, so user can approve/modify rather than have files moved without consent.",
-      "id": "agents_skills_file_organizer_skill_organization_plan_workflow",
-      "community": 14,
-      "norm_label": "organization plan workflow"
-    },
-    {
-      "label": "Folder/File Naming Conventions",
-      "file_type": "concept",
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "agents_skills_file_organizer_skill_folder_naming_convention",
-      "community": 18,
-      "norm_label": "folder/file naming conventions"
-    },
-    {
-      "label": "CLAUDE.md Behavioral Guidelines",
-      "file_type": "document",
-      "source_file": "docs/CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_claude_md_behavioral_guidelines",
-      "community": 19,
-      "norm_label": "claude.md behavioral guidelines"
-    },
-    {
-      "label": "Think Before Coding Principle",
-      "file_type": "rationale",
-      "source_file": "docs/CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "State assumptions explicitly and surface tradeoffs instead of guessing silently, to avoid mistaken implementations from unstated assumptions.",
-      "id": "docs_claude_md_think_before_coding",
-      "community": 14,
-      "norm_label": "think before coding principle"
-    },
-    {
-      "label": "Simplicity First Principle",
-      "file_type": "rationale",
-      "source_file": "docs/CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Write the minimum code that solves the problem; avoid speculative abstractions/configurability, because unused flexibility adds maintenance cost without benefit.",
-      "id": "docs_claude_md_simplicity_first",
-      "community": 4,
-      "norm_label": "simplicity first principle"
-    },
-    {
-      "label": "Surgical Changes Principle",
-      "file_type": "rationale",
-      "source_file": "docs/CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Touch only what the task requires and match existing style, so diffs stay traceable to the user's request and unrelated code isn't disturbed.",
-      "id": "docs_claude_md_surgical_changes",
-      "community": 13,
-      "norm_label": "surgical changes principle"
-    },
-    {
-      "label": "Goal-Driven Execution Principle",
-      "file_type": "rationale",
-      "source_file": "docs/CLAUDE.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Transform tasks into verifiable success criteria (e.g. write a failing test, then make it pass) so work can be looped and verified independently instead of requiring constant clarification.",
-      "id": "docs_claude_md_goal_driven_execution",
-      "community": 4,
-      "norm_label": "goal-driven execution principle"
-    },
-    {
-      "label": "MedOrganize Cozy Gamification Plan",
-      "file_type": "document",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
-      "community": 2,
-      "norm_label": "medorganize cozy gamification plan"
-    },
-    {
-      "label": "Cozy Pastel Ghibli-Lofi Design System",
-      "file_type": "concept",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_novas_instrucoes_gamificacao_design_system",
-      "community": 2,
-      "norm_label": "cozy pastel ghibli-lofi design system"
-    },
-    {
-      "label": "Sidebar Menu Order Spec",
-      "file_type": "rationale",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Defines the exact required order of sidebar buttons: Loja Cozy & Gacha, Apar\u00eancia & Bichinhos, Minijogos, Miss\u00f5es Di\u00e1rias, Configura\u00e7\u00f5es, Estat\u00edsticas de Estudo.",
-      "id": "docs_novas_instrucoes_gamificacao_sidebar_menu_order",
-      "community": 2,
-      "norm_label": "sidebar menu order spec"
-    },
-    {
-      "label": "Pet Care / Friendship Level Mechanic",
-      "file_type": "rationale",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Each pet has a friendship XP bar leveled up via feeding/playing with purchased items (Lanchinhos, Brinquedos) using MedTokens, unlocking bonuses/cosmetics to encourage engagement.",
-      "id": "docs_novas_instrucoes_gamificacao_pet_care_mechanic",
-      "community": 2,
-      "norm_label": "pet care / friendship level mechanic"
-    },
-    {
-      "label": "Termo Cozy Minigame (Wordle-like)",
-      "file_type": "rationale",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "5-letter word guessing game in 6 tries modeled on term.ooo, rewarding MedTokens once per day free, extra plays cost tokens, to gamify study breaks.",
-      "id": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame",
-      "community": 2,
-      "norm_label": "termo cozy minigame (wordle-like)"
-    },
-    {
-      "label": "Game Loop & State Technical Spec",
-      "file_type": "rationale",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Keep game state (Termo match, pet XP, food stock) in localStorage, use anime.js for animations, and validate guessed words (accent-insensitive) for a smoother UX.",
-      "id": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
-      "community": 2,
-      "norm_label": "game loop & state technical spec"
-    },
-    {
-      "label": "MedTokens Currency",
-      "file_type": "concept",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_novas_instrucoes_gamificacao_medtokens",
-      "community": 2,
-      "norm_label": "medtokens currency"
-    },
-    {
-      "label": "Moedas Gacha Currency",
-      "file_type": "concept",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_novas_instrucoes_gamificacao_gacha_coins",
-      "community": 2,
-      "norm_label": "moedas gacha currency"
-    },
-    {
-      "label": "anime.js Animation Library",
-      "file_type": "concept",
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_novas_instrucoes_gamificacao_anime_js",
-      "community": 2,
-      "norm_label": "anime.js animation library"
-    },
-    {
-      "label": "MedNotes Ferramentas de Desenho Plan",
-      "file_type": "document",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "docs_plano_ferramentas_mednotes_tools_plan",
-      "community": 4,
-      "norm_label": "mednotes ferramentas de desenho plan"
-    },
-    {
-      "label": "toolSettings Per-Tool State Map",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Replaces the global penColor/penSize/penOpacity variables with a per-tool settings map so pen and highlighter no longer share state and each tool remembers its own config; referenced at notes.js:1162.",
-      "id": "docs_plano_ferramentas_toolsettings_state_model",
-      "community": 4,
-      "norm_label": "toolsettings per-tool state map"
-    },
-    {
-      "label": "brushType Stroke Rendering Model",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Adds brushType to serialized strokes and dispatches rendering per type (ballpoint, fountain pen via pressure+velocity, pencil texture, fineliner, round/chisel highlighter, auto-straight-line) so mouse users get visually distinct pens without needing an S-Pen; old strokes default to ballpoint for backward compatibility.",
-      "id": "docs_plano_ferramentas_brushtype_stroke_model",
-      "community": 4,
-      "norm_label": "brushtype stroke rendering model"
-    },
-    {
-      "label": "Rich Tool Popovers (replace corner pickers)",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Moves color/size/type pickers from the top-right toolbar corner into per-tool popovers opened by clicking the active tool, reusing existing _togglePopover positioning logic; referenced at notes.js:1072.",
-      "id": "docs_plano_ferramentas_rich_popovers",
-      "community": 4,
-      "norm_label": "rich tool popovers (replace corner pickers)"
-    },
-    {
-      "label": "R\u00e9gua (Ruler) Visibility + Snap Fix",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Root cause: ruler only draws when _ruler.active, which is only set by clicking it while invisible (deadlock). Fix initializes ruler at viewport center on activation and projects strokes onto the ruler line for snap; referenced at notes.js:2263.",
-      "id": "docs_plano_ferramentas_ruler_fix",
-      "community": 4,
-      "norm_label": "regua (ruler) visibility + snap fix"
-    },
-    {
-      "label": "Texto (Text Tool) Editable + Persisted Fix",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Root cause: .canvas-text-element div has no CSS and no position, and canvas-ui layer blocks clicks; it isn't persisted. Fix creates the box inside #text-overlays, adds real CSS, persists via page.textElements[], and suspends canvas-ui pointer-capture while editing; referenced at notes.js:2439.",
-      "id": "docs_plano_ferramentas_text_tool_fix",
-      "community": 4,
-      "norm_label": "texto (text tool) editable + persisted fix"
-    },
-    {
-      "label": "Extended Persistence (Strokes + Texts)",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "_savePage and loadActivePage currently only handle strokes; must be extended to also serialize/restore page.textElements[] so text boxes persist across sessions.",
-      "id": "docs_plano_ferramentas_persistence_extension",
-      "community": 4,
-      "norm_label": "extended persistence (strokes + texts)"
-    },
-    {
-      "label": "Fases de Execu\u00e7\u00e3o A-D",
-      "file_type": "rationale",
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Ordered, independently testable phases: A) foundation (toolSettings + rich popovers), B) brush types, C) ruler, D) text \u2014 each verifiable in the browser via server.py before moving to the next.",
-      "id": "docs_plano_ferramentas_execution_phases",
-      "community": 4,
-      "norm_label": "fases de execucao a-d"
-    },
-    {
-      "label": "popcat.gif Decoration Asset",
-      "file_type": "concept",
-      "source_file": "src/assets/aesthetic/README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_assets_aesthetic_readme_popcat_gif",
-      "community": 2,
-      "norm_label": "popcat.gif decoration asset"
-    },
-    {
-      "label": "cherry_blossom.gif Decoration Asset",
-      "file_type": "concept",
-      "source_file": "src/assets/aesthetic/README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_assets_aesthetic_readme_cherry_blossom_gif",
-      "community": 2,
-      "norm_label": "cherry_blossom.gif decoration asset"
-    },
-    {
-      "label": "Fixed Aesthetic Asset Naming Convention",
-      "file_type": "rationale",
-      "source_file": "src/assets/aesthetic/README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "rationale": "Site reads these two decoration files by exact filename so users can swap assets without code changes.",
-      "id": "src_assets_aesthetic_readme_fixed_naming_convention",
+      "label": "sw.js",
+      "file_type": "code",
+      "source_file": "src/notes/sw.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_notes_sw",
       "community": 20,
-      "norm_label": "fixed aesthetic asset naming convention"
+      "norm_label": "sw.js"
+    },
+    {
+      "label": "SHELL_FILES",
+      "file_type": "code",
+      "source_file": "src/notes/sw.js",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "src_notes_sw_shell_files",
+      "community": 20,
+      "norm_label": "shell_files"
+    },
+    {
+      "label": "Behavioral Guidelines for LLM Coding",
+      "file_type": "rationale",
+      "source_file": "docs/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Guidelines bias toward caution over speed to reduce common LLM coding mistakes; for trivial tasks judgment applies. Working if diffs shrink, rewrites drop, and clarifying questions come before implementation.",
+      "id": "docs_claude_behavioral_guidelines",
+      "community": 15,
+      "norm_label": "behavioral guidelines for llm coding"
+    },
+    {
+      "label": "Think Before Coding",
+      "file_type": "rationale",
+      "source_file": "docs/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "State assumptions explicitly, surface tradeoffs, ask when unclear instead of picking an interpretation silently.",
+      "id": "docs_claude_think_before_coding",
+      "community": 15,
+      "norm_label": "think before coding"
+    },
+    {
+      "label": "Simplicity First",
+      "file_type": "rationale",
+      "source_file": "docs/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Minimum code that solves the problem; no speculative abstractions, flexibility, or error handling for impossible scenarios.",
+      "id": "docs_claude_simplicity_first",
+      "community": 15,
+      "norm_label": "simplicity first"
+    },
+    {
+      "label": "Surgical Changes",
+      "file_type": "rationale",
+      "source_file": "docs/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Touch only what you must; every changed line should trace directly to the user's request; only clean up orphans your own changes created.",
+      "id": "docs_claude_surgical_changes",
+      "community": 15,
+      "norm_label": "surgical changes"
+    },
+    {
+      "label": "Goal-Driven Execution",
+      "file_type": "rationale",
+      "source_file": "docs/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Transform tasks into verifiable goals with success criteria and loop until verified; strong criteria enable independent iteration.",
+      "id": "docs_claude_goal_driven_execution",
+      "community": 15,
+      "norm_label": "goal-driven execution"
+    },
+    {
+      "label": "Plano de Aprimoramento das Ferramentas MedNotes",
+      "file_type": "document",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Fix ruler and text tools, add pen/highlighter types, and move options into popovers opened by clicking the tool. Executed in four testable phases (A: foundation, B: brushes, C: ruler, D: text) so each phase closes independently in the browser.",
+      "id": "docs_plano_ferramentas_plan",
+      "community": 3,
+      "norm_label": "plano de aprimoramento das ferramentas mednotes"
+    },
+    {
+      "label": "toolSettings Per-Tool State",
+      "file_type": "concept",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Replaces global penColor/penSize/penOpacity with a per-tool map so each tool remembers its own configuration; pen and highlighter previously shared state and looked identical on mouse (variable width only worked with S-Pen).",
+      "id": "docs_plano_ferramentas_toolsettings",
+      "community": 3,
+      "norm_label": "toolsettings per-tool state"
+    },
+    {
+      "label": "brushType Stroke Model",
+      "file_type": "concept",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Adds brushType to serialized strokes and turns the renderer into a per-type dispatcher (ballpoint, fountain, pencil, fineliner, round, chisel, auto-straight-line). Fountain pen varies width by pressure AND velocity so it works with a mouse. Old strokes without brushType fall back to ballpoint for backward compatibility.",
+      "id": "docs_plano_ferramentas_brushtype",
+      "community": 3,
+      "norm_label": "brushtype stroke model"
+    },
+    {
+      "label": "Rich Tool Popovers",
+      "file_type": "concept",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Extends existing _togglePopover (previously only eraser/lasso/shapes) to pen, highlighter and eraser with type selector, size presets+slider, color swatches and opacity; removes color/thickness pickers from the right toolbar group. Touch targets must be >=44px for tablet.",
+      "id": "docs_plano_ferramentas_rich_popovers",
+      "community": 3,
+      "norm_label": "rich tool popovers"
+    },
+    {
+      "label": "Ruler Visibility + Snap Fix",
+      "file_type": "concept",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Root cause: ruler only drew when _ruler.active, which could only be toggled by clicking the invisible ruler (deadlock). Fix: initialize at viewport center on tool activation, always draw while active, and snap strokes by projecting points onto the ruler line (same projection math as the body hit-test).",
+      "id": "docs_plano_ferramentas_ruler_snap",
+      "community": 3,
+      "norm_label": "ruler visibility + snap fix"
+    },
+    {
+      "label": "Persisted Editable Text Elements",
+      "file_type": "concept",
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Root cause: .canvas-text-element div had no CSS, no position, was blocked by canvas-ui pointer capture and never persisted. Fix: create boxes in #text-overlays layer, persist page.textElements[] {id,cx,cy,text,color,size,font}, re-render on loadActivePage, reposition on pan/zoom.",
+      "id": "docs_plano_ferramentas_text_elements",
+      "community": 3,
+      "norm_label": "persisted editable text elements"
+    },
+    {
+      "label": "MedNotes Navigation Redesign Spec",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The tree sidebar worked but gave a poor overview (no folder overview, no notebook previews) and looked generic ('made by AI'). Approved solution: 4 navigable screens in the central area plus a mini icon rail, with 'papelaria + cozy' identity. Migration must be additive; existing mednotes_data can never be lost.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "community": 3,
+      "norm_label": "mednotes navigation redesign spec"
+    },
+    {
+      "label": "MedNotes.Views Screen Router (Home/Pasta/Caderno/Editor)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Four screens, one visible at a time, controlled by Views.route {view, folderId, notebookId} and document.body.dataset.view. No URL routing because the app is local and iframe-friendly. App always opens on Home (auto-open of first page removed). Editor (screen 4) keeps canvas/toolbar untouched.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router",
+      "community": 3,
+      "norm_label": "mednotes.views screen router (home/pasta/caderno/editor)"
+    },
+    {
+      "label": "Papelaria + Cozy Visual Identity",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Physical paper objects with warm palette + blue/purple: folders as kraft binders with color tab and pill label, notebooks as moleskine deluxe covers (stitching, purple elastic, orange ribbon, emoji seal), cream paper background #f6f3ec. Validated via approved HTML mockups before implementation.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_papelaria_cozy_identity",
+      "community": 3,
+      "norm_label": "papelaria + cozy visual identity"
+    },
+    {
+      "label": "Mini-Rail Icon Navigation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "58px rail replacing the tree sidebar: gradient home button, per-folder emoji shortcuts tinted with folder color, and a footer back button to MedOrganize (index.html). Provides Home access from anywhere including inside the editor.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail",
+      "community": 3,
+      "norm_label": "mini-rail icon navigation"
+    },
+    {
+      "label": "Additive DataStore Migration (color/icon/label/username)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Notebook gains color (default: parent folder color) and icon (default \ud83d\udcd3); folder gains label (null = name in caps); new localStorage key mednotes_username for the greeting. Migration runs in DataStore.load() filling missing fields with defaults, writing directly to localStorage to avoid triggering save() before init. Non-destructive: existing notes intact.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_data_migration",
+      "community": 3,
+      "norm_label": "additive datastore migration (color/icon/label/username)"
+    },
+    {
+      "label": "MedNotes Navigation Redesign Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "9 sequential tasks; the old sidebar deliberately coexists with the new screens until Task 7 so the app stays usable between commits. Vanilla JS/CSS/localStorage, no external deps, verification via node --check + orphan-reference greps + manual browser checklists (no test framework in the project).",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "community": 3,
+      "norm_label": "mednotes navigation redesign implementation plan"
+    },
+    {
+      "label": "MedNotes.Actions Shared Actions Module",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Extracts promptCreate/promptRename/promptDelete/duplicatePage/showToast/reorderPages from Sidebar into a neutral module so the Sidebar can be removed without breaking PageManager. Also fixes a pre-existing bug: #toast-container did not exist in the HTML so showToast was a silent no-op.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module",
+      "community": 3,
+      "norm_label": "mednotes.actions shared actions module"
+    },
+    {
+      "label": "MedNotes.Popover Generic Floating Popover",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single fixed-position popover host for card \u22ef menus, emoji grid and color grid; anchors to the trigger element, clamps to the viewport, and closes on outside click.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module",
+      "community": 3,
+      "norm_label": "mednotes.popover generic floating popover"
+    },
+    {
+      "label": "MedNotes.EmojiPicker Curated Grid",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "~40 curated emojis (medicine + study: \ud83c\udfe5\ud83e\udec0\ud83e\udde0\ud83d\udc8a\ud83e\ude7a...) instead of an external emoji lib, per the no-external-dependencies constraint; writes to folder.icon / notebook.icon.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker",
+      "community": 3,
+      "norm_label": "mednotes.emojipicker curated grid"
+    },
+    {
+      "label": "MedNotes.Rail Module",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Renders the mini-rail into #mn-rail: home button, per-folder shortcut buttons styled with --f-color, and exit button that calls the global returnToMedOrganize(). Re-rendered by Views.refresh and Actions.refreshUI so new folders appear immediately.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module",
+      "community": 3,
+      "norm_label": "mednotes.rail module"
+    },
+    {
+      "label": "Tree Sidebar Removal (Task 7)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deletes the whole MedNotes.Sidebar module, sidebar markup/CSS and toggle only after Actions and the new screens cover all CRUD; safe because Sidebar methods were reduced to one-line delegations to Actions in Task 1. Mandatory orphan-reference grep must return zero MedNotes.Sidebar hits.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal",
+      "community": 3,
+      "norm_label": "tree sidebar removal (task 7)"
+    },
+    {
+      "label": "MedNotes Page Peek Scroll Spec (Espiada + Snap)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Scrolling to the end of a page reveals the next page peeking underneath with elastic resistance; crossing a threshold animates the real page switch (or creates a new page on the last one). Works in both directions and fixes, in passing, the bug where the ruled background did not follow the pan.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_spec",
+      "community": 12,
+      "norm_label": "mednotes page peek scroll spec (espiada + snap)"
+    },
+    {
+      "label": "Espiada + Snap (Peek then Commit) Approach",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chosen over (A) a true multi-page coordinate-space rewrite (high risk, large scope) and (B) instant switch with fade (low risk but no visual preview). The peek is purely visual/transitory and never replaces the authoritative Canvas state before the snap completes, so undo/redo, minimap, autosave and the Pages panel keep working unchanged \u2014 the real switch still goes through setActiveSelection/loadActivePage. Two gesture models: drag decides on pointer-up against a 40% threshold; wheel/trackpad has no release so it commits immediately on crossing the threshold.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap",
+      "community": 12,
+      "norm_label": "espiada + snap (peek then commit) approach"
+    },
+    {
+      "label": "MedNotes.Canvas Single-Page Singleton Engine",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Code exploration confirmed the ~2270-line module holds exactly one page: one strokes array, one view {x,y,zoom}, one CANVAS_W/H pair; switching pages replaces this state wholesale. No multi-page logic exists (no inertia, no stacking, no cross-page scroll). Also found latent bugs: page.canvasW/H read but never written, and CANVAS_W/H never reset to default when switching to a page without override.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_canvas_singleton",
+      "community": 12,
+      "norm_label": "mednotes.canvas single-page singleton engine"
+    },
+    {
+      "label": "Background Render Unification Fix",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "_renderBackground computed screen coordinates by hand while _renderStrokes used ctx.translate/scale \u2014 two techniques for the same effect. Unifying both on translate/scale fixes the 'background looks fixed during pan' bug and is a technical prerequisite for the peek: the same draw function must be able to render page X at offset Y, which is far simpler with transforms than duplicated manual math. lineWidth/shadowBlur/dotR are divided by zoom to preserve the exact previous on-screen thickness.",
+      "id": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug",
+      "community": 12,
+      "norm_label": "background render unification fix"
+    },
+    {
+      "label": "MedNotes Page Peek Scroll Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "6 sequential tasks all inside src/notes/notes.js (MedNotes.Canvas); no new files, no HTML/CSS. Tasks 3-5 build the peek in layers (visual \u2192 decision \u2192 animation) so each is usable and testable before the next exists. _clampPan() stays untouched for zoomAt; only the two pan call sites (wheel and drag) switch to _clampPanWithPeek().",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "community": 12,
+      "norm_label": "mednotes page peek scroll implementation plan"
+    },
+    {
+      "label": "Elastic Overscroll (_clampPanWithPeek / _dampPeek)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Rubber-band damping max*(1-exp(-raw/max)) approaches PEEK_MAX (220px) asymptotically, iOS-style. X axis always clamps normally \u2014 the peek is vertical only, consistent with landscape page format. The _peek state caches parsed neighbor strokes to avoid JSON.parse per frame.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll",
+      "community": 12,
+      "norm_label": "elastic overscroll (_clamppanwithpeek / _damppeek)"
+    },
+    {
+      "label": "Canvas._getNeighborPage Helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Locates the adjacent page in the same notebook; deliberately NEVER creates a page \u2014 creation only happens when the snap is confirmed (_confirmPeek). Returns pageId:null for 'next' past the last page, and null for 'prev' on the first page (no peek there).",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page",
+      "community": 12,
+      "norm_label": "canvas._getneighborpage helper"
+    },
+    {
+      "label": "Canvas._confirmPeek Threshold Commit",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Drag commits on pointer-up when amount >= PEEK_MAX * PEEK_COMMIT_RATIO (0.4); wheel commits immediately at PEEK_WHEEL_TRIGGER (140px) because wheel has no release gesture. Creates the new page via DataStore.createPage (unnamed, auto-numbered) only when confirming past the last page, then hands off to setActiveSelection.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek",
+      "community": 12,
+      "norm_label": "canvas._confirmpeek threshold commit"
+    },
+    {
+      "label": "Snap-Through / Bounce-Back Animation (_animatePeekTo)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "requestAnimationFrame (not CSS \u2014 content is canvas) with easeOutCubic: ~300ms snap-through to the neighbor before the real switch, ~220ms bounce-back below threshold. _peek.snapping=true blocks new peek gestures during the animation. Zoom is preserved during the animation to avoid a scale jump.",
+      "id": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation",
+      "community": 12,
+      "norm_label": "snap-through / bounce-back animation (_animatepeekto)"
+    },
+    {
+      "label": "Fixed Aesthetic Decorations Convention (popcat, cherry blossom)",
+      "file_type": "concept",
+      "source_file": "src/assets/aesthetic/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Permanent decorations are read by exact filename (popcat.gif above the search bar, cherry_blossom.gif in the corners) so the user can swap decorations by replacing files with the same names, without touching code.",
+      "id": "src_assets_aesthetic_readme_aesthetic_assets",
+      "community": 9,
+      "norm_label": "fixed aesthetic decorations convention (popcat, cherry blossom)"
     },
     {
       "label": "Animal Asset Naming Convention (animal_1..12)",
-      "file_type": "rationale",
+      "file_type": "concept",
       "source_file": "src/assets/animals/README.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "rationale": "Numbered filenames (animal_1..animal_12, gif/png/webp) let the site auto-detect pets for the discovery 'Tinder' UI; missing files are simply skipped to avoid broken links.",
-      "id": "src_assets_animals_readme_animal_naming_convention",
-      "community": 16,
+      "rationale": "Slot-based names animal_1..animal_12 (.gif/.png/.webp) let the site auto-discover pet images; missing files are simply not shown in the discovery Tinder to avoid broken links.",
+      "id": "src_assets_animals_readme_animal_naming",
+      "community": 9,
       "norm_label": "animal asset naming convention (animal_1..12)"
     },
     {
-      "label": "Discovery 'Tinder' UI (Animals)",
+      "label": "Tinder de Descobertas (asset discovery UI)",
       "file_type": "concept",
       "source_file": "src/assets/animals/README.md",
       "source_location": null,
@@ -2741,195 +3020,111 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_assets_animals_readme_discovery_tinder",
-      "community": 2,
-      "norm_label": "discovery 'tinder' ui (animals)"
+      "rationale": "A swipe-style discovery UI that surfaces user-provided animals and backgrounds; only slots with existing files are shown, making the asset folders the single source of truth.",
+      "id": "src_assets_animals_readme_tinder_de_descobertas",
+      "community": 9,
+      "norm_label": "tinder de descobertas (asset discovery ui)"
     },
     {
       "label": "Background Asset Naming Convention (bg_1..12)",
-      "file_type": "rationale",
+      "file_type": "concept",
       "source_file": "src/assets/backgrounds/README.md",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "rationale": "Numbered filenames (bg_1..bg_12, jpg/png/gif/webp) let the site auto-detect backgrounds for the discovery 'Tinder' UI; missing slots are skipped to avoid broken links.",
-      "id": "src_assets_backgrounds_readme_bg_naming_convention",
-      "community": 16,
+      "rationale": "Slot-based names bg_1..bg_12 (.jpg/.png/.webp/.gif, static or animated) for auto-discovered site backgrounds; empty slots are hidden from the Tinder to avoid broken links.",
+      "id": "src_assets_backgrounds_readme_background_naming",
+      "community": 9,
       "norm_label": "background asset naming convention (bg_1..12)"
     },
     {
-      "label": "Discovery 'Tinder' UI (Backgrounds)",
-      "file_type": "concept",
-      "source_file": "src/assets/backgrounds/README.md",
+      "label": "MedOrganize Cozy Main Page",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_assets_backgrounds_readme_discovery_tinder",
-      "community": 2,
-      "norm_label": "discovery 'tinder' ui (backgrounds)"
-    },
-    {
-      "label": "Notebook Style B+ Moleskine Deluxe Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_moleskine_deluxe",
-      "community": 11,
-      "norm_label": "notebook style b+ moleskine deluxe mockup"
-    },
-    {
-      "label": "Notebook Style C+ Brochura Deluxe Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_brochura_deluxe",
-      "community": 11,
-      "norm_label": "notebook style c+ brochura deluxe mockup"
-    },
-    {
-      "label": "Notebook Style A Espiral Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_espiral",
-      "community": 23,
-      "norm_label": "notebook style a espiral mockup"
-    },
-    {
-      "label": "Notebook Style B Moleskine Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_moleskine",
-      "community": 11,
-      "norm_label": "notebook style b moleskine mockup"
-    },
-    {
-      "label": "Notebook Style C Brochura de Fita Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_brochura_fita",
-      "community": 11,
-      "norm_label": "notebook style c brochura de fita mockup"
-    },
-    {
-      "label": "Folder Style V1 Kraft + Aba Colorida Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba",
+      "rationale": "Studio Ghibli-inspired study organizer: task checklist, gamification bar (pomodoros, study time, tasks, MedTokens, gacha coins), theme toggle, and modal panels for shop/aesthetics/instructions/quests/settings/stats.",
+      "id": "src_main_index_medorganize_app",
       "community": 9,
-      "norm_label": "folder style v1 kraft + aba colorida mockup"
+      "norm_label": "medorganize cozy main page"
     },
     {
-      "label": "Folder Style V2 Kraft + Aba + Barbante Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
+      "label": "Fullscreen Pomodoro Focus Flow (Preparo/Foco/Pausa)",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba_barbante",
+      "rationale": "Three-stage fullscreen session: Preparo with poppable prep-task balloons and 3-2-1 countdown, Foco with animal mascot and error-notebook button, Pausa with fog overlay, guided breathing and rotating break suggestions.",
+      "id": "src_main_index_pomodoro_focus_flow",
       "community": 9,
-      "norm_label": "folder style v2 kraft + aba + barbante mockup"
+      "norm_label": "fullscreen pomodoro focus flow (preparo/foco/pausa)"
     },
     {
-      "label": "Folder Style A Fich\u00e1rio com Aba Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas.html",
+      "label": "Cozy Shop & Gacha",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_fichario_aba",
+      "rationale": "Shop modal with tabs for backgrounds, animals, pet-care items and a gacha machine; gacha coins cost 30 tokens, one roll costs 1 coin, with a cinematic curtain reveal and pet naming.",
+      "id": "src_main_index_gacha_shop",
       "community": 9,
-      "norm_label": "folder style a fichario com aba mockup"
+      "norm_label": "cozy shop & gacha"
     },
     {
-      "label": "Folder Style B Envelope Kraft Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas.html",
+      "label": "Pet Care System",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_envelope_kraft",
+      "rationale": "Active pet has rarity badge and evolution-point progress; care items (p\u00e3ozinho +15, ch\u00e1 +25, novelo +40) are bought with tokens in the shop and consumed from stock in the aesthetics panel.",
+      "id": "src_main_index_pet_care",
       "community": 9,
-      "norm_label": "folder style b envelope kraft mockup"
+      "norm_label": "pet care system"
     },
     {
-      "label": "Folder Style C Flat Cozy Minimal Mockup",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas.html",
+      "label": "Termo Minigame (Wordle-like)",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_flat_cozy",
-      "community": 24,
-      "norm_label": "folder style c flat cozy minimal mockup"
-    },
-    {
-      "label": "MedNotes Home Completa Mockup (Mini-rail + Grid de Pastas)",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup",
+      "rationale": "5-letter/6-attempt daily word game with virtual keyboard; free once per day (20-token prize), extra games cost 10 tokens.",
+      "id": "src_main_index_termo_game",
       "community": 9,
-      "norm_label": "mednotes home completa mockup (mini-rail + grid de pastas)"
+      "norm_label": "termo minigame (wordle-like)"
     },
     {
-      "label": "Mini-Rail Navigation Component",
-      "file_type": "concept",
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html",
+      "label": "Fishing Minigame (Pesca Cozy)",
+      "file_type": "code",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "superpowers_brainstorm_1273_1783394098_content_home_completa_mini_rail",
+      "rationale": "Stardew-style fishing with lobby (weather, streak, active rod), waiting/bite/minigame screens on a canvas gauge, catalog, rods and missions sub-tabs; 3 free casts per day. Tab currently hidden (display:none).",
+      "id": "src_main_index_fishing_game",
       "community": 9,
-      "norm_label": "mini-rail navigation component"
+      "norm_label": "fishing minigame (pesca cozy)"
     },
     {
-      "label": "MedOrganize Cozy Main App (index.html)",
+      "label": "Caderno de Erros (Error Notebook)",
       "file_type": "code",
       "source_file": "src/main/index.html",
       "source_location": null,
@@ -2937,12 +3132,13 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_main_index_html_medorganize_cozy_app",
-      "community": 2,
-      "norm_label": "medorganize cozy main app (index.html)"
+      "rationale": "Notebook modal opened during the Foco stage to jot mistakes on ruled lines, paired with an interactive flowchart image with clickable hotspot regions explaining note-taking principles.",
+      "id": "src_main_index_error_notebook",
+      "community": 9,
+      "norm_label": "caderno de erros (error notebook)"
     },
     {
-      "label": "Sidebar Controls Nav (index.html)",
+      "label": "Lofi Study Music Player Panel",
       "file_type": "code",
       "source_file": "src/main/index.html",
       "source_location": null,
@@ -2950,282 +3146,10 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_main_index_html_sidebar_controls",
-      "community": 2,
-      "norm_label": "sidebar controls nav (index.html)"
-    },
-    {
-      "label": "shop-toggle-btn (Loja Cozy & Gacha)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_shop_toggle_btn",
-      "community": 2,
-      "norm_label": "shop-toggle-btn (loja cozy & gacha)"
-    },
-    {
-      "label": "aesthetics-toggle-btn (Apar\u00eancia & Bichinhos)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_aesthetics_toggle_btn",
-      "community": 2,
-      "norm_label": "aesthetics-toggle-btn (aparencia & bichinhos)"
-    },
-    {
-      "label": "minigames-toggle-btn (Instru\u00e7\u00f5es/Minijogos)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_minigames_toggle_btn",
-      "community": 2,
-      "norm_label": "minigames-toggle-btn (instrucoes/minijogos)"
-    },
-    {
-      "label": "quests-toggle-btn (Miss\u00f5es Di\u00e1rias)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_quests_toggle_btn",
-      "community": 2,
-      "norm_label": "quests-toggle-btn (missoes diarias)"
-    },
-    {
-      "label": "settings-toggle-btn (Configura\u00e7\u00f5es)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_settings_toggle_btn",
-      "community": 2,
-      "norm_label": "settings-toggle-btn (configuracoes)"
-    },
-    {
-      "label": "stats-toggle-btn (Estat\u00edsticas de Estudo)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_stats_toggle_btn",
-      "community": 2,
-      "norm_label": "stats-toggle-btn (estatisticas de estudo)"
-    },
-    {
-      "label": "Gamification Stats Bar (Pomodoros/Tempo/Tarefas/Tokens/Gacha)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_gamification_bar",
-      "community": 2,
-      "norm_label": "gamification stats bar (pomodoros/tempo/tarefas/tokens/gacha)"
-    },
-    {
-      "label": "Fullscreen Focus Pomodoro Screen (Preparo/Foco/Pausa)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_fullscreen_focus_pomodoro",
-      "community": 22,
-      "norm_label": "fullscreen focus pomodoro screen (preparo/foco/pausa)"
-    },
-    {
-      "label": "Settings Modal (Pomodoro Timers/Music/Prep Checklist)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_settings_modal",
-      "community": 2,
-      "norm_label": "settings modal (pomodoro timers/music/prep checklist)"
-    },
-    {
-      "label": "Aesthetics Modal (Backgrounds/Animals/Pet Care)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_aesthetics_modal",
-      "community": 2,
-      "norm_label": "aesthetics modal (backgrounds/animals/pet care)"
-    },
-    {
-      "label": "Pet Care Section (Feed/Tea/Toy Actions)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_pet_care_section",
-      "community": 2,
-      "norm_label": "pet care section (feed/tea/toy actions)"
-    },
-    {
-      "label": "Cozy Shop & Gacha Modal",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_shop_modal",
-      "community": 2,
-      "norm_label": "cozy shop & gacha modal"
-    },
-    {
-      "label": "Shop Pet Care Items Panel (P\u00e3ozinho/Ch\u00e1/Novelo)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_shop_care_panel",
-      "community": 2,
-      "norm_label": "shop pet care items panel (paozinho/cha/novelo)"
-    },
-    {
-      "label": "Gacha Machine Panel",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_gacha_machine_panel",
-      "community": 2,
-      "norm_label": "gacha machine panel"
-    },
-    {
-      "label": "Gacha Cinematic Reveal Overlay",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_gacha_reveal_overlay",
-      "community": 2,
-      "norm_label": "gacha cinematic reveal overlay"
-    },
-    {
-      "label": "Weekly Study Statistics Modal",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_stats_modal",
-      "community": 2,
-      "norm_label": "weekly study statistics modal"
-    },
-    {
-      "label": "Daily Quests Sliding Panel",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_quests_panel",
-      "community": 2,
-      "norm_label": "daily quests sliding panel"
-    },
-    {
-      "label": "Caderno de Erros Modal (Error Notebook)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_error_notebook_modal",
-      "community": 21,
-      "norm_label": "caderno de erros modal (error notebook)"
-    },
-    {
-      "label": "Minigames Modal (Termo Cozy Tab)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_minigames_modal",
-      "community": 2,
-      "norm_label": "minigames modal (termo cozy tab)"
-    },
-    {
-      "label": "Termo Cozy Game Panel",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_termo_panel",
-      "community": 2,
-      "norm_label": "termo cozy game panel"
-    },
-    {
-      "label": "Pesca Cozy Fishing Minigame Panel (hidden tab)",
-      "file_type": "code",
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_main_index_html_pesca_panel",
-      "community": 2,
-      "norm_label": "pesca cozy fishing minigame panel (hidden tab)"
+      "rationale": "Persistent right panel in the focus screen with three sources: Spotify embed, YouTube embed, and a local ambiance synthesizer (rain/fireplace/chimes/waves) with volume control; user playlists configurable in settings.",
+      "id": "src_main_index_lofi_player",
+      "community": 9,
+      "norm_label": "lofi study music player panel"
     },
     {
       "label": "MedNotes App Shell (notes.html)",
@@ -3236,12 +3160,13 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_mednotes_app",
-      "community": 9,
+      "rationale": "App shell loading notes.js, notes-views.js, notes-drive.js and Google Identity Services; contains transition overlay, mini-rail, views container, drawing toolbar, triple-canvas wrapper (bg/main/ui) plus #text-overlays, and modals for search, page settings, app settings and templates.",
+      "id": "src_notes_notes_mednotes_shell",
+      "community": 3,
       "norm_label": "mednotes app shell (notes.html)"
     },
     {
-      "label": "Sidebar Tree (Pastas/Cadernos/P\u00e1ginas Navigation)",
+      "label": "#views-container + #mn-rail Navigation Markup",
       "file_type": "code",
       "source_file": "src/notes/notes.html",
       "source_location": null,
@@ -3249,12 +3174,12 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_sidebar_tree",
-      "community": 9,
-      "norm_label": "sidebar tree (pastas/cadernos/paginas navigation)"
+      "id": "src_notes_notes_views_container_markup",
+      "community": 3,
+      "norm_label": "#views-container + #mn-rail navigation markup"
     },
     {
-      "label": "Drawing Tools Toolbar (hand/pen/highlighter/eraser/lasso/shapes/ruler/text/laser)",
+      "label": "MedNotes Drawing Toolbar",
       "file_type": "code",
       "source_file": "src/notes/notes.html",
       "source_location": null,
@@ -3262,12 +3187,13 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_drawing_tools_toolbar",
-      "community": 4,
-      "norm_label": "drawing tools toolbar (hand/pen/highlighter/eraser/lasso/shapes/ruler/text/laser)"
+      "rationale": "Tools: hand, pen, highlighter, eraser, lasso, shapes, ruler, text, laser; breadcrumb links jump to folder/notebook views; right group holds page manager, page settings, undo/redo, save status and Drive sync status.",
+      "id": "src_notes_notes_drawing_toolbar",
+      "community": 3,
+      "norm_label": "mednotes drawing toolbar"
     },
     {
-      "label": "tool-pen Button",
+      "label": "Tool Popovers Markup (pen/highlighter/eraser/lasso/shapes)",
       "file_type": "code",
       "source_file": "src/notes/notes.html",
       "source_location": null,
@@ -3275,12 +3201,13 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_tool_pen",
-      "community": 4,
-      "norm_label": "tool-pen button"
+      "rationale": "Placed outside the header for correct fixed positioning. Pen popover offers ballpoint/fountain/pencil/fineliner types; highlighter offers round/chisel/line types \u2014 matching Fase A of the tools improvement plan \u2014 plus size presets, sliders, color swatches and opacity.",
+      "id": "src_notes_notes_tool_popovers",
+      "community": 3,
+      "norm_label": "tool popovers markup (pen/highlighter/eraser/lasso/shapes)"
     },
     {
-      "label": "tool-highlighter Button",
+      "label": "Page Manager Panel (Passo 10 thumbnails)",
       "file_type": "code",
       "source_file": "src/notes/notes.html",
       "source_location": null,
@@ -3288,178 +3215,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_tool_highlighter",
-      "community": 4,
-      "norm_label": "tool-highlighter button"
-    },
-    {
-      "label": "tool-eraser Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_eraser",
-      "community": 4,
-      "norm_label": "tool-eraser button"
-    },
-    {
-      "label": "tool-lasso Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_lasso",
-      "community": 4,
-      "norm_label": "tool-lasso button"
-    },
-    {
-      "label": "tool-shapes Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_shapes",
-      "community": 4,
-      "norm_label": "tool-shapes button"
-    },
-    {
-      "label": "tool-ruler Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_ruler",
-      "community": 4,
-      "norm_label": "tool-ruler button"
-    },
-    {
-      "label": "tool-text Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_text",
-      "community": 4,
-      "norm_label": "tool-text button"
-    },
-    {
-      "label": "tool-laser Button",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_tool_laser",
-      "community": 4,
-      "norm_label": "tool-laser button"
-    },
-    {
-      "label": "popover-eraser (Point/Object Mode + Size)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_popover_eraser",
-      "community": 4,
-      "norm_label": "popover-eraser (point/object mode + size)"
-    },
-    {
-      "label": "popover-lasso (Free/Rect Mode)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_popover_lasso",
-      "community": 4,
-      "norm_label": "popover-lasso (free/rect mode)"
-    },
-    {
-      "label": "popover-shapes (Rect/Circle/Triangle/Line/Arrow)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_popover_shapes",
-      "community": 4,
-      "norm_label": "popover-shapes (rect/circle/triangle/line/arrow)"
-    },
-    {
-      "label": "popover-pen (Type/Espessura/Cor/Opacidade)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_popover_pen",
-      "community": 4,
-      "norm_label": "popover-pen (type/espessura/cor/opacidade)"
-    },
-    {
-      "label": "popover-highlighter (Type/Espessura/Cor/Opacidade)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_popover_highlighter",
-      "community": 4,
-      "norm_label": "popover-highlighter (type/espessura/cor/opacidade)"
-    },
-    {
-      "label": "Canvas Wrapper (bg/main/ui layers + text-overlays)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_canvas_wrapper",
-      "community": 4,
-      "norm_label": "canvas wrapper (bg/main/ui layers + text-overlays)"
-    },
-    {
-      "label": "Page Manager Panel (Thumbnails)",
-      "file_type": "code",
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null,
-      "id": "src_notes_notes_html_page_manager_panel",
-      "community": 9,
-      "norm_label": "page manager panel (thumbnails)"
+      "id": "src_notes_notes_page_manager_panel",
+      "community": 3,
+      "norm_label": "page manager panel (passo 10 thumbnails)"
     },
     {
       "label": "returnToMedOrganize()",
@@ -3470,12 +3228,13 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_returntomedorganize_func",
-      "community": 2,
+      "rationale": "Global function in the inline script that plays the exit overlay animation then navigates to ../main/index.html; the plan explicitly forbids moving or renaming it because the Rail depends on it.",
+      "id": "src_notes_notes_returntomedorganize",
+      "community": 3,
       "norm_label": "returntomedorganize()"
     },
     {
-      "label": "initSidebarToggle()",
+      "label": "Service Worker Registration (sw.js, Passo 17)",
       "file_type": "code",
       "source_file": "src/notes/notes.html",
       "source_location": null,
@@ -3483,12 +3242,137 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "src_notes_notes_html_initsidebartoggle_func",
-      "community": 9,
-      "norm_label": "initsidebartoggle()"
+      "rationale": "Registers sw.js on load to cache the app shell for offline use; an offline banner in the toolbar area announces local-only saving until the connection returns.",
+      "id": "src_notes_notes_service_worker_registration",
+      "community": 3,
+      "norm_label": "service worker registration (sw.js, passo 17)"
+    },
+    {
+      "label": "Google Drive Sync UI (notes-drive.js + GSI)",
+      "file_type": "code",
+      "source_file": "src/notes/notes.html",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Loads notes-drive.js (OAuth + sync, Passos 15-17) and the Google Identity Services client; toolbar shows a cloud sync status button and the app settings panel has a Google Drive section.",
+      "id": "src_notes_notes_drive_sync_ui",
+      "community": 3,
+      "norm_label": "google drive sync ui (notes-drive.js + gsi)"
     }
   ],
   "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "data/termo_validation_words.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "data_termo_validation_words",
+      "target": "data_termo_validation_words_termo_validation_words"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
+      "target": "docs_novas_instrucoes_gamificacao_design_system"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
+      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
+      "target": "docs_novas_instrucoes_gamificacao_sidebar_menu_order"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
+      "target": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
+      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_pet_care_mechanic",
+      "target": "docs_novas_instrucoes_gamificacao_anime_js"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_pet_care_mechanic",
+      "target": "docs_novas_instrucoes_gamificacao_medtokens"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
+      "target": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame",
+      "target": "docs_novas_instrucoes_gamificacao_medtokens"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
+      "target": "docs_novas_instrucoes_gamificacao_anime_js"
+    },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
@@ -3657,16 +3541,6 @@
       "weight": 1.0,
       "source": "config_package_devdependencies",
       "target": "config_package_devdependencies_capacitor_cli",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "data/termo_validation_words.js",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "data_termo_validation_words",
-      "target": "data_termo_validation_words_termo_validation_words",
       "confidence_score": 1.0
     },
     {
@@ -4114,17 +3988,6 @@
       "source_file": "src/assets/anime.min.js",
       "source_location": "L8",
       "weight": 1.0,
-      "source": "src_assets_anime_min_o",
-      "target": "src_assets_anime_min_f",
-      "confidence_score": 0.5
-    },
-    {
-      "relation": "indirect_call",
-      "context": "argument",
-      "confidence": "INFERRED",
-      "source_file": "src/assets/anime.min.js",
-      "source_location": "L8",
-      "weight": 1.0,
       "source": "src_assets_anime_min_g",
       "target": "src_assets_anime_min_o",
       "confidence_score": 0.5
@@ -4138,6 +4001,17 @@
       "weight": 1.0,
       "source": "src_assets_anime_min_m",
       "target": "src_assets_anime_min_o",
+      "confidence_score": 0.5
+    },
+    {
+      "relation": "indirect_call",
+      "context": "argument",
+      "confidence": "INFERRED",
+      "source_file": "src/assets/anime.min.js",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_assets_anime_min_o",
+      "target": "src_assets_anime_min_f",
       "confidence_score": 0.5
     },
     {
@@ -4301,8 +4175,8 @@
       "source_file": "src/assets/anime.min.js",
       "source_location": "L8",
       "weight": 1.0,
-      "source": "src_assets_anime_min_s",
-      "target": "src_assets_anime_min_g",
+      "source": "src_assets_anime_min_h",
+      "target": "src_assets_anime_min_s",
       "confidence_score": 1.0
     },
     {
@@ -4312,8 +4186,8 @@
       "source_file": "src/assets/anime.min.js",
       "source_location": "L8",
       "weight": 1.0,
-      "source": "src_assets_anime_min_h",
-      "target": "src_assets_anime_min_s",
+      "source": "src_assets_anime_min_s",
+      "target": "src_assets_anime_min_g",
       "confidence_score": 1.0
     },
     {
@@ -9600,7 +9474,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/notes/notes.js",
-      "source_location": "L18",
+      "source_location": "L32",
       "weight": 1.0,
       "source": "src_notes_notes",
       "target": "src_notes_notes_mednotes",
@@ -9617,224 +9491,54 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.65,
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/notes/sw.js",
+      "source_location": "L11",
       "weight": 1.0,
-      "source": "agents_skills_file_organizer_skill_duplicate_detection",
-      "target": "docs_claude_md_surgical_changes"
+      "source": "src_notes_sw",
+      "target": "src_notes_sw_shell_files",
+      "confidence_score": 1.0
     },
     {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": ".agents/skills/file-organizer/SKILL.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_skills_file_organizer_skill_organization_plan_workflow",
-      "target": "docs_claude_md_think_before_coding"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.65,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_toolsettings_state_model",
-      "target": "docs_claude_md_simplicity_first"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
-      "target": "docs_claude_md_goal_driven_execution"
-    },
-    {
-      "relation": "references",
+      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_file": "docs/CLAUDE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
-      "target": "docs_novas_instrucoes_gamificacao_design_system"
+      "source": "docs_claude_goal_driven_execution",
+      "target": "docs_claude_behavioral_guidelines"
     },
     {
-      "relation": "references",
+      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_file": "docs/CLAUDE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
-      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
+      "source": "docs_claude_simplicity_first",
+      "target": "docs_claude_behavioral_guidelines"
     },
     {
-      "relation": "references",
+      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_file": "docs/CLAUDE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
-      "target": "docs_novas_instrucoes_gamificacao_sidebar_menu_order"
+      "source": "docs_claude_surgical_changes",
+      "target": "docs_claude_behavioral_guidelines"
     },
     {
-      "relation": "references",
+      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
+      "source_file": "docs/CLAUDE.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_medorganize_cozy_plan",
-      "target": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_medorganize_cozy_app",
-      "target": "docs_novas_instrucoes_gamificacao_design_system"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "docs_novas_instrucoes_gamificacao_sidebar_menu_order"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
-      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_pet_care_mechanic",
-      "target": "docs_novas_instrucoes_gamificacao_anime_js"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_pet_care_mechanic",
-      "target": "docs_novas_instrucoes_gamificacao_medtokens"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_pet_care_section",
-      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_shop_care_panel",
-      "target": "docs_novas_instrucoes_gamificacao_pet_care_mechanic"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
-      "target": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame",
-      "target": "docs_novas_instrucoes_gamificacao_medtokens"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_termo_panel",
-      "target": "docs_novas_instrucoes_gamificacao_termo_cozy_minigame"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/novas_instrucoes_gamificacao.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_novas_instrucoes_gamificacao_game_loop_state_spec",
-      "target": "docs_novas_instrucoes_gamificacao_anime_js"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_gamification_bar",
-      "target": "docs_novas_instrucoes_gamificacao_medtokens"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_gacha_machine_panel",
-      "target": "docs_novas_instrucoes_gamificacao_gacha_coins"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_gamification_bar",
-      "target": "docs_novas_instrucoes_gamificacao_gacha_coins"
+      "source": "docs_claude_think_before_coding",
+      "target": "docs_claude_behavioral_guidelines"
     },
     {
       "relation": "references",
@@ -9843,8 +9547,8 @@
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_brushtype_stroke_model"
+      "source": "docs_plano_ferramentas_plan",
+      "target": "docs_plano_ferramentas_brushtype"
     },
     {
       "relation": "references",
@@ -9853,27 +9557,7 @@
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_execution_phases"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_persistence_extension"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
+      "source": "docs_plano_ferramentas_plan",
       "target": "docs_plano_ferramentas_rich_popovers"
     },
     {
@@ -9883,8 +9567,8 @@
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_ruler_fix"
+      "source": "docs_plano_ferramentas_plan",
+      "target": "docs_plano_ferramentas_ruler_snap"
     },
     {
       "relation": "references",
@@ -9893,8 +9577,8 @@
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_text_tool_fix"
+      "source": "docs_plano_ferramentas_plan",
+      "target": "docs_plano_ferramentas_text_elements"
     },
     {
       "relation": "references",
@@ -9903,358 +9587,458 @@
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_mednotes_tools_plan",
-      "target": "docs_plano_ferramentas_toolsettings_state_model"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
-      "target": "docs_plano_ferramentas_toolsettings_state_model"
+      "source": "docs_plano_ferramentas_plan",
+      "target": "docs_plano_ferramentas_toolsettings"
     },
     {
       "relation": "conceptually_related_to",
       "confidence": "INFERRED",
       "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_toolsettings_state_model",
-      "target": "docs_plano_ferramentas_brushtype_stroke_model"
+      "source": "src_notes_notes_drawing_toolbar",
+      "target": "docs_plano_ferramentas_plan"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_toolsettings_state_model",
-      "target": "src_notes_notes_html_tool_eraser"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_toolsettings_state_model",
-      "target": "src_notes_notes_html_tool_highlighter"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_toolsettings_state_model",
-      "target": "src_notes_notes_html_tool_pen"
-    },
-    {
-      "relation": "references",
+      "relation": "shares_data_with",
       "confidence": "INFERRED",
-      "confidence_score": 0.85,
+      "confidence_score": 0.95,
       "source_file": "docs/plano_ferramentas.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_brushtype_stroke_model",
-      "target": "src_notes_notes_html_popover_highlighter"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_brushtype_stroke_model",
-      "target": "src_notes_notes_html_popover_pen"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
-      "target": "docs_plano_ferramentas_brushtype_stroke_model"
+      "source": "docs_plano_ferramentas_toolsettings",
+      "target": "docs_plano_ferramentas_brushtype"
     },
     {
       "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/plano_ferramentas.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_plano_ferramentas_brushtype",
+      "target": "docs_plano_ferramentas_ruler_snap"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/notes/notes.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_notes_notes_tool_popovers",
+      "target": "docs_plano_ferramentas_brushtype"
+    },
+    {
+      "relation": "semantically_similar_to",
       "confidence": "INFERRED",
       "confidence_score": 0.75,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_ruler_fix",
-      "target": "docs_plano_ferramentas_brushtype_stroke_model"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module",
       "target": "docs_plano_ferramentas_rich_popovers"
     },
     {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_rich_popovers",
-      "target": "src_notes_notes_html_popover_eraser"
+      "source": "src_notes_notes_tool_popovers",
+      "target": "docs_plano_ferramentas_rich_popovers"
     },
     {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_rich_popovers",
-      "target": "src_notes_notes_html_popover_highlighter"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "docs/plano_ferramentas.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "docs_plano_ferramentas_rich_popovers",
-      "target": "src_notes_notes_html_popover_pen"
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
-      "target": "docs_plano_ferramentas_ruler_fix"
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_ruler_fix",
-      "target": "src_notes_notes_html_tool_ruler"
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_data_migration"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_execution_phases",
-      "target": "docs_plano_ferramentas_text_tool_fix"
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_persistence_extension",
-      "target": "docs_plano_ferramentas_text_tool_fix"
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_papelaria_cozy_identity"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-navigation-redesign-design.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_text_tool_fix",
-      "target": "src_notes_notes_html_canvas_wrapper"
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "docs/plano_ferramentas.md",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "docs_plano_ferramentas_text_tool_fix",
-      "target": "src_notes_notes_html_tool_text"
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/notes/notes.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_notes_notes_views_container_markup",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/notes/notes.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_notes_notes_views_container_markup",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_medorganize_cozy_app",
-      "target": "src_assets_aesthetic_readme_popcat_gif"
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module"
     },
     {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_medorganize_cozy_app",
-      "target": "src_assets_aesthetic_readme_cherry_blossom_gif"
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker"
     },
     {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/assets/animals/README.md",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_assets_animals_readme_animal_naming_convention",
-      "target": "src_assets_backgrounds_readme_bg_naming_convention"
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_plan",
+      "target": "src_notes_notes_page_manager_panel"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module",
+      "target": "src_notes_notes_returntomedorganize"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_spec"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_canvas_singleton"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_spec",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap"
     },
     {
       "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-07-07-mednotes-page-peek-scroll-design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap",
+      "target": "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_canvas_singleton"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_plan",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation",
+      "target": "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/index.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_main_index_medorganize_app",
+      "target": "src_assets_aesthetic_readme_aesthetic_assets"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "src/assets/animals/README.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_assets_animals_readme_discovery_tinder",
-      "target": "src_assets_backgrounds_readme_discovery_tinder"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_aesthetics_modal",
-      "target": "src_assets_animals_readme_discovery_tinder"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_aesthetics_modal",
-      "target": "src_assets_backgrounds_readme_discovery_tinder"
+      "source": "src_assets_animals_readme_animal_naming",
+      "target": "src_assets_animals_readme_tinder_de_descobertas"
     },
     {
       "relation": "references",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_moleskine",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_moleskine_deluxe"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_assets_animals_readme_animal_naming"
     },
     {
       "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html",
+      "source_file": "src/assets/backgrounds/README.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_moleskine_deluxe",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_brochura_deluxe"
+      "source": "src_assets_backgrounds_readme_background_naming",
+      "target": "src_assets_animals_readme_tinder_de_descobertas"
     },
     {
       "relation": "references",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-cadernos-v2.html",
+      "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_brochura_fita",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_v2_brochura_deluxe"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_envelope_kraft",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_fichario_aba",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.65,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba",
-      "target": "src_notes_notes_html_sidebar_tree"
-    },
-    {
-      "relation": "conceptually_related_to",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/estilo-pastas-v2.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba_barbante"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup",
-      "target": "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup",
-      "target": "src_notes_notes_html_mednotes_app"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup",
-      "target": "superpowers_brainstorm_1273_1783394098_content_home_completa_mini_rail"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_assets_backgrounds_readme_background_naming"
     },
     {
       "relation": "references",
@@ -10263,18 +10047,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_medorganize_cozy_app",
-      "target": "src_main_index_html_sidebar_controls"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_returntomedorganize_func",
-      "target": "src_main_index_html_medorganize_cozy_app"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_error_notebook"
     },
     {
       "relation": "references",
@@ -10283,8 +10057,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_aesthetics_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_fishing_game"
     },
     {
       "relation": "references",
@@ -10293,8 +10067,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_minigames_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_gacha_shop"
     },
     {
       "relation": "references",
@@ -10303,8 +10077,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_quests_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_lofi_player"
     },
     {
       "relation": "references",
@@ -10313,8 +10087,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_settings_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_pet_care"
     },
     {
       "relation": "references",
@@ -10323,8 +10097,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_shop_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_pomodoro_focus_flow"
     },
     {
       "relation": "references",
@@ -10333,8 +10107,18 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_sidebar_controls",
-      "target": "src_main_index_html_stats_toggle_btn"
+      "source": "src_main_index_medorganize_app",
+      "target": "src_main_index_termo_game"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/notes/notes.html",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_notes_notes_returntomedorganize",
+      "target": "src_main_index_medorganize_app"
     },
     {
       "relation": "references",
@@ -10343,8 +10127,8 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_shop_toggle_btn",
-      "target": "src_main_index_html_shop_modal"
+      "source": "src_main_index_pomodoro_focus_flow",
+      "target": "src_main_index_error_notebook"
     },
     {
       "relation": "references",
@@ -10353,108 +10137,28 @@
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_aesthetics_toggle_btn",
-      "target": "src_main_index_html_aesthetics_modal"
+      "source": "src_main_index_pomodoro_focus_flow",
+      "target": "src_main_index_lofi_player"
     },
     {
-      "relation": "references",
+      "relation": "shares_data_with",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_minigames_toggle_btn",
-      "target": "src_main_index_html_minigames_modal"
+      "source": "src_main_index_gacha_shop",
+      "target": "src_main_index_pet_care"
     },
     {
-      "relation": "references",
+      "relation": "shares_data_with",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/main/index.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_main_index_html_quests_toggle_btn",
-      "target": "src_main_index_html_quests_panel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_settings_toggle_btn",
-      "target": "src_main_index_html_settings_modal"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_stats_toggle_btn",
-      "target": "src_main_index_html_stats_modal"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_aesthetics_modal",
-      "target": "src_main_index_html_pet_care_section"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_shop_modal",
-      "target": "src_main_index_html_gacha_machine_panel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_shop_modal",
-      "target": "src_main_index_html_shop_care_panel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_gacha_machine_panel",
-      "target": "src_main_index_html_gacha_reveal_overlay"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_minigames_modal",
-      "target": "src_main_index_html_pesca_panel"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/main/index.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_main_index_html_minigames_modal",
-      "target": "src_main_index_html_termo_panel"
+      "source": "src_main_index_termo_game",
+      "target": "src_main_index_gacha_shop"
     },
     {
       "relation": "references",
@@ -10463,18 +10167,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_mednotes_app",
-      "target": "src_notes_notes_html_drawing_tools_toolbar"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_mednotes_app",
-      "target": "src_notes_notes_html_initsidebartoggle_func"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_drawing_toolbar"
     },
     {
       "relation": "references",
@@ -10483,8 +10177,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_mednotes_app",
-      "target": "src_notes_notes_html_page_manager_panel"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_drive_sync_ui"
     },
     {
       "relation": "references",
@@ -10493,8 +10187,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_mednotes_app",
-      "target": "src_notes_notes_html_sidebar_tree"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_page_manager_panel"
     },
     {
       "relation": "references",
@@ -10503,8 +10197,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_eraser"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_returntomedorganize"
     },
     {
       "relation": "references",
@@ -10513,8 +10207,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_highlighter"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_service_worker_registration"
     },
     {
       "relation": "references",
@@ -10523,8 +10217,8 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_laser"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_tool_popovers"
     },
     {
       "relation": "references",
@@ -10533,133 +10227,61 @@
       "source_file": "src/notes/notes.html",
       "source_location": null,
       "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_lasso"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_pen"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_ruler"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_shapes"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_drawing_tools_toolbar",
-      "target": "src_notes_notes_html_tool_text"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_pen",
-      "target": "src_notes_notes_html_popover_pen"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_highlighter",
-      "target": "src_notes_notes_html_popover_highlighter"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_eraser",
-      "target": "src_notes_notes_html_popover_eraser"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_lasso",
-      "target": "src_notes_notes_html_popover_lasso"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_shapes",
-      "target": "src_notes_notes_html_popover_shapes"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/notes/notes.html",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "src_notes_notes_html_tool_text",
-      "target": "src_notes_notes_html_canvas_wrapper"
+      "source": "src_notes_notes_mednotes_shell",
+      "target": "src_notes_notes_views_container_markup"
     }
   ],
   "hyperedges": [
     {
-      "id": "hyperedge_mednotes_drawing_toolbar_popovers",
-      "label": "MedNotes Drawing Toolbar + Popover System",
+      "id": "mednotes_navigation_redesign_system",
+      "label": "MedNotes Navigation Redesign System",
       "nodes": [
-        "src_notes_notes_html_drawing_tools_toolbar",
-        "src_notes_notes_html_tool_pen",
-        "src_notes_notes_html_tool_highlighter",
-        "src_notes_notes_html_tool_eraser",
-        "src_notes_notes_html_tool_lasso",
-        "src_notes_notes_html_tool_shapes",
-        "src_notes_notes_html_popover_pen",
-        "src_notes_notes_html_popover_highlighter",
-        "src_notes_notes_html_popover_eraser",
-        "src_notes_notes_html_popover_lasso",
-        "src_notes_notes_html_popover_shapes",
-        "docs_plano_ferramentas_rich_popovers",
-        "docs_plano_ferramentas_toolsettings_state_model"
+        "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_views_router",
+        "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_mini_rail",
+        "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_papelaria_cozy_identity",
+        "docs_superpowers_specs_2026_07_07_mednotes_navigation_redesign_design_data_migration",
+        "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_actions_module",
+        "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_popover_module",
+        "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_emojipicker",
+        "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_rail_module",
+        "docs_superpowers_plans_2026_07_07_mednotes_navigation_redesign_sidebar_removal",
+        "src_notes_notes_views_container_markup"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-navigation-redesign.md"
+    },
+    {
+      "id": "mednotes_page_peek_scroll_flow",
+      "label": "Page Peek + Snap Scroll Flow",
+      "nodes": [
+        "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_peek_snap",
+        "docs_superpowers_specs_2026_07_07_mednotes_page_peek_scroll_design_background_pan_bug",
+        "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_elastic_overscroll",
+        "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_get_neighbor_page",
+        "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_confirm_peek",
+        "docs_superpowers_plans_2026_07_07_mednotes_page_peek_scroll_snap_animation"
       ],
       "relation": "participate_in",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "src/notes/notes.html"
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-07-mednotes-page-peek-scroll.md"
+    },
+    {
+      "id": "medorganize_gamification_economy",
+      "label": "MedOrganize Token/Gacha Gamification Economy",
+      "nodes": [
+        "src_main_index_pomodoro_focus_flow",
+        "src_main_index_gacha_shop",
+        "src_main_index_pet_care",
+        "src_main_index_termo_game",
+        "src_main_index_fishing_game"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/main/index.html"
     },
     {
       "id": "hyperedge_medorganize_gamification_currencies",
@@ -10677,24 +10299,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.85,
       "source_file": "docs/novas_instrucoes_gamificacao.md"
-    },
-    {
-      "id": "hyperedge_papelaria_cozy_brainstorm_mockups",
-      "label": "Papelaria Cozy Visual Direction Brainstorm Set",
-      "nodes": [
-        "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_fichario_aba",
-        "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_envelope_kraft",
-        "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_flat_cozy",
-        "superpowers_brainstorm_1273_1783394098_content_estilo_pastas_v2_kraft_aba",
-        "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_espiral",
-        "superpowers_brainstorm_1273_1783394098_content_estilo_cadernos_moleskine",
-        "superpowers_brainstorm_1273_1783394098_content_home_completa_mockup"
-      ],
-      "relation": "form",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": ".superpowers/brainstorm/1273-1783394098/content/home-completa.html"
     }
   ],
-  "built_at_commit": "da3d8b7719603fd30f881a5091469c8a408968d1"
+  "built_at_commit": "eff8e99bfd8592d69007400d15ee3f5c23d8fd4e"
 }
